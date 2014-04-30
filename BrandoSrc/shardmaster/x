@@ -1,0 +1,1011 @@
+Test: Basic leave/join ...
+	 START me 0 Query Shards [0 0 0 0 0 0 0 0 0 0]
+	 START me 0 Query Groups map[]
+	 END me 0 Query Shards [0 0 0 0 0 0 0 0 0 0]
+	 END me 0 Query Groups map[]
+	 START me 0 Query Shards [0 0 0 0 0 0 0 0 0 0]
+	 START me 0 Query Groups map[]
+	 END me 0 Query Shards [0 0 0 0 0 0 0 0 0 0]
+	 END me 0 Query Groups map[]
+	 START me 0 Join Shards [0 0 0 0 0 0 0 0 0 0]
+	 START me 0 Join Groups map[]
+{ >>> CURRENT_OP: {Type:JOIN GID:1 Servers:[x y z] Shard:0 Num:0 OpID:2 ServerID:0} 
+ >>> OLD: {Num:0 Shards:[0 0 0 0 0 0 0 0 0 0] Groups:map[]} 
+ >>> NEW: {Num:1 Shards:[1 1 1 1 1 1 1 1 1 1] Groups:map[1:[x y z]]} } 
+ >>>
+	 END me 0 Join Shards [1 1 1 1 1 1 1 1 1 1]
+	 END me 0 Join Groups map[1:[x y z]]
+	 START me 0 Query Shards [1 1 1 1 1 1 1 1 1 1]
+	 START me 0 Query Groups map[1:[x y z]]
+	 END me 0 Query Shards [1 1 1 1 1 1 1 1 1 1]
+	 END me 0 Query Groups map[1:[x y z]]
+	 START me 0 Query Shards [1 1 1 1 1 1 1 1 1 1]
+	 START me 0 Query Groups map[1:[x y z]]
+	 END me 0 Query Shards [1 1 1 1 1 1 1 1 1 1]
+	 END me 0 Query Groups map[1:[x y z]]
+	 START me 0 Join Shards [1 1 1 1 1 1 1 1 1 1]
+	 START me 0 Join Groups map[1:[x y z]]
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:0} 
+ >>> OLD: {Num:1 Shards:[1 1 1 1 1 1 1 1 1 1] Groups:map[1:[x y z]]} 
+ >>> NEW: {Num:2 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Join Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 END me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 END me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Join Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Join Groups map[1:[x y z] 2:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:8 ServerID:0} 
+ >>> OLD: {Num:2 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} 
+ >>> NEW: {Num:3 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Join Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 END me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 END me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 END me 0 Query Shards [1 1 1 1 1 2 2 2 2 2]
+	 END me 0 Query Groups map[1:[x y z] 2:[a b c]]
+	 START me 0 Leave Shards [1 1 1 1 1 2 2 2 2 2]
+	 START me 0 Leave Groups map[1:[x y z] 2:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1 Servers:[] Shard:0 Num:0 OpID:12 ServerID:0} 
+ >>> OLD: {Num:3 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} 
+ >>> NEW: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Leave Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Leave Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Leave Groups map[2:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1 Servers:[] Shard:0 Num:0 OpID:15 ServerID:0} 
+ >>> OLD: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Leave Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+  ... Passed
+Test: Historical queries ...
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+	 START me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Query Groups map[2:[a b c]]
+	 END me 0 Query Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Query Groups map[2:[a b c]]
+  ... Passed
+Test: Move ...
+	 START me 0 Join Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Join Groups map[2:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:503 Servers:[3a 3b 3c] Shard:0 Num:0 OpID:24 ServerID:0} 
+ >>> OLD: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:5 Shards:[2 2 2 2 2 503 503 503 503 503] Groups:map[2:[a b c] 503:[3a 3b 3c]]} } 
+ >>>
+	 END me 0 Join Shards [2 2 2 2 2 503 503 503 503 503]
+	 END me 0 Join Groups map[2:[a b c] 503:[3a 3b 3c]]
+	 START me 0 Join Shards [2 2 2 2 2 503 503 503 503 503]
+	 START me 0 Join Groups map[2:[a b c] 503:[3a 3b 3c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:504 Servers:[4a 4b 4c] Shard:0 Num:0 OpID:25 ServerID:0} 
+ >>> OLD: {Num:5 Shards:[2 2 2 2 2 503 503 503 503 503] Groups:map[2:[a b c] 503:[3a 3b 3c]]} 
+ >>> NEW: {Num:6 Shards:[2 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Join Shards [2 2 2 504 504 503 503 503 503 504]
+	 END me 0 Join Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [2 2 2 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [2 2 2 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [2 2 2 504 504 503 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:0 Num:0 OpID:27 ServerID:0} 
+ >>> OLD: {Num:6 Shards:[2 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:7 Shards:[503 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 2 2 504 504 503 503 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 2 2 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 2 2 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 2 2 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 2 2 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 2 2 504 504 503 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:1 Num:0 OpID:30 ServerID:0} 
+ >>> OLD: {Num:7 Shards:[503 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:8 Shards:[503 503 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 2 504 504 503 503 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 2 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 2 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 2 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 2 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 2 504 504 503 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:2 Num:0 OpID:33 ServerID:0} 
+ >>> OLD: {Num:8 Shards:[503 503 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:9 Shards:[503 503 503 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 504 504 503 503 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 504 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 504 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 504 504 503 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:3 Num:0 OpID:36 ServerID:0} 
+ >>> OLD: {Num:9 Shards:[503 503 503 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:10 Shards:[503 503 503 503 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 504 503 503 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 504 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 504 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 503 504 503 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:4 Num:0 OpID:39 ServerID:0} 
+ >>> OLD: {Num:10 Shards:[503 503 503 503 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:11 Shards:[503 503 503 503 503 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 503 503 503 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 503 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 503 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 503 503 503 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:5 Num:0 OpID:42 ServerID:0} 
+ >>> OLD: {Num:11 Shards:[503 503 503 503 503 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:12 Shards:[503 503 503 503 503 504 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 503 504 503 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 503 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 503 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 503 503 504 503 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:6 Num:0 OpID:45 ServerID:0} 
+ >>> OLD: {Num:12 Shards:[503 503 503 503 503 504 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:13 Shards:[503 503 503 503 503 504 504 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 503 504 504 503 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 503 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 503 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 503 503 504 504 503 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:7 Num:0 OpID:48 ServerID:0} 
+ >>> OLD: {Num:13 Shards:[503 503 503 503 503 504 504 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:14 Shards:[503 503 503 503 503 504 504 504 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 503 504 504 504 503 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 504 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 504 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 504 503 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 504 503 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 503 503 504 504 504 503 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:8 Num:0 OpID:51 ServerID:0} 
+ >>> OLD: {Num:14 Shards:[503 503 503 503 503 504 504 504 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:15 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 503 504 504 504 504 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 504 504 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 504 504 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 504 504 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 504 504 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Move Shards [503 503 503 503 503 504 504 504 504 504]
+	 START me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:9 Num:0 OpID:54 ServerID:0} 
+ >>> OLD: {Num:15 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:16 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Move Shards [503 503 503 503 503 504 504 504 504 504]
+	 END me 0 Move Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Query Shards [503 503 503 503 503 504 504 504 504 504]
+	 START me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 END me 0 Query Shards [503 503 503 503 503 504 504 504 504 504]
+	 END me 0 Query Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+	 START me 0 Leave Shards [503 503 503 503 503 504 504 504 504 504]
+	 START me 0 Leave Groups map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:503 Servers:[] Shard:0 Num:0 OpID:56 ServerID:0} 
+ >>> OLD: {Num:16 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:17 Shards:[2 2 2 2 2 504 504 504 504 504] Groups:map[2:[a b c] 504:[4a 4b 4c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 2 2 2 2 504 504 504 504 504]
+	 END me 0 Leave Groups map[2:[a b c] 504:[4a 4b 4c]]
+	 START me 0 Leave Shards [2 2 2 2 2 504 504 504 504 504]
+	 START me 0 Leave Groups map[2:[a b c] 504:[4a 4b 4c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:504 Servers:[] Shard:0 Num:0 OpID:57 ServerID:0} 
+ >>> OLD: {Num:17 Shards:[2 2 2 2 2 504 504 504 504 504] Groups:map[2:[a b c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:18 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 2 2 2 2 2 2 2 2 2]
+	 END me 0 Leave Groups map[2:[a b c]]
+  ... Passed
+Test: Concurrent leave/join ...
+	 START me 2 Join Shards [0 0 0 0 0 0 0 0 0 0]
+	 START me 2 Join Groups map[]
+	 START me 0 Join Shards [2 2 2 2 2 2 2 2 2 2]
+	 START me 0 Join Groups map[2:[a b c]]
+	 START me 1 Join Shards [0 0 0 0 0 0 0 0 0 0]
+	 START me 1 Join Groups map[]
+{ >>> CURRENT_OP: {Type:JOIN GID:1 Servers:[x y z] Shard:0 Num:0 OpID:2 ServerID:0} 
+ >>> OLD: {Num:0 Shards:[0 0 0 0 0 0 0 0 0 0] Groups:map[]} 
+ >>> NEW: {Num:1 Shards:[1 1 1 1 1 1 1 1 1 1] Groups:map[1:[x y z]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:0} 
+ >>> OLD: {Num:1 Shards:[1 1 1 1 1 1 1 1 1 1] Groups:map[1:[x y z]]} 
+ >>> NEW: {Num:2 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:8 ServerID:0} 
+ >>> OLD: {Num:2 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} 
+ >>> NEW: {Num:3 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1 Servers:[] Shard:0 Num:0 OpID:12 ServerID:0} 
+ >>> OLD: {Num:3 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} 
+ >>> NEW: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1 Servers:[] Shard:0 Num:0 OpID:15 ServerID:0} 
+ >>> OLD: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:503 Servers:[3a 3b 3c] Shard:0 Num:0 OpID:24 ServerID:0} 
+ >>> OLD: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:5 Shards:[2 2 2 2 2 503 503 503 503 503] Groups:map[2:[a b c] 503:[3a 3b 3c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:504 Servers:[4a 4b 4c] Shard:0 Num:0 OpID:25 ServerID:0} 
+ >>> OLD: {Num:5 Shards:[2 2 2 2 2 503 503 503 503 503] Groups:map[2:[a b c] 503:[3a 3b 3c]]} 
+ >>> NEW: {Num:6 Shards:[2 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:0 Num:0 OpID:27 ServerID:0} 
+ >>> OLD: {Num:6 Shards:[2 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:7 Shards:[503 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:1 Num:0 OpID:30 ServerID:0} 
+ >>> OLD: {Num:7 Shards:[503 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:8 Shards:[503 503 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:2 Num:0 OpID:33 ServerID:0} 
+ >>> OLD: {Num:8 Shards:[503 503 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:9 Shards:[503 503 503 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:3 Num:0 OpID:36 ServerID:0} 
+ >>> OLD: {Num:9 Shards:[503 503 503 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:10 Shards:[503 503 503 503 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:4 Num:0 OpID:39 ServerID:0} 
+ >>> OLD: {Num:10 Shards:[503 503 503 503 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:11 Shards:[503 503 503 503 503 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:5 Num:0 OpID:42 ServerID:0} 
+ >>> OLD: {Num:11 Shards:[503 503 503 503 503 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:12 Shards:[503 503 503 503 503 504 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:6 Num:0 OpID:45 ServerID:0} 
+ >>> OLD: {Num:12 Shards:[503 503 503 503 503 504 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:13 Shards:[503 503 503 503 503 504 504 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:7 Num:0 OpID:48 ServerID:0} 
+ >>> OLD: {Num:13 Shards:[503 503 503 503 503 504 504 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:14 Shards:[503 503 503 503 503 504 504 504 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:8 Num:0 OpID:51 ServerID:0} 
+ >>> OLD: {Num:14 Shards:[503 503 503 503 503 504 504 504 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:15 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:9 Num:0 OpID:54 ServerID:0} 
+ >>> OLD: {Num:15 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:16 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:503 Servers:[] Shard:0 Num:0 OpID:56 ServerID:0} 
+ >>> OLD: {Num:16 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:17 Shards:[2 2 2 2 2 504 504 504 504 504] Groups:map[2:[a b c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:504 Servers:[] Shard:0 Num:0 OpID:57 ServerID:0} 
+ >>> OLD: {Num:17 Shards:[2 2 2 2 2 504 504 504 504 504] Groups:map[2:[a b c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:18 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1006 Servers:[a b c] Shard:0 Num:0 OpID:0 ServerID:2} 
+ >>> OLD: {Num:18 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:19 Shards:[2 2 2 2 2 1006 1006 1006 1006 1006] Groups:map[2:[a b c] 1006:[a b c]]} } 
+ >>>
+	 END me 2 Join Shards [2 2 2 2 2 1006 1006 1006 1006 1006]
+	 END me 2 Join Groups map[2:[a b c] 1006:[a b c]]
+	 START me 2 Join Shards [2 2 2 2 2 1006 1006 1006 1006 1006]
+	 START me 2 Join Groups map[2:[a b c] 1006:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1 Servers:[x y z] Shard:0 Num:0 OpID:2 ServerID:0} 
+ >>> OLD: {Num:0 Shards:[0 0 0 0 0 0 0 0 0 0] Groups:map[]} 
+ >>> NEW: {Num:1 Shards:[1 1 1 1 1 1 1 1 1 1] Groups:map[1:[x y z]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:0} 
+ >>> OLD: {Num:1 Shards:[1 1 1 1 1 1 1 1 1 1] Groups:map[1:[x y z]]} 
+ >>> NEW: {Num:2 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:8 ServerID:0} 
+ >>> OLD: {Num:2 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} 
+ >>> NEW: {Num:3 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1 Servers:[] Shard:0 Num:0 OpID:12 ServerID:0} 
+ >>> OLD: {Num:3 Shards:[1 1 1 1 1 2 2 2 2 2] Groups:map[1:[x y z] 2:[a b c]]} 
+ >>> NEW: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1 Servers:[] Shard:0 Num:0 OpID:15 ServerID:0} 
+ >>> OLD: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:503 Servers:[3a 3b 3c] Shard:0 Num:0 OpID:24 ServerID:0} 
+ >>> OLD: {Num:4 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:5 Shards:[2 2 2 2 2 503 503 503 503 503] Groups:map[2:[a b c] 503:[3a 3b 3c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:504 Servers:[4a 4b 4c] Shard:0 Num:0 OpID:25 ServerID:0} 
+ >>> OLD: {Num:5 Shards:[2 2 2 2 2 503 503 503 503 503] Groups:map[2:[a b c] 503:[3a 3b 3c]]} 
+ >>> NEW: {Num:6 Shards:[2 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:0 Num:0 OpID:27 ServerID:0} 
+ >>> OLD: {Num:6 Shards:[2 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:7 Shards:[503 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:1 Num:0 OpID:30 ServerID:0} 
+ >>> OLD: {Num:7 Shards:[503 2 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:8 Shards:[503 503 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:2 Num:0 OpID:33 ServerID:0} 
+ >>> OLD: {Num:8 Shards:[503 503 2 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:9 Shards:[503 503 503 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:3 Num:0 OpID:36 ServerID:0} 
+ >>> OLD: {Num:9 Shards:[503 503 503 504 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:10 Shards:[503 503 503 503 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:503 Servers:[] Shard:4 Num:0 OpID:39 ServerID:0} 
+ >>> OLD: {Num:10 Shards:[503 503 503 503 504 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:11 Shards:[503 503 503 503 503 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:5 Num:0 OpID:42 ServerID:0} 
+ >>> OLD: {Num:11 Shards:[503 503 503 503 503 503 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:12 Shards:[503 503 503 503 503 504 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:6 Num:0 OpID:45 ServerID:0} 
+ >>> OLD: {Num:12 Shards:[503 503 503 503 503 504 503 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:13 Shards:[503 503 503 503 503 504 504 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:7 Num:0 OpID:48 ServerID:0} 
+ >>> OLD: {Num:13 Shards:[503 503 503 503 503 504 504 503 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:14 Shards:[503 503 503 503 503 504 504 504 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:8 Num:0 OpID:51 ServerID:0} 
+ >>> OLD: {Num:14 Shards:[503 503 503 503 503 504 504 504 503 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:15 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:MOVE GID:504 Servers:[] Shard:9 Num:0 OpID:54 ServerID:0} 
+ >>> OLD: {Num:15 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:16 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:503 Servers:[] Shard:0 Num:0 OpID:56 ServerID:0} 
+ >>> OLD: {Num:16 Shards:[503 503 503 503 503 504 504 504 504 504] Groups:map[2:[a b c] 503:[3a 3b 3c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:17 Shards:[2 2 2 2 2 504 504 504 504 504] Groups:map[2:[a b c] 504:[4a 4b 4c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:504 Servers:[] Shard:0 Num:0 OpID:57 ServerID:0} 
+ >>> OLD: {Num:17 Shards:[2 2 2 2 2 504 504 504 504 504] Groups:map[2:[a b c] 504:[4a 4b 4c]]} 
+ >>> NEW: {Num:18 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1006 Servers:[a b c] Shard:0 Num:0 OpID:0 ServerID:2} 
+ >>> OLD: {Num:18 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:19 Shards:[2 2 2 2 2 1006 1006 1006 1006 1006] Groups:map[2:[a b c] 1006:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1002 Servers:[a b c] Shard:0 Num:0 OpID:0 ServerID:1} 
+ >>> OLD: {Num:19 Shards:[2 2 2 2 2 1006 1006 1006 1006 1006] Groups:map[2:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:20 Shards:[2 2 2 1002 1002 1006 1006 1006 1006 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c]]} } 
+ >>>
+	 END me 1 Join Shards [2 2 2 1002 1002 1006 1006 1006 1006 1002]
+	 END me 1 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c]]
+	 START me 1 Join Shards [2 2 2 1002 1002 1006 1006 1006 1006 1002]
+	 START me 1 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1006 Servers:[a b c] Shard:0 Num:0 OpID:0 ServerID:2} 
+ >>> OLD: {Num:18 Shards:[2 2 2 2 2 2 2 2 2 2] Groups:map[2:[a b c]]} 
+ >>> NEW: {Num:19 Shards:[2 2 2 2 2 1006 1006 1006 1006 1006] Groups:map[2:[a b c] 1006:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1002 Servers:[a b c] Shard:0 Num:0 OpID:0 ServerID:1} 
+ >>> OLD: {Num:19 Shards:[2 2 2 2 2 1006 1006 1006 1006 1006] Groups:map[2:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:20 Shards:[2 2 2 1002 1002 1006 1006 1006 1006 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:6 Servers:[a b c] Shard:0 Num:0 OpID:1 ServerID:2} 
+ >>> OLD: {Num:20 Shards:[2 2 2 1002 1002 1006 1006 1006 1006 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c]]} 
+ >>> NEW: {Num:21 Shards:[2 2 6 1002 1002 1006 1006 1006 6 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1001 Servers:[a b c] Shard:0 Num:0 OpID:58 ServerID:0} 
+ >>> OLD: {Num:21 Shards:[2 2 6 1002 1002 1006 1006 1006 6 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]} 
+ >>> NEW: {Num:22 Shards:[2 2 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 2 6 1002 1002 1006 1006 1001 6 1001]
+	 END me 0 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]
+	 START me 0 Join Shards [2 2 6 1002 1002 1006 1006 1001 6 1001]
+	 START me 0 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1002 Servers:[a b c] Shard:0 Num:0 OpID:0 ServerID:1} 
+ >>> OLD: {Num:19 Shards:[2 2 2 2 2 1006 1006 1006 1006 1006] Groups:map[2:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:20 Shards:[2 2 2 1002 1002 1006 1006 1006 1006 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1004 Servers:[a b c] Shard:0 Num:0 OpID:59 ServerID:0} 
+ >>> OLD: {Num:22 Shards:[2 2 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]} 
+ >>> NEW: {Num:23 Shards:[2 1004 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 1004 6 1002 1002 1006 1006 1001 6 1001]
+pID:1 ServerID:2} 
+ >>> OLD: {Num:20 Shards:[2 2 2 1002 1002 1006 1006 1006 1006 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c]]} 
+ >>> NEW: {Num:21 Shards:[2 2 6 1002 1002 1006 1006 1006 6 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]} } 
+ >>>
+                                                                  	 END me 2 Join Shards [2 2 6 1002 1002 1006 1006 1006 6 1002]
+	 END me 0 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]
+	 END me 2 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]
+	 START me 0 Join Shards [2 1004 6 1002 1002 1006 1006 1001 6 1001]
+	 START me 0 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]
+	 START me 2 Join Shards [2 2 6 1002 1002 1006 1006 1006 6 1002]
+	 START me 2 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:6 Servers:[a b c] Shard:0 Num:0 OpID:1 ServerID:2} 
+ >>> OLD: {Num:20 Shards:[2 2 2 1002 1002 1006 1006 1006 1006 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c]]} 
+ >>> NEW: {Num:21 Shards:[2 2 6 1002 1002 1006 1006 1006 6 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1001 Servers:[a b c] Shard:0 Num:0 OpID:58 ServerID:0} 
+ >>> OLD: {Num:21 Shards:[2 2 6 1002 1002 1006 1006 1006 6 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]} 
+ >>> NEW: {Num:22 Shards:[2 2 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1004 Servers:[a b c] Shard:0 Num:0 OpID:59 ServerID:0} 
+ >>> OLD: {Num:22 Shards:[2 2 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]} 
+ >>> NEW: {Num:23 Shards:[2 1004 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1005 Servers:[a b c] Shard:0 Num:0 OpID:1 ServerID:1} 
+ >>> OLD: {Num:23 Shards:[2 1004 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:24 Shards:[2 1004 6 1002 1002 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]} } 
+ >>>
+	 END me 1 Join Shards [2 1004 6 1002 1002 1006 1005 1001 6 1001]
+	 END me 1 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]
+	 START me 1 Join Shards [2 1004 6 1002 1002 1006 1005 1001 6 1001]
+	 START me 1 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1001 Servers:[a b c] Shard:0 Num:0 OpID:58 ServerID:0} 
+ >>> OLD: {Num:21 Shards:[2 2 6 1002 1002 1006 1006 1006 6 1002] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c]]} 
+ >>> NEW: {Num:22 Shards:[2 2 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1004 Servers:[a b c] Shard:0 Num:0 OpID:59 ServerID:0} 
+ >>> OLD: {Num:22 Shards:[2 2 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c]]} 
+ >>> NEW: {Num:23 Shards:[2 1004 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1005 Servers:[a b c] Shard:0 Num:0 OpID:1 ServerID:1} 
+ >>> OLD: {Num:23 Shards:[2 1004 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:24 Shards:[2 1004 6 1002 1002 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1009 Servers:[a b c] Shard:0 Num:0 OpID:2 ServerID:2} 
+ >>> OLD: {Num:24 Shards:[2 1004 6 1002 1002 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]} 
+ >>> NEW: {Num:25 Shards:[2 1004 6 1002 1009 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]} } 
+ >>>
+	 END me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 6 1001]
+	 END me 2 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]
+	 START me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 6 1001]
+	 START me 2 Join Groups map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1009 Servers:[a b c] Shard:0 Num:0 OpID:2 ServerID:2} 
+ >>> OLD: {Num:24 Shards:[2 1004 6 1002 1002 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]} 
+ >>> NEW: {Num:25 Shards:[2 1004 6 1002 1009 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1008 Servers:[a b c] Shard:0 Num:0 OpID:2 ServerID:1} 
+ >>> OLD: {Num:25 Shards:[2 1004 6 1002 1009 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]} 
+ >>> NEW: {Num:26 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1001] Groups:map[1002:[a b c] 1006:[a b c] 1004:[a b c] 2:[a b c] 1005:[a b c] 1009:[a b c] 6:[a b c] 1001:[a b c] 1008:[a b c]]} } 
+ >>>
+	 END me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1001]
+	 END me 1 Join Groups map[2:[a b c] 1005:[a b c] 1009:[a b c] 6:[a b c] 1001:[a b c] 1008:[a b c] 1002:[a b c] 1006:[a b c] 1004:[a b c]]
+	 START me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1001]
+	 START me 1 Join Groups map[1002:[a b c] 1006:[a b c] 1004:[a b c] 2:[a b c] 1005:[a b c] 1009:[a b c] 6:[a b c] 1001:[a b c] 1008:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1008 Servers:[a b c] Shard:0 Num:0 OpID:2 ServerID:1} 
+ >>> OLD: {Num:25 Shards:[2 1004 6 1002 1009 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]} 
+ >>> NEW: {Num:26 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1001] Groups:map[1002:[a b c] 1006:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c] 1005:[a b c] 2:[a b c] 1008:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1003 Servers:[a b c] Shard:0 Num:0 OpID:3 ServerID:2} 
+ >>> OLD: {Num:26 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1001] Groups:map[1005:[a b c] 2:[a b c] 1008:[a b c] 1002:[a b c] 1006:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c]]} 
+ >>> NEW: {Num:27 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1009:[a b c] 1002:[a b c] 1003:[a b c] 6:[a b c] 1005:[a b c] 2:[a b c] 1008:[a b c] 1006:[a b c] 1001:[a b c] 1004:[a b c]]} } 
+ >>>
+	 END me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 2 Join Groups map[1009:[a b c] 1002:[a b c] 1003:[a b c] 6:[a b c] 1005:[a b c] 2:[a b c] 1008:[a b c] 1006:[a b c] 1001:[a b c] 1004:[a b c]]
+	 START me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 2 Join Groups map[1009:[a b c] 1002:[a b c] 1003:[a b c] 6:[a b c] 1005:[a b c] 2:[a b c] 1008:[a b c] 1006:[a b c] 1001:[a b c] 1004:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1003 Servers:[a b c] Shard:0 Num:0 OpID:3 ServerID:2} 
+ >>> OLD: {Num:26 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1001] Groups:map[2:[a b c] 1005:[a b c] 1009:[a b c] 6:[a b c] 1001:[a b c] 1008:[a b c] 1002:[a b c] 1006:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:27 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1002:[a b c] 1006:[a b c] 1003:[a b c] 1008:[a b c] 1005:[a b c] 2:[a b c] 1009:[a b c] 1001:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:3 ServerID:1} 
+ >>> OLD: {Num:27 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1002:[a b c] 1006:[a b c] 1003:[a b c] 1008:[a b c] 1005:[a b c] 2:[a b c] 1009:[a b c] 1001:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:28 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[2:[a b c] 1002:[a b c] 1006:[a b c] 1001:[a b c] 1008:[a b c] 1005:[a b c] 1009:[a b c] 1004:[a b c] 6:[a b c] 1003:[a b c]]} } 
+ >>>
+	 END me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 1 Join Groups map[2:[a b c] 1002:[a b c] 1006:[a b c] 1001:[a b c] 1008:[a b c] 1005:[a b c] 1009:[a b c] 1004:[a b c] 6:[a b c] 1003:[a b c]]
+	 START me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 1 Join Groups map[2:[a b c] 1002:[a b c] 1006:[a b c] 1001:[a b c] 1008:[a b c] 1005:[a b c] 1009:[a b c] 1004:[a b c] 6:[a b c] 1003:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1005 Servers:[a b c] Shard:0 Num:0 OpID:1 ServerID:1} 
+ >>> OLD: {Num:23 Shards:[2 1004 6 1002 1002 1006 1006 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:24 Shards:[2 1004 6 1002 1002 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1009 Servers:[a b c] Shard:0 Num:0 OpID:2 ServerID:2} 
+ >>> OLD: {Num:24 Shards:[2 1004 6 1002 1002 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c]]} 
+ >>> NEW: {Num:25 Shards:[2 1004 6 1002 1009 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1008 Servers:[a b c] Shard:0 Num:0 OpID:2 ServerID:1} 
+ >>> OLD: {Num:25 Shards:[2 1004 6 1002 1009 1006 1005 1001 6 1001] Groups:map[2:[a b c] 1006:[a b c] 1002:[a b c] 6:[a b c] 1001:[a b c] 1004:[a b c] 1005:[a b c] 1009:[a b c]]} 
+ >>> NEW: {Num:26 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1001] Groups:map[2:[a b c] 6:[a b c] 1001:[a b c] 1005:[a b c] 1008:[a b c] 1009:[a b c] 1006:[a b c] 1002:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:3 ServerID:1} 
+ >>> OLD: {Num:27 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1005:[a b c] 2:[a b c] 1008:[a b c] 1006:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c] 1002:[a b c] 1003:[a b c]]} 
+ >>> NEW: {Num:28 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1003:[a b c] 1008:[a b c] 1004:[a b c] 1005:[a b c] 1006:[a b c] 1001:[a b c] 1009:[a b c] 1002:[a b c] 6:[a b c] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1003 Servers:[a b c] Shard:0 Num:0 OpID:3 ServerID:2} 
+ >>> OLD: {Num:26 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1001] Groups:map[2:[a b c] 6:[a b c] 1001:[a b c] 1005:[a b c] 1008:[a b c] 1009:[a b c] 1006:[a b c] 1002:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:27 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1004:[a b c] 1001:[a b c] 1009:[a b c] 1006:[a b c] 1002:[a b c] 1003:[a b c] 2:[a b c] 6:[a b c] 1005:[a b c] 1008:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1007 Servers:[a b c] Shard:0 Num:0 OpID:60 ServerID:0} 
+ >>> OLD: {Num:28 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1005:[a b c] 1006:[a b c] 1001:[a b c] 1009:[a b c] 1002:[a b c] 6:[a b c] 2:[a b c] 1003:[a b c] 1008:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:29 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1003:[a b c] 1009:[a b c] 1004:[a b c] 1006:[a b c] 1005:[a b c] 1008:[a b c] 1001:[a b c] 1002:[a b c] 6:[a b c] 2:[a b c] 1007:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:2 Servers:[a b c] Shard:0 Num:0 OpID:3 ServerID:1} 
+ >>> OLD: {Num:27 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[2:[a b c] 6:[a b c] 1005:[a b c] 1008:[a b c] 1004:[a b c] 1001:[a b c] 1009:[a b c] 1006:[a b c] 1002:[a b c] 1003:[a b c]]} 
+ >>> NEW: {Num:28 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1008:[a b c] 1004:[a b c] 1002:[a b c] 1005:[a b c] 1001:[a b c] 6:[a b c] 1009:[a b c] 1003:[a b c] 2:[a b c] 1006:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:9 Servers:[a b c] Shard:0 Num:0 OpID:4 ServerID:2} 
+ >>> OLD: {Num:29 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1003:[a b c] 1009:[a b c] 1004:[a b c] 1006:[a b c] 1005:[a b c] 1008:[a b c] 1001:[a b c] 1002:[a b c] 6:[a b c] 2:[a b c] 1007:[a b c]]} 
+ >>> NEW: {Num:30 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1002:[a b c] 9:[a b c] 1008:[a b c] 2:[a b c] 1003:[a b c] 1009:[a b c] 1004:[a b c] 1006:[a b c] 6:[a b c] 1005:[a b c] 1001:[a b c] 1007:[a b c]]} } 
+ >>>
+	 END me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+{ >>> CURRENT_OP: {Type:JOIN GID:1007 Servers:[a b c] Shard:0 Num:0 OpID:60 ServerID:0} 
+ >>> OLD: {Num:28 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1008:[a b c] 1004:[a b c] 1002:[a b c] 1005:[a b c] 1001:[a b c] 6:[a b c] 1009:[a b c] 1003:[a b c] 2:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:29 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1006:[a b c] 1004:[a b c] 2:[a b c] 1008:[a b c] 1005:[a b c] 1003:[a b c] 1007:[a b c] 1002:[a b c] 1001:[a b c] 1009:[a b c]]} } 
+ >>>
+	 END me 2 Join Groups map[6:[a b c] 1005:[a b c] 1001:[a b c] 1007:[a b c] 1002:[a b c] 9:[a b c] 1008:[a b c] 2:[a b c] 1003:[a b c] 1009:[a b c] 1004:[a b c] 1006:[a b c]]
+	 END me 0 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 0 Join Groups map[6:[a b c] 1006:[a b c] 1004:[a b c] 2:[a b c] 1008:[a b c] 1005:[a b c] 1003:[a b c] 1007:[a b c] 1002:[a b c] 1001:[a b c] 1009:[a b c]]
+	 START me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 2 Join Groups map[6:[a b c] 1005:[a b c] 1001:[a b c] 1007:[a b c] 1002:[a b c] 9:[a b c] 1008:[a b c] 2:[a b c] 1003:[a b c] 1009:[a b c] 1004:[a b c] 1006:[a b c]]
+	 START me 0 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 0 Join Groups map[1008:[a b c] 1005:[a b c] 1003:[a b c] 1007:[a b c] 1002:[a b c] 1001:[a b c] 1009:[a b c] 6:[a b c] 1006:[a b c] 1004:[a b c] 2:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1007 Servers:[a b c] Shard:0 Num:0 OpID:60 ServerID:0} 
+ >>> OLD: {Num:28 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1005:[a b c] 1009:[a b c] 1004:[a b c] 6:[a b c] 1003:[a b c] 2:[a b c] 1002:[a b c] 1006:[a b c] 1001:[a b c] 1008:[a b c]]} 
+ >>> NEW: {Num:29 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1001:[a b c] 1008:[a b c] 1003:[a b c] 1002:[a b c] 1006:[a b c] 1009:[a b c] 1004:[a b c] 6:[a b c] 2:[a b c] 1007:[a b c] 1005:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:9 Servers:[a b c] Shard:0 Num:0 OpID:4 ServerID:2} 
+ >>> OLD: {Num:29 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1009:[a b c] 1004:[a b c] 6:[a b c] 2:[a b c] 1007:[a b c] 1005:[a b c] 1001:[a b c] 1008:[a b c] 1003:[a b c] 1002:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:30 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1001:[a b c] 1003:[a b c] 6:[a b c] 1007:[a b c] 1004:[a b c] 1005:[a b c] 1006:[a b c] 1009:[a b c] 1008:[a b c] 1002:[a b c] 2:[a b c] 9:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:5 Servers:[a b c] Shard:0 Num:0 OpID:4 ServerID:1} 
+ >>> OLD: {Num:30 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1001:[a b c] 1003:[a b c] 6:[a b c] 1007:[a b c] 1004:[a b c] 1005:[a b c] 1006:[a b c] 1009:[a b c] 1008:[a b c] 1002:[a b c] 2:[a b c] 9:[a b c]]} 
+ >>> NEW: {Num:31 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1007:[a b c] 1004:[a b c] 1009:[a b c] 1002:[a b c] 1001:[a b c] 1006:[a b c] 1008:[a b c] 2:[a b c] 9:[a b c] 1003:[a b c] 1005:[a b c] 5:[a b c]]} } 
+ >>>
+	 END me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 1 Join Groups map[1001:[a b c] 1006:[a b c] 1008:[a b c] 2:[a b c] 9:[a b c] 1003:[a b c] 1005:[a b c] 5:[a b c] 6:[a b c] 1007:[a b c] 1004:[a b c] 1009:[a b c] 1002:[a b c]]
+	 START me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 1 Join Groups map[1001:[a b c] 1006:[a b c] 1008:[a b c] 2:[a b c] 9:[a b c] 1003:[a b c] 1005:[a b c] 5:[a b c] 6:[a b c] 1007:[a b c] 1004:[a b c] 1009:[a b c] 1002:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:5 Servers:[a b c] Shard:0 Num:0 OpID:4 ServerID:1} 
+ >>> OLD: {Num:30 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1005:[a b c] 1001:[a b c] 1007:[a b c] 1002:[a b c] 9:[a b c] 1008:[a b c] 2:[a b c] 1003:[a b c] 1009:[a b c] 1004:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:31 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1009:[a b c] 1002:[a b c] 2:[a b c] 1001:[a b c] 1007:[a b c] 9:[a b c] 1004:[a b c] 1006:[a b c] 1005:[a b c] 1008:[a b c] 1003:[a b c] 5:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:3 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:2} 
+ >>> OLD: {Num:31 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1009:[a b c] 1002:[a b c] 2:[a b c] 1001:[a b c] 1007:[a b c] 9:[a b c] 1004:[a b c] 1006:[a b c] 1005:[a b c] 1008:[a b c] 1003:[a b c] 5:[a b c]]} 
+ >>> NEW: {Num:32 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1007:[a b c] 5:[a b c] 1004:[a b c] 6:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 1003:[a b c] 2:[a b c] 1009:[a b c] 9:[a b c] 3:[a b c] 1006:[a b c] 1008:[a b c]]} } 
+ >>>
+	 END me 2 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 2 Join Groups map[6:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 1003:[a b c] 2:[a b c] 1009:[a b c] 9:[a b c] 3:[a b c] 1006:[a b c] 1008:[a b c] 1007:[a b c] 5:[a b c] 1004:[a b c]]
+	 START me 2 Leave Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 2 Leave Groups map[6:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 1003:[a b c] 2:[a b c] 1009:[a b c] 9:[a b c] 3:[a b c] 1006:[a b c] 1008:[a b c] 1007:[a b c] 5:[a b c] 1004:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:3 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:2} 
+ >>> OLD: {Num:31 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[6:[a b c] 1007:[a b c] 1004:[a b c] 1009:[a b c] 1002:[a b c] 1001:[a b c] 1006:[a b c] 1008:[a b c] 2:[a b c] 9:[a b c] 1003:[a b c] 1005:[a b c] 5:[a b c]]} 
+ >>> NEW: {Num:32 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1009:[a b c] 1005:[a b c] 6:[a b c] 5:[a b c] 1004:[a b c] 1006:[a b c] 1003:[a b c] 2:[a b c] 1001:[a b c] 1008:[a b c] 3:[a b c] 9:[a b c] 1007:[a b c] 1002:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:8 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:1} 
+ >>> OLD: {Num:32 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1001:[a b c] 1008:[a b c] 3:[a b c] 9:[a b c] 1007:[a b c] 1002:[a b c] 1009:[a b c] 1005:[a b c] 6:[a b c] 5:[a b c] 1004:[a b c] 1006:[a b c] 1003:[a b c] 2:[a b c]]} 
+ >>> NEW: {Num:33 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1009:[a b c] 6:[a b c] 3:[a b c] 5:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 8:[a b c] 2:[a b c] 1007:[a b c] 1006:[a b c] 9:[a b c] 1004:[a b c] 1003:[a b c] 1008:[a b c]]} } 
+ >>>
+	 END me 1 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 1 Join Groups map[2:[a b c] 1007:[a b c] 1006:[a b c] 9:[a b c] 1004:[a b c] 1003:[a b c] 1008:[a b c] 1009:[a b c] 6:[a b c] 3:[a b c] 5:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 8:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:9 Servers:[a b c] Shard:0 Num:0 OpID:4 ServerID:2} 
+ >>> OLD: {Num:29 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1008:[a b c] 1005:[a b c] 1003:[a b c] 1007:[a b c] 1002:[a b c] 1001:[a b c] 1009:[a b c] 6:[a b c] 1006:[a b c] 1004:[a b c] 2:[a b c]]} 
+ >>> NEW: {Num:30 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1008:[a b c] 1003:[a b c] 1007:[a b c] 1002:[a b c] 2:[a b c] 9:[a b c] 1001:[a b c] 1006:[a b c] 1005:[a b c] 6:[a b c] 1009:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:5 Servers:[a b c] Shard:0 Num:0 OpID:4 ServerID:1} 
+ >>> OLD: {Num:30 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1008:[a b c] 1003:[a b c] 1007:[a b c] 1002:[a b c] 2:[a b c] 9:[a b c] 1001:[a b c] 1006:[a b c] 1005:[a b c] 6:[a b c] 1009:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:31 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[2:[a b c] 1006:[a b c] 5:[a b c] 1005:[a b c] 1003:[a b c] 1002:[a b c] 6:[a b c] 1009:[a b c] 1007:[a b c] 1004:[a b c] 1008:[a b c] 9:[a b c] 1001:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:3 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:2} 
+ >>> OLD: {Num:31 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[2:[a b c] 1006:[a b c] 5:[a b c] 1005:[a b c] 1003:[a b c] 1002:[a b c] 6:[a b c] 1009:[a b c] 1007:[a b c] 1004:[a b c] 1008:[a b c] 9:[a b c] 1001:[a b c]]} 
+ >>> NEW: {Num:32 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1005:[a b c] 2:[a b c] 9:[a b c] 1006:[a b c] 1003:[a b c] 6:[a b c] 3:[a b c] 1004:[a b c] 1001:[a b c] 1002:[a b c] 5:[a b c] 1009:[a b c] 1007:[a b c] 1008:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:8 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:1} 
+ >>> OLD: {Num:32 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1002:[a b c] 5:[a b c] 1009:[a b c] 1007:[a b c] 1008:[a b c] 1005:[a b c] 2:[a b c] 9:[a b c] 1006:[a b c] 1003:[a b c] 6:[a b c] 3:[a b c] 1004:[a b c] 1001:[a b c]]} 
+ >>> NEW: {Num:33 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1003:[a b c] 3:[a b c] 9:[a b c] 8:[a b c] 1002:[a b c] 1005:[a b c] 1008:[a b c] 2:[a b c] 1004:[a b c] 1006:[a b c] 1001:[a b c] 5:[a b c] 6:[a b c] 1007:[a b c] 1009:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1010 Servers:[a b c] Shard:0 Num:0 OpID:61 ServerID:0} 
+ >>> OLD: {Num:33 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[5:[a b c] 6:[a b c] 1007:[a b c] 1009:[a b c] 1003:[a b c] 3:[a b c] 9:[a b c] 8:[a b c] 1002:[a b c] 1005:[a b c] 1008:[a b c] 2:[a b c] 1004:[a b c] 1006:[a b c] 1001:[a b c]]} 
+ >>> NEW: {Num:34 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[9:[a b c] 8:[a b c] 1002:[a b c] 6:[a b c] 1006:[a b c] 1004:[a b c] 1003:[a b c] 1009:[a b c] 1008:[a b c] 1001:[a b c] 1005:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 2:[a b c] 1007:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 END me 0 Join Groups map[1004:[a b c] 1003:[a b c] 1009:[a b c] 1008:[a b c] 1001:[a b c] 1005:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 2:[a b c] 1007:[a b c] 9:[a b c] 8:[a b c] 1002:[a b c] 6:[a b c] 1006:[a b c]]
+	 START me 0 Join Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 0 Join Groups map[1005:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 2:[a b c] 1007:[a b c] 9:[a b c] 8:[a b c] 1002:[a b c] 6:[a b c] 1006:[a b c] 1004:[a b c] 1003:[a b c] 1009:[a b c] 1008:[a b c] 1001:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:8 Servers:[a b c] Shard:0 Num:0 OpID:5 ServerID:1} 
+ >>> OLD: {Num:32 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[9:[a b c] 3:[a b c] 1006:[a b c] 1008:[a b c] 1007:[a b c] 5:[a b c] 1004:[a b c] 6:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 1003:[a b c] 2:[a b c] 1009:[a b c]]} 
+ >>> NEW: {Num:33 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1009:[a b c] 1001:[a b c] 2:[a b c] 1002:[a b c] 1005:[a b c] 5:[a b c] 1008:[a b c] 1006:[a b c] 1007:[a b c] 8:[a b c] 9:[a b c] 1003:[a b c] 1004:[a b c] 3:[a b c] 6:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1010 Servers:[a b c] Shard:0 Num:0 OpID:61 ServerID:0} 
+ >>> OLD: {Num:33 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1006:[a b c] 1007:[a b c] 8:[a b c] 9:[a b c] 1003:[a b c] 1004:[a b c] 3:[a b c] 6:[a b c] 1009:[a b c] 1001:[a b c] 2:[a b c] 1002:[a b c] 1005:[a b c] 5:[a b c] 1008:[a b c]]} 
+ >>> NEW: {Num:34 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1006:[a b c] 9:[a b c] 1003:[a b c] 1008:[a b c] 5:[a b c] 1009:[a b c] 8:[a b c] 1010:[a b c] 1004:[a b c] 2:[a b c] 3:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 6:[a b c] 1007:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1002 Servers:[] Shard:0 Num:0 OpID:6 ServerID:2} 
+ >>> OLD: {Num:34 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1006:[a b c] 9:[a b c] 1003:[a b c] 1008:[a b c] 5:[a b c] 1009:[a b c] 8:[a b c] 1010:[a b c] 1004:[a b c] 2:[a b c] 3:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 6:[a b c] 1007:[a b c]]} 
+ >>> NEW: {Num:35 Shards:[2 1004 6 1010 1009 1006 1005 1001 1008 1003] Groups:map[1009:[a b c] 1007:[a b c] 3:[a b c] 5:[a b c] 8:[a b c] 1005:[a b c] 1010:[a b c] 2:[a b c] 9:[a b c] 6:[a b c] 1003:[a b c] 1001:[a b c] 1008:[a b c] 1004:[a b c] 1006:[a b c]]} } 
+ >>>
+	 END me 2 Leave Shards [2 1004 6 1010 1009 1006 1005 1001 1008 1003]
+	 END me 2 Leave Groups map[3:[a b c] 5:[a b c] 8:[a b c] 1005:[a b c] 1010:[a b c] 2:[a b c] 9:[a b c] 6:[a b c] 1003:[a b c] 1001:[a b c] 1008:[a b c] 1004:[a b c] 1006:[a b c] 1009:[a b c] 1007:[a b c]]
+	 START me 2 Leave Shards [2 1004 6 1010 1009 1006 1005 1001 1008 1003]
+	 START me 2 Leave Groups map[1001:[a b c] 1008:[a b c] 1004:[a b c] 1006:[a b c] 1009:[a b c] 1007:[a b c] 3:[a b c] 5:[a b c] 8:[a b c] 1005:[a b c] 1010:[a b c] 2:[a b c] 9:[a b c] 6:[a b c] 1003:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1005 Servers:[] Shard:0 Num:0 OpID:7 ServerID:2} 
+ >>> OLD: {Num:35 Shards:[2 1004 6 1010 1009 1006 1005 1001 1008 1003] Groups:map[3:[a b c] 5:[a b c] 8:[a b c] 1005:[a b c] 1010:[a b c] 2:[a b c] 9:[a b c] 6:[a b c] 1003:[a b c] 1001:[a b c] 1008:[a b c] 1004:[a b c] 1006:[a b c] 1009:[a b c] 1007:[a b c]]} 
+ >>> NEW: {Num:36 Shards:[2 1004 6 1010 1009 1006 9 1001 1008 1003] Groups:map[2:[a b c] 5:[a b c] 1003:[a b c] 1008:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 8:[a b c] 1007:[a b c] 1010:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c] 1006:[a b c]]} } 
+ >>>
+	 END me 2 Leave Shards [2 1004 6 1010 1009 1006 9 1001 1008 1003]
+	 END me 2 Leave Groups map[1006:[a b c] 2:[a b c] 5:[a b c] 1003:[a b c] 1008:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 8:[a b c] 1007:[a b c] 1010:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c]]
+	 START me 2 Leave Shards [2 1004 6 1010 1009 1006 9 1001 1008 1003]
+	 START me 2 Leave Groups map[1006:[a b c] 2:[a b c] 5:[a b c] 1003:[a b c] 1008:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 8:[a b c] 1007:[a b c] 1010:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1002 Servers:[] Shard:0 Num:0 OpID:6 ServerID:2} 
+ >>> OLD: {Num:34 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[1004:[a b c] 1003:[a b c] 1009:[a b c] 1008:[a b c] 1001:[a b c] 1005:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 2:[a b c] 1007:[a b c] 9:[a b c] 8:[a b c] 1002:[a b c] 6:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:35 Shards:[2 1004 6 3 1009 1006 1005 1001 1008 1003] Groups:map[1006:[a b c] 1007:[a b c] 1001:[a b c] 2:[a b c] 1009:[a b c] 1008:[a b c] 6:[a b c] 5:[a b c] 1005:[a b c] 1010:[a b c] 3:[a b c] 1004:[a b c] 1003:[a b c] 8:[a b c] 9:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1005 Servers:[] Shard:0 Num:0 OpID:7 ServerID:2} 
+ >>> OLD: {Num:35 Shards:[2 1004 6 3 1009 1006 1005 1001 1008 1003] Groups:map[1006:[a b c] 1007:[a b c] 1001:[a b c] 2:[a b c] 1009:[a b c] 1008:[a b c] 6:[a b c] 5:[a b c] 1005:[a b c] 1010:[a b c] 3:[a b c] 1004:[a b c] 1003:[a b c] 8:[a b c] 9:[a b c]]} 
+ >>> NEW: {Num:36 Shards:[2 1004 6 3 1009 1006 8 1001 1008 1003] Groups:map[2:[a b c] 6:[a b c] 1004:[a b c] 9:[a b c] 3:[a b c] 1006:[a b c] 1009:[a b c] 5:[a b c] 1003:[a b c] 8:[a b c] 1010:[a b c] 1001:[a b c] 1007:[a b c] 1008:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1 Servers:[a b c] Shard:0 Num:0 OpID:62 ServerID:0} 
+ >>> OLD: {Num:36 Shards:[2 1004 6 3 1009 1006 8 1001 1008 1003] Groups:map[2:[a b c] 6:[a b c] 1004:[a b c] 9:[a b c] 3:[a b c] 1006:[a b c] 1009:[a b c] 5:[a b c] 1003:[a b c] 8:[a b c] 1010:[a b c] 1001:[a b c] 1007:[a b c] 1008:[a b c]]} 
+ >>> NEW: {Num:37 Shards:[2 1004 6 3 1009 1006 8 1001 1008 1003] Groups:map[5:[a b c] 6:[a b c] 1003:[a b c] 1007:[a b c] 1006:[a b c] 1010:[a b c] 1008:[a b c] 3:[a b c] 1:[a b c] 2:[a b c] 1001:[a b c] 9:[a b c] 1009:[a b c] 8:[a b c] 1004:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 1004 6 3 1009 1006 8 1001 1008 1003]
+	 END me 0 Join Groups map[5:[a b c] 6:[a b c] 1003:[a b c] 1007:[a b c] 1006:[a b c] 1010:[a b c] 1008:[a b c] 3:[a b c] 1:[a b c] 2:[a b c] 1001:[a b c] 9:[a b c] 1009:[a b c] 8:[a b c] 1004:[a b c]]
+	 START me 0 Leave Shards [2 1004 6 3 1009 1006 8 1001 1008 1003]
+	 START me 0 Leave Groups map[2:[a b c] 1001:[a b c] 9:[a b c] 1009:[a b c] 8:[a b c] 1004:[a b c] 5:[a b c] 6:[a b c] 1003:[a b c] 1007:[a b c] 1006:[a b c] 1010:[a b c] 1008:[a b c] 3:[a b c] 1:[a b c]]
+	 START me 1 Leave Shards [2 1004 6 1002 1009 1006 1005 1001 1008 1003]
+	 START me 1 Leave Groups map[2:[a b c] 1007:[a b c] 1006:[a b c] 9:[a b c] 1004:[a b c] 1003:[a b c] 1008:[a b c] 1009:[a b c] 6:[a b c] 3:[a b c] 5:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 8:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1 Servers:[a b c] Shard:0 Num:0 OpID:62 ServerID:0} 
+ >>> OLD: {Num:36 Shards:[2 1004 6 1010 1009 1006 9 1001 1008 1003] Groups:map[1010:[a b c] 1001:[a b c] 1004:[a b c] 1009:[a b c] 1006:[a b c] 2:[a b c] 5:[a b c] 1003:[a b c] 1008:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 8:[a b c] 1007:[a b c]]} 
+ >>> NEW: {Num:37 Shards:[2 1004 6 1010 1009 1006 9 1001 1008 1003] Groups:map[1003:[a b c] 1:[a b c] 1007:[a b c] 1009:[a b c] 8:[a b c] 1001:[a b c] 1010:[a b c] 1008:[a b c] 1006:[a b c] 9:[a b c] 1004:[a b c] 5:[a b c] 6:[a b c] 3:[a b c] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1008 Servers:[] Shard:0 Num:0 OpID:8 ServerID:2} 
+ >>> OLD: {Num:37 Shards:[2 1004 6 1010 1009 1006 9 1001 1008 1003] Groups:map[6:[a b c] 3:[a b c] 2:[a b c] 1003:[a b c] 1:[a b c] 1007:[a b c] 1009:[a b c] 8:[a b c] 1001:[a b c] 1010:[a b c] 1008:[a b c] 1006:[a b c] 9:[a b c] 1004:[a b c] 5:[a b c]]} 
+ >>> NEW: {Num:38 Shards:[2 1004 6 1010 1009 1006 9 1001 5 1003] Groups:map[1009:[a b c] 1006:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c] 1010:[a b c] 2:[a b c] 1001:[a b c] 1004:[a b c] 3:[a b c] 8:[a b c] 5:[a b c] 1:[a b c] 1007:[a b c]]} } 
+ >>>
+	 END me 2 Leave Shards [2 1004 6 1010 1009 1006 9 1001 5 1003]
+	 END me 2 Leave Groups map[1006:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c] 1010:[a b c] 2:[a b c] 1001:[a b c] 1004:[a b c] 3:[a b c] 8:[a b c] 5:[a b c] 1:[a b c] 1007:[a b c] 1009:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1008 Servers:[] Shard:0 Num:0 OpID:8 ServerID:2} 
+ >>> OLD: {Num:37 Shards:[2 1004 6 3 1009 1006 8 1001 1008 1003] Groups:map[1007:[a b c] 1006:[a b c] 1010:[a b c] 1008:[a b c] 3:[a b c] 1:[a b c] 2:[a b c] 1001:[a b c] 9:[a b c] 1009:[a b c] 8:[a b c] 1004:[a b c] 5:[a b c] 6:[a b c] 1003:[a b c]]} 
+ >>> NEW: {Num:38 Shards:[2 1004 6 3 1009 1006 8 1001 1007 1003] Groups:map[8:[a b c] 1:[a b c] 1009:[a b c] 1001:[a b c] 6:[a b c] 1003:[a b c] 1006:[a b c] 2:[a b c] 5:[a b c] 9:[a b c] 1007:[a b c] 1010:[a b c] 3:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1006 Servers:[] Shard:0 Num:0 OpID:63 ServerID:0} 
+ >>> OLD: {Num:38 Shards:[2 1004 6 3 1009 1006 8 1001 1007 1003] Groups:map[1003:[a b c] 1006:[a b c] 2:[a b c] 5:[a b c] 9:[a b c] 1007:[a b c] 1010:[a b c] 3:[a b c] 1004:[a b c] 8:[a b c] 1:[a b c] 1009:[a b c] 1001:[a b c] 6:[a b c]]} 
+ >>> NEW: {Num:39 Shards:[2 1004 6 3 1009 5 8 1001 1007 1003] Groups:map[1001:[a b c] 2:[a b c] 1010:[a b c] 9:[a b c] 1007:[a b c] 3:[a b c] 5:[a b c] 1009:[a b c] 6:[a b c] 1004:[a b c] 8:[a b c] 1003:[a b c] 1:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 1004 6 3 1009 5 8 1001 1007 1003]
+	 END me 0 Leave Groups map[9:[a b c] 1007:[a b c] 3:[a b c] 5:[a b c] 1009:[a b c] 6:[a b c] 1004:[a b c] 8:[a b c] 1003:[a b c] 1:[a b c] 1001:[a b c] 2:[a b c] 1010:[a b c]]
+	 START me 0 Join Shards [2 1004 6 3 1009 5 8 1001 1007 1003]
+	 START me 0 Join Groups map[1001:[a b c] 2:[a b c] 1010:[a b c] 9:[a b c] 1007:[a b c] 3:[a b c] 5:[a b c] 1009:[a b c] 6:[a b c] 1004:[a b c] 8:[a b c] 1003:[a b c] 1:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:1010 Servers:[a b c] Shard:0 Num:0 OpID:61 ServerID:0} 
+ >>> OLD: {Num:33 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[2:[a b c] 1007:[a b c] 1006:[a b c] 9:[a b c] 1004:[a b c] 1003:[a b c] 1008:[a b c] 1009:[a b c] 6:[a b c] 3:[a b c] 5:[a b c] 1001:[a b c] 1002:[a b c] 1005:[a b c] 8:[a b c]]} 
+ >>> NEW: {Num:34 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[5:[a b c] 1002:[a b c] 2:[a b c] 9:[a b c] 1008:[a b c] 8:[a b c] 1007:[a b c] 1004:[a b c] 1009:[a b c] 1005:[a b c] 1006:[a b c] 3:[a b c] 6:[a b c] 1001:[a b c] 1010:[a b c] 1003:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1002 Servers:[] Shard:0 Num:0 OpID:6 ServerID:2} 
+ >>> OLD: {Num:34 Shards:[2 1004 6 1002 1009 1006 1005 1001 1008 1003] Groups:map[5:[a b c] 1002:[a b c] 2:[a b c] 9:[a b c] 1008:[a b c] 8:[a b c] 1007:[a b c] 1004:[a b c] 1009:[a b c] 1005:[a b c] 1006:[a b c] 3:[a b c] 6:[a b c] 1001:[a b c] 1010:[a b c] 1003:[a b c]]} 
+ >>> NEW: {Num:35 Shards:[2 1004 6 1010 1009 1006 1005 1001 1008 1003] Groups:map[1001:[a b c] 5:[a b c] 2:[a b c] 1003:[a b c] 1005:[a b c] 6:[a b c] 9:[a b c] 1010:[a b c] 1008:[a b c] 1007:[a b c] 1004:[a b c] 1006:[a b c] 1009:[a b c] 8:[a b c] 3:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1005 Servers:[] Shard:0 Num:0 OpID:7 ServerID:2} 
+ >>> OLD: {Num:35 Shards:[2 1004 6 1010 1009 1006 1005 1001 1008 1003] Groups:map[1006:[a b c] 1009:[a b c] 8:[a b c] 3:[a b c] 1001:[a b c] 5:[a b c] 2:[a b c] 1003:[a b c] 1005:[a b c] 6:[a b c] 9:[a b c] 1010:[a b c] 1008:[a b c] 1007:[a b c] 1004:[a b c]]} 
+ >>> NEW: {Num:36 Shards:[2 1004 6 1010 1009 1006 5 1001 1008 1003] Groups:map[3:[a b c] 9:[a b c] 1001:[a b c] 1010:[a b c] 1008:[a b c] 6:[a b c] 1004:[a b c] 2:[a b c] 8:[a b c] 1007:[a b c] 1009:[a b c] 1003:[a b c] 1006:[a b c] 5:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:1 Servers:[a b c] Shard:0 Num:0 OpID:62 ServerID:0} 
+ >>> OLD: {Num:36 Shards:[2 1004 6 1010 1009 1006 5 1001 1008 1003] Groups:map[5:[a b c] 3:[a b c] 9:[a b c] 1001:[a b c] 1010:[a b c] 1008:[a b c] 6:[a b c] 1004:[a b c] 2:[a b c] 8:[a b c] 1007:[a b c] 1009:[a b c] 1003:[a b c] 1006:[a b c]]} 
+ >>> NEW: {Num:37 Shards:[2 1004 6 1010 1009 1006 5 1001 1008 1003] Groups:map[8:[a b c] 6:[a b c] 1010:[a b c] 1003:[a b c] 9:[a b c] 3:[a b c] 1007:[a b c] 1009:[a b c] 1004:[a b c] 5:[a b c] 2:[a b c] 1:[a b c] 1001:[a b c] 1006:[a b c] 1008:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1008 Servers:[] Shard:0 Num:0 OpID:8 ServerID:2} 
+ >>> OLD: {Num:37 Shards:[2 1004 6 1010 1009 1006 5 1001 1008 1003] Groups:map[1001:[a b c] 1006:[a b c] 1008:[a b c] 8:[a b c] 6:[a b c] 1010:[a b c] 1003:[a b c] 9:[a b c] 3:[a b c] 1007:[a b c] 1009:[a b c] 1004:[a b c] 5:[a b c] 2:[a b c] 1:[a b c]]} 
+ >>> NEW: {Num:38 Shards:[2 1004 6 1010 1009 1006 5 1001 3 1003] Groups:map[1006:[a b c] 2:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c] 1004:[a b c] 1007:[a b c] 1001:[a b c] 1010:[a b c] 1009:[a b c] 5:[a b c] 1:[a b c] 8:[a b c] 3:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1006 Servers:[] Shard:0 Num:0 OpID:63 ServerID:0} 
+ >>> OLD: {Num:38 Shards:[2 1004 6 1010 1009 1006 5 1001 3 1003] Groups:map[1009:[a b c] 5:[a b c] 1:[a b c] 8:[a b c] 3:[a b c] 1006:[a b c] 2:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c] 1004:[a b c] 1007:[a b c] 1001:[a b c] 1010:[a b c]]} 
+ >>> NEW: {Num:39 Shards:[2 1004 6 1010 1009 9 5 1001 3 1003] Groups:map[8:[a b c] 3:[a b c] 1010:[a b c] 6:[a b c] 9:[a b c] 1:[a b c] 1003:[a b c] 1009:[a b c] 2:[a b c] 5:[a b c] 1004:[a b c] 1007:[a b c] 1001:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1001 Servers:[] Shard:0 Num:0 OpID:6 ServerID:1} 
+ >>> OLD: {Num:39 Shards:[2 1004 6 1010 1009 9 5 1001 3 1003] Groups:map[6:[a b c] 9:[a b c] 1:[a b c] 1003:[a b c] 1009:[a b c] 2:[a b c] 5:[a b c] 1004:[a b c] 1007:[a b c] 1001:[a b c] 8:[a b c] 3:[a b c] 1010:[a b c]]} 
+ >>> NEW: {Num:40 Shards:[2 1004 6 1010 1009 9 5 1 3 1003] Groups:map[6:[a b c] 9:[a b c] 1003:[a b c] 5:[a b c] 1004:[a b c] 8:[a b c] 3:[a b c] 1010:[a b c] 1:[a b c] 1009:[a b c] 1007:[a b c] 2:[a b c]]} } 
+ >>>
+	 END me 1 Leave Shards [2 1004 6 1010 1009 9 5 1 3 1003]
+	 END me 1 Leave Groups map[3:[a b c] 1010:[a b c] 1:[a b c] 1009:[a b c] 1007:[a b c] 2:[a b c] 6:[a b c] 9:[a b c] 1003:[a b c] 5:[a b c] 1004:[a b c] 8:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1001 Servers:[] Shard:0 Num:0 OpID:6 ServerID:1} 
+ >>> OLD: {Num:39 Shards:[2 1004 6 3 1009 5 8 1001 1007 1003] Groups:map[9:[a b c] 1007:[a b c] 3:[a b c] 5:[a b c] 1009:[a b c] 6:[a b c] 1004:[a b c] 8:[a b c] 1003:[a b c] 1:[a b c] 1001:[a b c] 2:[a b c] 1010:[a b c]]} 
+ >>> NEW: {Num:40 Shards:[2 1004 6 3 1009 5 8 1010 1007 1003] Groups:map[1009:[a b c] 1007:[a b c] 6:[a b c] 1004:[a b c] 8:[a b c] 5:[a b c] 2:[a b c] 1010:[a b c] 9:[a b c] 3:[a b c] 1003:[a b c] 1:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:4 Servers:[a b c] Shard:0 Num:0 OpID:64 ServerID:0} 
+ >>> OLD: {Num:40 Shards:[2 1004 6 3 1009 5 8 1010 1007 1003] Groups:map[1009:[a b c] 1007:[a b c] 6:[a b c] 1004:[a b c] 8:[a b c] 5:[a b c] 2:[a b c] 1010:[a b c] 9:[a b c] 3:[a b c] 1003:[a b c] 1:[a b c]]} 
+ >>> NEW: {Num:41 Shards:[2 1004 6 3 1009 5 8 1010 1007 1003] Groups:map[1009:[a b c] 8:[a b c] 1:[a b c] 4:[a b c] 1004:[a b c] 1010:[a b c] 6:[a b c] 5:[a b c] 2:[a b c] 1003:[a b c] 1007:[a b c] 9:[a b c] 3:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 1004 6 3 1009 5 8 1010 1007 1003]
+	 END me 0 Join Groups map[6:[a b c] 5:[a b c] 2:[a b c] 1003:[a b c] 1007:[a b c] 9:[a b c] 3:[a b c] 1009:[a b c] 8:[a b c] 1:[a b c] 4:[a b c] 1004:[a b c] 1010:[a b c]]
+	 START me 0 Leave Shards [2 1004 6 3 1009 5 8 1010 1007 1003]
+	 START me 0 Leave Groups map[1009:[a b c] 8:[a b c] 1:[a b c] 4:[a b c] 1004:[a b c] 1010:[a b c] 6:[a b c] 5:[a b c] 2:[a b c] 1003:[a b c] 1007:[a b c] 9:[a b c] 3:[a b c]]
+	 START me 1 Leave Shards [2 1004 6 1010 1009 9 5 1 3 1003]
+	 START me 1 Leave Groups map[6:[a b c] 9:[a b c] 1003:[a b c] 5:[a b c] 1004:[a b c] 8:[a b c] 3:[a b c] 1010:[a b c] 1:[a b c] 1009:[a b c] 1007:[a b c] 2:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1009 Servers:[] Shard:0 Num:0 OpID:65 ServerID:0} 
+ >>> OLD: {Num:41 Shards:[2 1004 6 3 1009 5 8 1010 1007 1003] Groups:map[6:[a b c] 5:[a b c] 2:[a b c] 1003:[a b c] 1007:[a b c] 9:[a b c] 3:[a b c] 1009:[a b c] 8:[a b c] 1:[a b c] 4:[a b c] 1004:[a b c] 1010:[a b c]]} 
+ >>> NEW: {Num:42 Shards:[2 1004 6 3 1 5 8 1010 1007 1003] Groups:map[4:[a b c] 3:[a b c] 1004:[a b c] 1010:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c] 1:[a b c] 2:[a b c] 1007:[a b c] 8:[a b c] 5:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 1004 6 3 1 5 8 1010 1007 1003]
+	 END me 0 Leave Groups map[1:[a b c] 2:[a b c] 1007:[a b c] 8:[a b c] 5:[a b c] 4:[a b c] 3:[a b c] 1004:[a b c] 1010:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c]]
+	 START me 0 Join Shards [2 1004 6 3 1 5 8 1010 1007 1003]
+{ >>> CURRENT_OP: {Type:JOIN GID:4 Servers:[a b c] Shard:0 Num:0 OpID:64 ServerID:0} 
+ >>> OLD: {Num:40 Shards:[2 1004 6 1010 1009 9 5 1 3 1003] Groups:map[3:[a b c] 1010:[a b c] 1:[a b c] 1009:[a b c] 1007:[a b c] 2:[a b c] 6:[a b c] 9:[a b c] 1003:[a b c] 5:[a b c] 1004:[a b c] 8:[a b c]]} 
+ >>> NEW: {Num:41 Shards:[2 1004 6 1010 1009 9 5 1 3 1003] Groups:map[6:[a b c] 1003:[a b c] 1010:[a b c] 2:[a b c] 9:[a b c] 4:[a b c] 1:[a b c] 8:[a b c] 3:[a b c] 1009:[a b c] 1007:[a b c] 5:[a b c] 1004:[a b c]]} } 
+ >>>
+                                                                                                                                                                  { >>> CURRENT_OP: {Type:LEAVE GID:1009 Servers:[] Shard:0 Num:0 OpID:65 ServerID:0} 
+ >>> OLD: {Num:41 Shards:[2 1004 6 1010 1009 9 5 1 3 1003] Groups:map[1:[a b c] 8:[a b c] 3:[a b c] 1009:[a b c] 1007:[a b c] 5:[a b c] 1004:[a b c] 6:[a b c] 1003:[a b c] 1010:[a b c] 2:[a b c] 9:[a b c] 4:[a b c]]} 
+ >>> NEW: {Num:42 Shards:[2 1004 6 1010 8 9 5 1 3 1003] Groups:map[1:[a b c] 8:[a b c] 6:[a b c] 2:[a b c] 3:[a b c] 1007:[a b c] 1010:[a b c] 9:[a b c] 4:[a b c] 1003:[a b c] 5:[a b c] 1004:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1004 Servers:[] Shard:0 Num:0 OpID:7 ServerID:1} 
+ >>> OLD: {Num:42 Shards:[2 1004 6 1010 8 9 5 1 3 1003] Groups:map[1003:[a b c] 5:[a b c] 1004:[a b c] 1:[a b c] 8:[a b c] 6:[a b c] 2:[a b c] 3:[a b c] 1007:[a b c] 1010:[a b c] 9:[a b c] 4:[a b c]]} 
+ >>> NEW: {Num:43 Shards:[2 4 6 1010 8 9 5 1 3 1003] Groups:map[1003:[a b c] 1:[a b c] 6:[a b c] 9:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 8:[a b c] 2:[a b c] 4:[a b c] 1007:[a b c]]} } 
+ >>>
+	 END me 1 Leave Shards [2 4 6 1010 8 9 5 1 3 1003]
+	 END me 1 Leave Groups map[8:[a b c] 2:[a b c] 4:[a b c] 1007:[a b c] 1003:[a b c] 1:[a b c] 6:[a b c] 9:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1004 Servers:[] Shard:0 Num:0 OpID:7 ServerID:1} 
+ >>> OLD: {Num:42 Shards:[2 1004 6 3 1 5 8 1010 1007 1003] Groups:map[4:[a b c] 3:[a b c] 1004:[a b c] 1010:[a b c] 6:[a b c] 1003:[a b c] 9:[a b c] 1:[a b c] 2:[a b c] 1007:[a b c] 8:[a b c] 5:[a b c]]} 
+ >>> NEW: {Num:43 Shards:[2 9 6 3 1 5 8 1010 1007 1003] Groups:map[4:[a b c] 1003:[a b c] 8:[a b c] 3:[a b c] 1007:[a b c] 1:[a b c] 5:[a b c] 1010:[a b c] 6:[a b c] 9:[a b c] 2:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:7 Servers:[a b c] Shard:0 Num:0 OpID:66 ServerID:0} 
+ >>> OLD: {Num:43 Shards:[2 9 6 3 1 5 8 1010 1007 1003] Groups:map[4:[a b c] 1003:[a b c] 8:[a b c] 3:[a b c] 1007:[a b c] 1:[a b c] 5:[a b c] 1010:[a b c] 6:[a b c] 9:[a b c] 2:[a b c]]} 
+ >>> NEW: {Num:44 Shards:[2 9 6 3 1 5 8 1010 1007 1003] Groups:map[1003:[a b c] 3:[a b c] 6:[a b c] 9:[a b c] 1007:[a b c] 5:[a b c] 1010:[a b c] 7:[a b c] 4:[a b c] 1:[a b c] 2:[a b c] 8:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 1010 1007 1003]
+	 END me 0 Join Groups map[4:[a b c] 1:[a b c] 2:[a b c] 8:[a b c] 1003:[a b c] 3:[a b c] 6:[a b c] 9:[a b c] 1007:[a b c] 5:[a b c] 1010:[a b c] 7:[a b c]]
+	 START me 0 Leave Shards [2 9 6 3 1 5 8 1010 1007 1003]
+	 START me 0 Leave Groups map[1003:[a b c] 3:[a b c] 6:[a b c] 9:[a b c] 1007:[a b c] 5:[a b c] 1010:[a b c] 7:[a b c] 4:[a b c] 1:[a b c] 2:[a b c] 8:[a b c]]
+	 START me 1 Leave Shards [2 4 6 1010 8 9 5 1 3 1003]
+	 START me 1 Leave Groups map[8:[a b c] 2:[a b c] 4:[a b c] 1007:[a b c] 1003:[a b c] 1:[a b c] 6:[a b c] 9:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1003 Servers:[] Shard:0 Num:0 OpID:67 ServerID:0} 
+ >>> OLD: {Num:44 Shards:[2 9 6 3 1 5 8 1010 1007 1003] Groups:map[4:[a b c] 1:[a b c] 2:[a b c] 8:[a b c] 1003:[a b c] 3:[a b c] 6:[a b c] 9:[a b c] 1007:[a b c] 5:[a b c] 1010:[a b c] 7:[a b c]]} 
+ >>> NEW: {Num:45 Shards:[2 9 6 3 1 5 8 1010 1007 7] Groups:map[3:[a b c] 6:[a b c] 1007:[a b c] 1:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 5:[a b c] 1010:[a b c] 9:[a b c] 7:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 9 6 3 1 5 8 1010 1007 7]
+	 END me 0 Leave Groups map[4:[a b c] 5:[a b c] 1010:[a b c] 9:[a b c] 7:[a b c] 3:[a b c] 6:[a b c] 1007:[a b c] 1:[a b c] 2:[a b c] 8:[a b c]]
+	 START me 0 Join Shards [2 9 6 3 1 5 8 1010 1007 7]
+	 START me 0 Join Groups map[4:[a b c] 5:[a b c] 1010:[a b c] 9:[a b c] 7:[a b c] 3:[a b c] 6:[a b c] 1007:[a b c] 1:[a b c] 2:[a b c] 8:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:7 Servers:[a b c] Shard:0 Num:0 OpID:66 ServerID:0} 
+ >>> OLD: {Num:43 Shards:[2 4 6 1010 8 9 5 1 3 1003] Groups:map[1003:[a b c] 1:[a b c] 6:[a b c] 9:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 8:[a b c] 2:[a b c] 4:[a b c] 1007:[a b c]]} 
+ >>> NEW: {Num:44 Shards:[2 4 6 1010 8 9 5 1 3 1003] Groups:map[1003:[a b c] 1:[a b c] 4:[a b c] 7:[a b c] 6:[a b c] 9:[a b c] 2:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 8:[a b c] 1007:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1003 Servers:[] Shard:0 Num:0 OpID:67 ServerID:0} 
+ >>> OLD: {Num:44 Shards:[2 4 6 1010 8 9 5 1 3 1003] Groups:map[1003:[a b c] 1:[a b c] 4:[a b c] 7:[a b c] 6:[a b c] 9:[a b c] 2:[a b c] 5:[a b c] 3:[a b c] 1010:[a b c] 8:[a b c] 1007:[a b c]]} 
+ >>> NEW: {Num:45 Shards:[2 4 6 1010 8 9 5 1 3 7] Groups:map[6:[a b c] 2:[a b c] 4:[a b c] 7:[a b c] 1010:[a b c] 8:[a b c] 9:[a b c] 3:[a b c] 1007:[a b c] 1:[a b c] 5:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1007 Servers:[] Shard:0 Num:0 OpID:8 ServerID:1} 
+ >>> OLD: {Num:45 Shards:[2 4 6 1010 8 9 5 1 3 7] Groups:map[6:[a b c] 2:[a b c] 4:[a b c] 7:[a b c] 1010:[a b c] 8:[a b c] 9:[a b c] 3:[a b c] 1007:[a b c] 1:[a b c] 5:[a b c]]} 
+ >>> NEW: {Num:46 Shards:[2 4 6 1010 8 9 5 1 3 7] Groups:map[8:[a b c] 9:[a b c] 3:[a b c] 1:[a b c] 2:[a b c] 7:[a b c] 1010:[a b c] 6:[a b c] 4:[a b c] 5:[a b c]]} } 
+ >>>
+	 END me 1 Leave Shards [2 4 6 1010 8 9 5 1 3 7]
+	 END me 1 Leave Groups map[2:[a b c] 7:[a b c] 1010:[a b c] 6:[a b c] 4:[a b c] 5:[a b c] 8:[a b c] 9:[a b c] 3:[a b c] 1:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1007 Servers:[] Shard:0 Num:0 OpID:8 ServerID:1} 
+ >>> OLD: {Num:45 Shards:[2 9 6 3 1 5 8 1010 1007 7] Groups:map[3:[a b c] 6:[a b c] 1007:[a b c] 1:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 5:[a b c] 1010:[a b c] 9:[a b c] 7:[a b c]]} 
+ >>> NEW: {Num:46 Shards:[2 9 6 3 1 5 8 1010 4 7] Groups:map[1010:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 1:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 5:[a b c] 7:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:JOIN GID:10 Servers:[a b c] Shard:0 Num:0 OpID:68 ServerID:0} 
+ >>> OLD: {Num:46 Shards:[2 9 6 3 1 5 8 1010 4 7] Groups:map[1:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 5:[a b c] 7:[a b c] 1010:[a b c] 2:[a b c] 8:[a b c] 4:[a b c]]} 
+ >>> NEW: {Num:47 Shards:[2 9 6 3 1 5 8 1010 4 7] Groups:map[1010:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 1:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 10:[a b c] 5:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 1010 4 7]
+	 END me 0 Join Groups map[1010:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 1:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 10:[a b c] 5:[a b c]]
+	 START me 1 Leave Shards [2 4 6 1010 8 9 5 1 3 7]
+	 START me 1 Leave Groups map[8:[a b c] 9:[a b c] 3:[a b c] 1:[a b c] 2:[a b c] 7:[a b c] 1010:[a b c] 6:[a b c] 4:[a b c] 5:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:10 Servers:[a b c] Shard:0 Num:0 OpID:68 ServerID:0} 
+ >>> OLD: {Num:46 Shards:[2 4 6 1010 8 9 5 1 3 7] Groups:map[2:[a b c] 7:[a b c] 1010:[a b c] 6:[a b c] 4:[a b c] 5:[a b c] 8:[a b c] 9:[a b c] 3:[a b c] 1:[a b c]]} 
+ >>> NEW: {Num:47 Shards:[2 4 6 1010 8 9 5 1 3 7] Groups:map[3:[a b c] 6:[a b c] 10:[a b c] 9:[a b c] 2:[a b c] 1010:[a b c] 4:[a b c] 5:[a b c] 8:[a b c] 1:[a b c] 7:[a b c]]} } 
+ >>>
+{ >>> CURRENT_OP: {Type:LEAVE GID:1010 Servers:[] Shard:0 Num:0 OpID:9 ServerID:1} 
+ >>> OLD: {Num:47 Shards:[2 4 6 1010 8 9 5 1 3 7] Groups:map[3:[a b c] 6:[a b c] 10:[a b c] 9:[a b c] 2:[a b c] 1010:[a b c] 4:[a b c] 5:[a b c] 8:[a b c] 1:[a b c] 7:[a b c]]} 
+ >>> NEW: {Num:48 Shards:[2 4 6 10 8 9 5 1 3 7] Groups:map[8:[a b c] 7:[a b c] 10:[a b c] 5:[a b c] 3:[a b c] 6:[a b c] 2:[a b c] 4:[a b c] 1:[a b c] 9:[a b c]]} } 
+ >>>
+	 END me 1 Leave Shards [2 4 6 10 8 9 5 1 3 7]
+	 END me 1 Leave Groups map[8:[a b c] 7:[a b c] 10:[a b c] 5:[a b c] 3:[a b c] 6:[a b c] 2:[a b c] 4:[a b c] 1:[a b c] 9:[a b c]]
+	 START me 0 Query Shards [2 9 6 3 1 5 8 1010 4 7]
+	 START me 0 Query Groups map[9:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 10:[a b c] 5:[a b c] 1010:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 1:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:1010 Servers:[] Shard:0 Num:0 OpID:9 ServerID:1} 
+ >>> OLD: {Num:47 Shards:[2 9 6 3 1 5 8 1010 4 7] Groups:map[1010:[a b c] 2:[a b c] 8:[a b c] 4:[a b c] 1:[a b c] 9:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 10:[a b c] 5:[a b c]]} 
+ >>> NEW: {Num:48 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[8:[a b c] 5:[a b c] 1:[a b c] 9:[a b c] 10:[a b c] 2:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 4:[a b c]]} } 
+ >>>
+	 END me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Query Groups map[2:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 4:[a b c] 8:[a b c] 5:[a b c] 1:[a b c] 9:[a b c] 10:[a b c]]
+  ... Passed
+Test: Min advances after joins ...
+  ... Passed
+Test: Minimal transfers after joins ...
+	 START me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Query Groups map[8:[a b c] 5:[a b c] 1:[a b c] 9:[a b c] 10:[a b c] 2:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 4:[a b c]]
+	 END me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Query Groups map[2:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 4:[a b c] 8:[a b c] 5:[a b c] 1:[a b c] 9:[a b c] 10:[a b c]]
+	 START me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Join Groups map[8:[a b c] 5:[a b c] 1:[a b c] 9:[a b c] 10:[a b c] 2:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 4:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:11 Servers:[a b c] Shard:0 Num:0 OpID:71 ServerID:0} 
+ >>> OLD: {Num:48 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[8:[a b c] 5:[a b c] 1:[a b c] 9:[a b c] 10:[a b c] 2:[a b c] 3:[a b c] 6:[a b c] 7:[a b c] 4:[a b c]]} 
+ >>> NEW: {Num:49 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[4:[a b c] 2:[a b c] 7:[a b c] 1:[a b c] 11:[a b c] 3:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 5:[a b c] 9:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Join Groups map[3:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 5:[a b c] 9:[a b c] 4:[a b c] 2:[a b c] 7:[a b c] 1:[a b c] 11:[a b c]]
+	 START me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Join Groups map[4:[a b c] 2:[a b c] 7:[a b c] 1:[a b c] 11:[a b c] 3:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 5:[a b c] 9:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:12 Servers:[a b c] Shard:0 Num:0 OpID:72 ServerID:0} 
+ >>> OLD: {Num:49 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[3:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 5:[a b c] 9:[a b c] 4:[a b c] 2:[a b c] 7:[a b c] 1:[a b c] 11:[a b c]]} 
+ >>> NEW: {Num:50 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[4:[a b c] 1:[a b c] 10:[a b c] 2:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 6:[a b c] 5:[a b c] 11:[a b c] 9:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Join Groups map[6:[a b c] 5:[a b c] 11:[a b c] 9:[a b c] 4:[a b c] 1:[a b c] 10:[a b c] 2:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c]]
+	 START me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Join Groups map[4:[a b c] 1:[a b c] 10:[a b c] 2:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 6:[a b c] 5:[a b c] 11:[a b c] 9:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:13 Servers:[a b c] Shard:0 Num:0 OpID:73 ServerID:0} 
+ >>> OLD: {Num:50 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[4:[a b c] 1:[a b c] 10:[a b c] 2:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 6:[a b c] 5:[a b c] 11:[a b c] 9:[a b c]]} 
+ >>> NEW: {Num:51 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[9:[a b c] 10:[a b c] 2:[a b c] 5:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 1:[a b c] 6:[a b c] 11:[a b c] 4:[a b c] 13:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Join Groups map[9:[a b c] 10:[a b c] 2:[a b c] 5:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 1:[a b c] 6:[a b c] 11:[a b c] 4:[a b c] 13:[a b c]]
+	 START me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Join Groups map[9:[a b c] 10:[a b c] 2:[a b c] 5:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 1:[a b c] 6:[a b c] 11:[a b c] 4:[a b c] 13:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:14 Servers:[a b c] Shard:0 Num:0 OpID:74 ServerID:0} 
+ >>> OLD: {Num:51 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[9:[a b c] 10:[a b c] 2:[a b c] 5:[a b c] 7:[a b c] 3:[a b c] 8:[a b c] 12:[a b c] 1:[a b c] 6:[a b c] 11:[a b c] 4:[a b c] 13:[a b c]]} 
+ >>> NEW: {Num:52 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[11:[a b c] 12:[a b c] 14:[a b c] 6:[a b c] 2:[a b c] 3:[a b c] 10:[a b c] 5:[a b c] 7:[a b c] 4:[a b c] 13:[a b c] 8:[a b c] 1:[a b c] 9:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Join Groups map[1:[a b c] 9:[a b c] 11:[a b c] 12:[a b c] 14:[a b c] 6:[a b c] 2:[a b c] 3:[a b c] 10:[a b c] 5:[a b c] 7:[a b c] 4:[a b c] 13:[a b c] 8:[a b c]]
+	 START me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Join Groups map[1:[a b c] 9:[a b c] 11:[a b c] 12:[a b c] 14:[a b c] 6:[a b c] 2:[a b c] 3:[a b c] 10:[a b c] 5:[a b c] 7:[a b c] 4:[a b c] 13:[a b c] 8:[a b c]]
+{ >>> CURRENT_OP: {Type:JOIN GID:15 Servers:[a b c] Shard:0 Num:0 OpID:75 ServerID:0} 
+ >>> OLD: {Num:52 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[1:[a b c] 9:[a b c] 11:[a b c] 12:[a b c] 14:[a b c] 6:[a b c] 2:[a b c] 3:[a b c] 10:[a b c] 5:[a b c] 7:[a b c] 4:[a b c] 13:[a b c] 8:[a b c]]} 
+ >>> NEW: {Num:53 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[4:[a b c] 8:[a b c] 11:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 12:[a b c] 6:[a b c] 10:[a b c] 5:[a b c] 2:[a b c] 3:[a b c] 7:[a b c] 14:[a b c] 1:[a b c]]} } 
+ >>>
+	 END me 0 Join Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Join Groups map[10:[a b c] 5:[a b c] 2:[a b c] 3:[a b c] 7:[a b c] 14:[a b c] 1:[a b c] 4:[a b c] 8:[a b c] 11:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 12:[a b c] 6:[a b c]]
+	 START me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Query Groups map[10:[a b c] 5:[a b c] 2:[a b c] 3:[a b c] 7:[a b c] 14:[a b c] 1:[a b c] 4:[a b c] 8:[a b c] 11:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 12:[a b c] 6:[a b c]]
+	 END me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Query Groups map[9:[a b c] 15:[a b c] 12:[a b c] 6:[a b c] 10:[a b c] 5:[a b c] 2:[a b c] 3:[a b c] 7:[a b c] 14:[a b c] 1:[a b c] 4:[a b c] 8:[a b c] 11:[a b c] 13:[a b c]]
+  ... Passed
+Test: Minimal transfers after leaves ...
+	 START me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Leave Groups map[10:[a b c] 5:[a b c] 2:[a b c] 3:[a b c] 7:[a b c] 14:[a b c] 1:[a b c] 4:[a b c] 8:[a b c] 11:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 12:[a b c] 6:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:11 Servers:[] Shard:0 Num:0 OpID:77 ServerID:0} 
+ >>> OLD: {Num:53 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[9:[a b c] 15:[a b c] 12:[a b c] 6:[a b c] 10:[a b c] 5:[a b c] 2:[a b c] 3:[a b c] 7:[a b c] 14:[a b c] 1:[a b c] 4:[a b c] 8:[a b c] 11:[a b c] 13:[a b c]]} 
+ >>> NEW: {Num:54 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[2:[a b c] 10:[a b c] 6:[a b c] 3:[a b c] 14:[a b c] 5:[a b c] 4:[a b c] 9:[a b c] 15:[a b c] 7:[a b c] 1:[a b c] 13:[a b c] 12:[a b c] 8:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Leave Groups map[3:[a b c] 14:[a b c] 5:[a b c] 4:[a b c] 9:[a b c] 15:[a b c] 7:[a b c] 1:[a b c] 13:[a b c] 12:[a b c] 8:[a b c] 2:[a b c] 10:[a b c] 6:[a b c]]
+	 START me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Leave Groups map[14:[a b c] 5:[a b c] 4:[a b c] 9:[a b c] 15:[a b c] 7:[a b c] 1:[a b c] 13:[a b c] 12:[a b c] 8:[a b c] 2:[a b c] 10:[a b c] 6:[a b c] 3:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:12 Servers:[] Shard:0 Num:0 OpID:78 ServerID:0} 
+ >>> OLD: {Num:54 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[9:[a b c] 15:[a b c] 7:[a b c] 1:[a b c] 13:[a b c] 12:[a b c] 8:[a b c] 2:[a b c] 10:[a b c] 6:[a b c] 3:[a b c] 14:[a b c] 5:[a b c] 4:[a b c]]} 
+ >>> NEW: {Num:55 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[14:[a b c] 5:[a b c] 4:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 1:[a b c] 2:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 3:[a b c] 7:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Leave Groups map[3:[a b c] 7:[a b c] 14:[a b c] 5:[a b c] 4:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 1:[a b c] 2:[a b c] 6:[a b c] 8:[a b c] 10:[a b c]]
+	 START me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Leave Groups map[14:[a b c] 5:[a b c] 4:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 1:[a b c] 2:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 3:[a b c] 7:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:13 Servers:[] Shard:0 Num:0 OpID:79 ServerID:0} 
+ >>> OLD: {Num:55 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[14:[a b c] 5:[a b c] 4:[a b c] 13:[a b c] 9:[a b c] 15:[a b c] 1:[a b c] 2:[a b c] 6:[a b c] 8:[a b c] 10:[a b c] 3:[a b c] 7:[a b c]]} 
+ >>> NEW: {Num:56 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[7:[a b c] 5:[a b c] 9:[a b c] 10:[a b c] 4:[a b c] 15:[a b c] 1:[a b c] 6:[a b c] 3:[a b c] 14:[a b c] 8:[a b c] 2:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Leave Groups map[3:[a b c] 14:[a b c] 8:[a b c] 2:[a b c] 7:[a b c] 5:[a b c] 9:[a b c] 10:[a b c] 4:[a b c] 15:[a b c] 1:[a b c] 6:[a b c]]
+	 START me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Leave Groups map[7:[a b c] 5:[a b c] 9:[a b c] 10:[a b c] 4:[a b c] 15:[a b c] 1:[a b c] 6:[a b c] 3:[a b c] 14:[a b c] 8:[a b c] 2:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:14 Servers:[] Shard:0 Num:0 OpID:80 ServerID:0} 
+ >>> OLD: {Num:56 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[3:[a b c] 14:[a b c] 8:[a b c] 2:[a b c] 7:[a b c] 5:[a b c] 9:[a b c] 10:[a b c] 4:[a b c] 15:[a b c] 1:[a b c] 6:[a b c]]} 
+ >>> NEW: {Num:57 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[7:[a b c] 3:[a b c] 2:[a b c] 9:[a b c] 1:[a b c] 8:[a b c] 6:[a b c] 5:[a b c] 10:[a b c] 4:[a b c] 15:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Leave Groups map[7:[a b c] 3:[a b c] 2:[a b c] 9:[a b c] 1:[a b c] 8:[a b c] 6:[a b c] 5:[a b c] 10:[a b c] 4:[a b c] 15:[a b c]]
+	 START me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Leave Groups map[6:[a b c] 5:[a b c] 10:[a b c] 4:[a b c] 15:[a b c] 7:[a b c] 3:[a b c] 2:[a b c] 9:[a b c] 1:[a b c] 8:[a b c]]
+{ >>> CURRENT_OP: {Type:LEAVE GID:15 Servers:[] Shard:0 Num:0 OpID:81 ServerID:0} 
+ >>> OLD: {Num:57 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[6:[a b c] 5:[a b c] 10:[a b c] 4:[a b c] 15:[a b c] 7:[a b c] 3:[a b c] 2:[a b c] 9:[a b c] 1:[a b c] 8:[a b c]]} 
+ >>> NEW: {Num:58 Shards:[2 9 6 3 1 5 8 10 4 7] Groups:map[4:[a b c] 8:[a b c] 7:[a b c] 3:[a b c] 2:[a b c] 1:[a b c] 6:[a b c] 5:[a b c] 9:[a b c] 10:[a b c]]} } 
+ >>>
+	 END me 0 Leave Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Leave Groups map[4:[a b c] 8:[a b c] 7:[a b c] 3:[a b c] 2:[a b c] 1:[a b c] 6:[a b c] 5:[a b c] 9:[a b c] 10:[a b c]]
+	 START me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 START me 0 Query Groups map[7:[a b c] 3:[a b c] 2:[a b c] 1:[a b c] 6:[a b c] 5:[a b c] 9:[a b c] 10:[a b c] 4:[a b c] 8:[a b c]]
+	 END me 0 Query Shards [2 9 6 3 1 5 8 10 4 7]
+	 END me 0 Query Groups map[4:[a b c] 8:[a b c] 7:[a b c] 3:[a b c] 2:[a b c] 1:[a b c] 6:[a b c] 5:[a b c] 9:[a b c] 10:[a b c]]
+  ... Passed
+PASS
+ok  	shardmaster	1.072s

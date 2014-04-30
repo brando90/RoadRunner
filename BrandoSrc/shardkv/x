@@ -1,0 +1,2887 @@
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+2014/04/23 17:23:52 method Done has wrong number of ins: 2
+2014/04/23 17:23:52 method Kill has wrong number of ins: 1
+2014/04/23 17:23:52 method Max has wrong number of ins: 1
+2014/04/23 17:23:52 method Min has wrong number of ins: 1
+2014/04/23 17:23:52 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:52 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:52 method Status has wrong number of ins: 2
+Test: Basic Join/Leave ...
+2014/04/23 17:23:53 {>>>> PUT: &{Key:a Value:x DoHash:false ClientID:1160094492425565265 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:a Value:x DoHash:false ClientID:1160094492425565265 OpID:0} 
+ >>>> BEFORE PUT: x 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:a Value:b DoHash:true ClientID:1160094492425565265 OpID:1} 
+ >>>> BEFORE PUT: 1063475327 
+ >>>> &{Err:OK PreviousValue:x} reply 
+}
+2014/04/23 17:23:53 {>>>> GET: &{Key:a ClientID:1160094492425565265 OpID:2} 
+ >>>> &{Err:OK Value:1063475327} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:26222426471854123 Value:8446960703956728189 DoHash:false ClientID:1160094492425565265 OpID:3} 
+ >>>> BEFORE PUT: 8446960703956728189 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:5919415281453547599 Value:2282476590775666788 DoHash:false ClientID:1160094492425565265 OpID:4} 
+ >>>> BEFORE PUT: 2282476590775666788 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:4973335412664053511 Value:8999011805617471788 DoHash:false ClientID:1160094492425565265 OpID:5} 
+ >>>> BEFORE PUT: 8999011805617471788 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:2711729604092318900 Value:6946686668319032438 DoHash:false ClientID:1160094492425565265 OpID:6} 
+ >>>> BEFORE PUT: 6946686668319032438 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:7673207765878545335 Value:2138254726110839158 DoHash:false ClientID:1160094492425565265 OpID:7} 
+ >>>> BEFORE PUT: 2138254726110839158 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:4596876061716608039 Value:828591673584457147 DoHash:false ClientID:1160094492425565265 OpID:8} 
+ >>>> BEFORE PUT: 828591673584457147 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:3617555776104743529 Value:5436099478104293176 DoHash:false ClientID:1160094492425565265 OpID:9} 
+ >>>> BEFORE PUT: 5436099478104293176 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:5276569407083831530 Value:5428658603350578075 DoHash:false ClientID:1160094492425565265 OpID:10} 
+ >>>> BEFORE PUT: 5428658603350578075 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:5096654515527008449 Value:4534277910591376951 DoHash:false ClientID:1160094492425565265 OpID:11} 
+ >>>> BEFORE PUT: 4534277910591376951 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:53 {>>>> PUT: &{Key:7352950963778495221 Value:990415953277272574 DoHash:false ClientID:1160094492425565265 OpID:12} 
+ >>>> BEFORE PUT: 990415953277272574 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:26222426471854123 ClientID:1160094492425565265 OpID:13} 
+ >>>> &{Err:OK Value:8446960703956728189} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:26222426471854123 Value:1917936835493074776 DoHash:false ClientID:1160094492425565265 OpID:14} 
+ >>>> BEFORE PUT: 1917936835493074776 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:5919415281453547599 ClientID:1160094492425565265 OpID:15} 
+ >>>> &{Err:OK Value:2282476590775666788} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:5919415281453547599 Value:5910934670967209084 DoHash:false ClientID:1160094492425565265 OpID:16} 
+ >>>> BEFORE PUT: 5910934670967209084 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:4973335412664053511 ClientID:1160094492425565265 OpID:17} 
+ >>>> &{Err:OK Value:8999011805617471788} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:4973335412664053511 Value:1674879938132494608 DoHash:false ClientID:1160094492425565265 OpID:18} 
+ >>>> BEFORE PUT: 1674879938132494608 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:2711729604092318900 ClientID:1160094492425565265 OpID:19} 
+ >>>> &{Err:OK Value:6946686668319032438} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:2711729604092318900 Value:4562621698571384881 DoHash:false ClientID:1160094492425565265 OpID:20} 
+ >>>> BEFORE PUT: 4562621698571384881 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:7673207765878545335 ClientID:1160094492425565265 OpID:21} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:7673207765878545335 ClientID:1160094492425565265 OpID:21} 
+ >>>> &{Err:OK Value:2138254726110839158} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:7673207765878545335 Value:7979830878773245174 DoHash:false ClientID:1160094492425565265 OpID:22} 
+ >>>> BEFORE PUT: 7979830878773245174 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:4596876061716608039 ClientID:1160094492425565265 OpID:23} 
+ >>>> &{Err:OK Value:828591673584457147} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:4596876061716608039 Value:4526775788405064679 DoHash:false ClientID:1160094492425565265 OpID:24} 
+ >>>> BEFORE PUT: 4526775788405064679 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:3617555776104743529 ClientID:1160094492425565265 OpID:25} 
+ >>>> &{Err:OK Value:5436099478104293176} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:3617555776104743529 Value:3834635091911834437 DoHash:false ClientID:1160094492425565265 OpID:26} 
+ >>>> BEFORE PUT: 3834635091911834437 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:5276569407083831530 ClientID:1160094492425565265 OpID:27} 
+ >>>> &{Err:OK Value:5428658603350578075} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:5276569407083831530 Value:40994750895431521 DoHash:false ClientID:1160094492425565265 OpID:28} 
+ >>>> BEFORE PUT: 40994750895431521 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:5096654515527008449 ClientID:1160094492425565265 OpID:29} 
+ >>>> &{Err:OK Value:4534277910591376951} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:5096654515527008449 Value:7890118970448673079 DoHash:false ClientID:1160094492425565265 OpID:30} 
+ >>>> BEFORE PUT: 7890118970448673079 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:54 {>>>> GET: &{Key:7352950963778495221 ClientID:1160094492425565265 OpID:31} 
+ >>>> &{Err:OK Value:990415953277272574} reply 
+}
+2014/04/23 17:23:54 {>>>> PUT: &{Key:7352950963778495221 Value:8544637207693042276 DoHash:false ClientID:1160094492425565265 OpID:32} 
+ >>>> BEFORE PUT: 8544637207693042276 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:26222426471854123 ClientID:1160094492425565265 OpID:33} 
+ >>>> &{Err:OK Value:1917936835493074776} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:26222426471854123 Value:2901581893313933971 DoHash:false ClientID:1160094492425565265 OpID:34} 
+ >>>> BEFORE PUT: 2901581893313933971 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:5919415281453547599 ClientID:1160094492425565265 OpID:35} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:5919415281453547599 ClientID:1160094492425565265 OpID:35} 
+ >>>> &{Err:OK Value:5910934670967209084} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:5919415281453547599 Value:1662713748597895257 DoHash:false ClientID:1160094492425565265 OpID:36} 
+ >>>> BEFORE PUT: 1662713748597895257 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:4973335412664053511 ClientID:1160094492425565265 OpID:37} 
+ >>>> &{Err:OK Value:1674879938132494608} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:4973335412664053511 Value:6971515504882803680 DoHash:false ClientID:1160094492425565265 OpID:38} 
+ >>>> BEFORE PUT: 6971515504882803680 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:2711729604092318900 ClientID:1160094492425565265 OpID:39} 
+ >>>> &{Err:OK Value:4562621698571384881} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:2711729604092318900 Value:3949956415341892322 DoHash:false ClientID:1160094492425565265 OpID:40} 
+ >>>> BEFORE PUT: 3949956415341892322 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:7673207765878545335 ClientID:1160094492425565265 OpID:41} 
+ >>>> &{Err:OK Value:7979830878773245174} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:7673207765878545335 Value:4125643631056849026 DoHash:false ClientID:1160094492425565265 OpID:42} 
+ >>>> BEFORE PUT: 4125643631056849026 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:4596876061716608039 ClientID:1160094492425565265 OpID:43} 
+ >>>> &{Err:OK Value:4526775788405064679} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:4596876061716608039 Value:1694881465938077493 DoHash:false ClientID:1160094492425565265 OpID:44} 
+ >>>> BEFORE PUT: 1694881465938077493 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:3617555776104743529 ClientID:1160094492425565265 OpID:45} 
+ >>>> &{Err:OK Value:3834635091911834437} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:3617555776104743529 Value:2317460015917781615 DoHash:false ClientID:1160094492425565265 OpID:46} 
+ >>>> BEFORE PUT: 2317460015917781615 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:5276569407083831530 ClientID:1160094492425565265 OpID:47} 
+ >>>> &{Err:OK Value:40994750895431521} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:5276569407083831530 Value:889988161859419353 DoHash:false ClientID:1160094492425565265 OpID:48} 
+ >>>> BEFORE PUT: 889988161859419353 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:5096654515527008449 ClientID:1160094492425565265 OpID:49} 
+ >>>> &{Err:OK Value:7890118970448673079} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:5096654515527008449 Value:2591857096295729149 DoHash:false ClientID:1160094492425565265 OpID:50} 
+ >>>> BEFORE PUT: 2591857096295729149 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:55 {>>>> GET: &{Key:7352950963778495221 ClientID:1160094492425565265 OpID:51} 
+ >>>> &{Err:OK Value:8544637207693042276} reply 
+}
+2014/04/23 17:23:55 {>>>> PUT: &{Key:7352950963778495221 Value:1895058517391226750 DoHash:false ClientID:1160094492425565265 OpID:52} 
+ >>>> BEFORE PUT: 1895058517391226750 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:26222426471854123 ClientID:1160094492425565265 OpID:53} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:26222426471854123 ClientID:1160094492425565265 OpID:53} 
+ >>>> &{Err:OK Value:2901581893313933971} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:26222426471854123 Value:8972475615499269822 DoHash:false ClientID:1160094492425565265 OpID:54} 
+ >>>> BEFORE PUT: 8972475615499269822 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:5919415281453547599 ClientID:1160094492425565265 OpID:55} 
+ >>>> &{Err:OK Value:1662713748597895257} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:5919415281453547599 Value:6190962017917573592 DoHash:false ClientID:1160094492425565265 OpID:56} 
+ >>>> BEFORE PUT: 6190962017917573592 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:4973335412664053511 ClientID:1160094492425565265 OpID:57} 
+ >>>> &{Err:OK Value:6971515504882803680} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:4973335412664053511 Value:4280841143732940727 DoHash:false ClientID:1160094492425565265 OpID:58} 
+ >>>> BEFORE PUT: 4280841143732940727 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:2711729604092318900 ClientID:1160094492425565265 OpID:59} 
+ >>>> &{Err:OK Value:3949956415341892322} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:2711729604092318900 Value:1374505960475558837 DoHash:false ClientID:1160094492425565265 OpID:60} 
+ >>>> BEFORE PUT: 1374505960475558837 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:7673207765878545335 ClientID:1160094492425565265 OpID:61} 
+ >>>> &{Err:OK Value:4125643631056849026} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:7673207765878545335 Value:5034556978741429915 DoHash:false ClientID:1160094492425565265 OpID:62} 
+ >>>> BEFORE PUT: 5034556978741429915 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:4596876061716608039 ClientID:1160094492425565265 OpID:63} 
+ >>>> &{Err:OK Value:1694881465938077493} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:4596876061716608039 Value:4125532999287192258 DoHash:false ClientID:1160094492425565265 OpID:64} 
+ >>>> BEFORE PUT: 4125532999287192258 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:3617555776104743529 ClientID:1160094492425565265 OpID:65} 
+ >>>> &{Err:OK Value:2317460015917781615} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:3617555776104743529 Value:3719685973800884532 DoHash:false ClientID:1160094492425565265 OpID:66} 
+ >>>> BEFORE PUT: 3719685973800884532 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:5276569407083831530 ClientID:1160094492425565265 OpID:67} 
+ >>>> &{Err:OK Value:889988161859419353} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:5276569407083831530 Value:2673644565579601470 DoHash:false ClientID:1160094492425565265 OpID:68} 
+ >>>> BEFORE PUT: 2673644565579601470 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:5096654515527008449 ClientID:1160094492425565265 OpID:69} 
+ >>>> &{Err:OK Value:2591857096295729149} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:5096654515527008449 Value:5806921737724242314 DoHash:false ClientID:1160094492425565265 OpID:70} 
+ >>>> BEFORE PUT: 5806921737724242314 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:57 {>>>> GET: &{Key:7352950963778495221 ClientID:1160094492425565265 OpID:71} 
+ >>>> &{Err:OK Value:1895058517391226750} reply 
+}
+2014/04/23 17:23:57 {>>>> PUT: &{Key:7352950963778495221 Value:5387406539853981989 DoHash:false ClientID:1160094492425565265 OpID:72} 
+ >>>> BEFORE PUT: 5387406539853981989 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:26222426471854123 ClientID:1160094492425565265 OpID:73} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:26222426471854123 ClientID:1160094492425565265 OpID:73} 
+ >>>> &{Err:OK Value:8972475615499269822} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:26222426471854123 Value:6474039878440823823 DoHash:false ClientID:1160094492425565265 OpID:74} 
+ >>>> BEFORE PUT: 6474039878440823823 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:5919415281453547599 ClientID:1160094492425565265 OpID:75} 
+ >>>> &{Err:OK Value:6190962017917573592} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:5919415281453547599 Value:2844229746743954283 DoHash:false ClientID:1160094492425565265 OpID:76} 
+ >>>> BEFORE PUT: 2844229746743954283 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:4973335412664053511 ClientID:1160094492425565265 OpID:77} 
+ >>>> &{Err:OK Value:4280841143732940727} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:4973335412664053511 Value:606281927392511840 DoHash:false ClientID:1160094492425565265 OpID:78} 
+ >>>> BEFORE PUT: 606281927392511840 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:2711729604092318900 ClientID:1160094492425565265 OpID:79} 
+ >>>> &{Err:OK Value:1374505960475558837} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:2711729604092318900 Value:4156721158850876882 DoHash:false ClientID:1160094492425565265 OpID:80} 
+ >>>> BEFORE PUT: 4156721158850876882 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:7673207765878545335 ClientID:1160094492425565265 OpID:81} 
+ >>>> &{Err:OK Value:5034556978741429915} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:7673207765878545335 Value:1238451894099712860 DoHash:false ClientID:1160094492425565265 OpID:82} 
+ >>>> BEFORE PUT: 1238451894099712860 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:4596876061716608039 ClientID:1160094492425565265 OpID:83} 
+ >>>> &{Err:OK Value:4125532999287192258} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:4596876061716608039 Value:9076328698430248230 DoHash:false ClientID:1160094492425565265 OpID:84} 
+ >>>> BEFORE PUT: 9076328698430248230 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:3617555776104743529 ClientID:1160094492425565265 OpID:85} 
+ >>>> &{Err:OK Value:3719685973800884532} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:3617555776104743529 Value:1664799966255770020 DoHash:false ClientID:1160094492425565265 OpID:86} 
+ >>>> BEFORE PUT: 1664799966255770020 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:5276569407083831530 ClientID:1160094492425565265 OpID:87} 
+ >>>> &{Err:OK Value:2673644565579601470} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:5276569407083831530 Value:2730675717254707923 DoHash:false ClientID:1160094492425565265 OpID:88} 
+ >>>> BEFORE PUT: 2730675717254707923 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:5096654515527008449 ClientID:1160094492425565265 OpID:89} 
+ >>>> &{Err:OK Value:5806921737724242314} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:5096654515527008449 Value:6511679359708573028 DoHash:false ClientID:1160094492425565265 OpID:90} 
+ >>>> BEFORE PUT: 6511679359708573028 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:58 {>>>> GET: &{Key:7352950963778495221 ClientID:1160094492425565265 OpID:91} 
+ >>>> &{Err:OK Value:5387406539853981989} reply 
+}
+2014/04/23 17:23:58 {>>>> PUT: &{Key:7352950963778495221 Value:4922527176624939195 DoHash:false ClientID:1160094492425565265 OpID:92} 
+ >>>> BEFORE PUT: 4922527176624939195 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+  ... Passed
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+2014/04/23 17:23:58 method Done has wrong number of ins: 2
+2014/04/23 17:23:58 method Kill has wrong number of ins: 1
+2014/04/23 17:23:58 method Max has wrong number of ins: 1
+2014/04/23 17:23:58 method Min has wrong number of ins: 1
+2014/04/23 17:23:58 method Start reply type not a pointer: interface {}
+2014/04/23 17:23:58 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:23:58 method Status has wrong number of ins: 2
+Test: Shards really move ...
+2014/04/23 17:23:58 {>>>> PUT: &{Key:0 Value:0 DoHash:false ClientID:4207187378322226930 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:0 Value:0 DoHash:false ClientID:4207187378322226930 OpID:0} 
+ >>>> BEFORE PUT: 0 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:1 Value:1 DoHash:false ClientID:4207187378322226930 OpID:1} 
+ >>>> BEFORE PUT: 1 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:2 Value:2 DoHash:false ClientID:4207187378322226930 OpID:2} 
+ >>>> BEFORE PUT: 2 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:3 Value:3 DoHash:false ClientID:4207187378322226930 OpID:3} 
+ >>>> BEFORE PUT: 3 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:4 Value:4 DoHash:false ClientID:4207187378322226930 OpID:4} 
+ >>>> BEFORE PUT: 4 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:5 Value:5 DoHash:false ClientID:4207187378322226930 OpID:5} 
+ >>>> BEFORE PUT: 5 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:6 Value:6 DoHash:false ClientID:4207187378322226930 OpID:6} 
+ >>>> BEFORE PUT: 6 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:7 Value:7 DoHash:false ClientID:4207187378322226930 OpID:7} 
+ >>>> BEFORE PUT: 7 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:8 Value:8 DoHash:false ClientID:4207187378322226930 OpID:8} 
+ >>>> BEFORE PUT: 8 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:23:59 {>>>> PUT: &{Key:9 Value:9 DoHash:false ClientID:4207187378322226930 OpID:9} 
+ >>>> BEFORE PUT: 9 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:0 ClientID:4207187378322226930 OpID:10} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:0 ClientID:4207187378322226930 OpID:10} 
+ >>>> &{Err:OK Value:0} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:1 ClientID:4207187378322226930 OpID:11} 
+ >>>> &{Err:OK Value:1} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:2 ClientID:4207187378322226930 OpID:12} 
+ >>>> &{Err:OK Value:2} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:3 ClientID:4207187378322226930 OpID:13} 
+ >>>> &{Err:OK Value:3} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:4 ClientID:4207187378322226930 OpID:14} 
+ >>>> &{Err:OK Value:4} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:5 ClientID:4207187378322226930 OpID:15} 
+ >>>> &{Err:OK Value:5} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:6 ClientID:4207187378322226930 OpID:16} 
+ >>>> &{Err:OK Value:6} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:7 ClientID:4207187378322226930 OpID:17} 
+ >>>> &{Err:OK Value:7} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:8 ClientID:4207187378322226930 OpID:18} 
+ >>>> &{Err:OK Value:8} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:9 ClientID:4207187378322226930 OpID:19} 
+ >>>> &{Err:OK Value:9} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:0 ClientID:4330820440501289417 OpID:0} 
+ >>>> &{Err:OK Value:0} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:8 ClientID:1237444670458941444 OpID:0} 
+ >>>> &{Err:OK Value:8} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:9 ClientID:1391725377868784532 OpID:0} 
+ >>>> &{Err:OK Value:9} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:7 ClientID:2747287093609811780 OpID:0} 
+ >>>> &{Err:OK Value:7} reply 
+}
+2014/04/23 17:24:04 {>>>> GET: &{Key:1 ClientID:1406279307786009244 OpID:0} 
+ >>>> &{Err:OK Value:1} reply 
+}
+  ... Passed
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+2014/04/23 17:24:14 method Done has wrong number of ins: 2
+2014/04/23 17:24:14 method Kill has wrong number of ins: 1
+2014/04/23 17:24:14 method Max has wrong number of ins: 1
+2014/04/23 17:24:14 method Min has wrong number of ins: 1
+2014/04/23 17:24:14 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:14 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:14 method Status has wrong number of ins: 2
+Test: Reconfiguration with some dead replicas ...
+2014/04/23 17:24:14 {>>>> PUT: &{Key:a Value:b DoHash:false ClientID:1132640628183846378 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:a Value:b DoHash:false ClientID:1132640628183846378 OpID:0} 
+ >>>> BEFORE PUT: b 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> GET: &{Key:a ClientID:1132640628183846378 OpID:1} 
+ >>>> &{Err:OK Value:b} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:8534040548847070366 Value:405257739008908187 DoHash:false ClientID:1132640628183846378 OpID:2} 
+ >>>> BEFORE PUT: 405257739008908187 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:187704516591184695 Value:4566441390589575779 DoHash:false ClientID:1132640628183846378 OpID:3} 
+ >>>> BEFORE PUT: 4566441390589575779 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:4881649788649007981 Value:4447304487216342609 DoHash:false ClientID:1132640628183846378 OpID:4} 
+ >>>> BEFORE PUT: 4447304487216342609 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:1536965605015697909 Value:8957193685654004348 DoHash:false ClientID:1132640628183846378 OpID:5} 
+ >>>> BEFORE PUT: 8957193685654004348 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:1427361164305553393 Value:4568739045510477302 DoHash:false ClientID:1132640628183846378 OpID:6} 
+ >>>> BEFORE PUT: 4568739045510477302 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:255885359875435314 Value:3876386639349904501 DoHash:false ClientID:1132640628183846378 OpID:7} 
+ >>>> BEFORE PUT: 3876386639349904501 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:6056660606607777033 Value:3327541621836704977 DoHash:false ClientID:1132640628183846378 OpID:8} 
+ >>>> BEFORE PUT: 3327541621836704977 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:64296315011878323 Value:4154195409643372481 DoHash:false ClientID:1132640628183846378 OpID:9} 
+ >>>> BEFORE PUT: 4154195409643372481 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:4849596810583213149 Value:7904116850275858695 DoHash:false ClientID:1132640628183846378 OpID:10} 
+ >>>> BEFORE PUT: 7904116850275858695 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:14 {>>>> PUT: &{Key:2529416721723579432 Value:2195181230886508412 DoHash:false ClientID:1132640628183846378 OpID:11} 
+ >>>> BEFORE PUT: 2195181230886508412 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:15 {>>>> GET: &{Key:8534040548847070366 ClientID:1132640628183846378 OpID:12} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:8534040548847070366 ClientID:1132640628183846378 OpID:12} 
+ >>>> &{Err:OK Value:405257739008908187} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:8534040548847070366 Value:6813066272609257900 DoHash:false ClientID:1132640628183846378 OpID:13} 
+ >>>> BEFORE PUT: 6813066272609257900 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:187704516591184695 ClientID:1132640628183846378 OpID:14} 
+ >>>> &{Err:OK Value:4566441390589575779} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:187704516591184695 Value:8583682876407876963 DoHash:false ClientID:1132640628183846378 OpID:15} 
+ >>>> BEFORE PUT: 8583682876407876963 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:4881649788649007981 ClientID:1132640628183846378 OpID:16} 
+ >>>> &{Err:OK Value:4447304487216342609} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:4881649788649007981 Value:91288124062352742 DoHash:false ClientID:1132640628183846378 OpID:17} 
+ >>>> BEFORE PUT: 91288124062352742 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:1536965605015697909 ClientID:1132640628183846378 OpID:18} 
+ >>>> &{Err:OK Value:8957193685654004348} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:1536965605015697909 Value:3305439767125957717 DoHash:false ClientID:1132640628183846378 OpID:19} 
+ >>>> BEFORE PUT: 3305439767125957717 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:1427361164305553393 ClientID:1132640628183846378 OpID:20} 
+ >>>> &{Err:OK Value:4568739045510477302} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:1427361164305553393 Value:2420740738466920067 DoHash:false ClientID:1132640628183846378 OpID:21} 
+ >>>> BEFORE PUT: 2420740738466920067 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:255885359875435314 ClientID:1132640628183846378 OpID:22} 
+ >>>> &{Err:OK Value:3876386639349904501} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:255885359875435314 Value:1651603781777317823 DoHash:false ClientID:1132640628183846378 OpID:23} 
+ >>>> BEFORE PUT: 1651603781777317823 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:6056660606607777033 ClientID:1132640628183846378 OpID:24} 
+ >>>> &{Err:OK Value:3327541621836704977} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:6056660606607777033 Value:3118357303204635251 DoHash:false ClientID:1132640628183846378 OpID:25} 
+ >>>> BEFORE PUT: 3118357303204635251 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:64296315011878323 ClientID:1132640628183846378 OpID:26} 
+ >>>> &{Err:OK Value:4154195409643372481} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:64296315011878323 Value:7098885163566240898 DoHash:false ClientID:1132640628183846378 OpID:27} 
+ >>>> BEFORE PUT: 7098885163566240898 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:4849596810583213149 ClientID:1132640628183846378 OpID:28} 
+ >>>> &{Err:OK Value:7904116850275858695} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:4849596810583213149 Value:2141978999056184048 DoHash:false ClientID:1132640628183846378 OpID:29} 
+ >>>> BEFORE PUT: 2141978999056184048 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:16 {>>>> GET: &{Key:2529416721723579432 ClientID:1132640628183846378 OpID:30} 
+ >>>> &{Err:OK Value:2195181230886508412} reply 
+}
+2014/04/23 17:24:16 {>>>> PUT: &{Key:2529416721723579432 Value:3298146948845103071 DoHash:false ClientID:1132640628183846378 OpID:31} 
+ >>>> BEFORE PUT: 3298146948845103071 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:8534040548847070366 ClientID:1132640628183846378 OpID:32} 
+ >>>> &{Err:OK Value:6813066272609257900} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:8534040548847070366 Value:8552946728936033349 DoHash:false ClientID:1132640628183846378 OpID:33} 
+ >>>> BEFORE PUT: 8552946728936033349 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:187704516591184695 ClientID:1132640628183846378 OpID:34} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:187704516591184695 ClientID:1132640628183846378 OpID:34} 
+ >>>> &{Err:OK Value:8583682876407876963} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:187704516591184695 Value:4324675134788174691 DoHash:false ClientID:1132640628183846378 OpID:35} 
+ >>>> BEFORE PUT: 4324675134788174691 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:4881649788649007981 ClientID:1132640628183846378 OpID:36} 
+ >>>> &{Err:OK Value:91288124062352742} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:4881649788649007981 Value:2116276956739963317 DoHash:false ClientID:1132640628183846378 OpID:37} 
+ >>>> BEFORE PUT: 2116276956739963317 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:1536965605015697909 ClientID:1132640628183846378 OpID:38} 
+ >>>> &{Err:OK Value:3305439767125957717} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:1536965605015697909 Value:3112620479632077407 DoHash:false ClientID:1132640628183846378 OpID:39} 
+ >>>> BEFORE PUT: 3112620479632077407 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:1427361164305553393 ClientID:1132640628183846378 OpID:40} 
+ >>>> &{Err:OK Value:2420740738466920067} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:1427361164305553393 Value:6330752317708121624 DoHash:false ClientID:1132640628183846378 OpID:41} 
+ >>>> BEFORE PUT: 6330752317708121624 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:255885359875435314 ClientID:1132640628183846378 OpID:42} 
+ >>>> &{Err:OK Value:1651603781777317823} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:255885359875435314 Value:1962926579363357407 DoHash:false ClientID:1132640628183846378 OpID:43} 
+ >>>> BEFORE PUT: 1962926579363357407 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:6056660606607777033 ClientID:1132640628183846378 OpID:44} 
+ >>>> &{Err:OK Value:3118357303204635251} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:6056660606607777033 Value:4429411038747506934 DoHash:false ClientID:1132640628183846378 OpID:45} 
+ >>>> BEFORE PUT: 4429411038747506934 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:64296315011878323 ClientID:1132640628183846378 OpID:46} 
+ >>>> &{Err:OK Value:7098885163566240898} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:64296315011878323 Value:3342414071700304639 DoHash:false ClientID:1132640628183846378 OpID:47} 
+ >>>> BEFORE PUT: 3342414071700304639 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:4849596810583213149 ClientID:1132640628183846378 OpID:48} 
+ >>>> &{Err:OK Value:2141978999056184048} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:4849596810583213149 Value:7314148462267705315 DoHash:false ClientID:1132640628183846378 OpID:49} 
+ >>>> BEFORE PUT: 7314148462267705315 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:17 {>>>> GET: &{Key:2529416721723579432 ClientID:1132640628183846378 OpID:50} 
+ >>>> &{Err:OK Value:3298146948845103071} reply 
+}
+2014/04/23 17:24:17 {>>>> PUT: &{Key:2529416721723579432 Value:6545807081503048217 DoHash:false ClientID:1132640628183846378 OpID:51} 
+ >>>> BEFORE PUT: 6545807081503048217 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:8534040548847070366 ClientID:1132640628183846378 OpID:52} 
+ >>>> &{Err:OK Value:8552946728936033349} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:8534040548847070366 Value:2922399849352751220 DoHash:false ClientID:1132640628183846378 OpID:53} 
+ >>>> BEFORE PUT: 2922399849352751220 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:187704516591184695 ClientID:1132640628183846378 OpID:54} 
+ >>>> &{Err:OK Value:4324675134788174691} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:187704516591184695 Value:8807091299567803782 DoHash:false ClientID:1132640628183846378 OpID:55} 
+ >>>> BEFORE PUT: 8807091299567803782 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:4881649788649007981 ClientID:1132640628183846378 OpID:56} 
+ >>>> &{Err:OK Value:2116276956739963317} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:4881649788649007981 Value:2568081201319644493 DoHash:false ClientID:1132640628183846378 OpID:57} 
+ >>>> BEFORE PUT: 2568081201319644493 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:1536965605015697909 ClientID:1132640628183846378 OpID:58} 
+ >>>> &{Err:OK Value:3112620479632077407} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:1536965605015697909 Value:1969570698988957470 DoHash:false ClientID:1132640628183846378 OpID:59} 
+ >>>> BEFORE PUT: 1969570698988957470 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:1427361164305553393 ClientID:1132640628183846378 OpID:60} 
+ >>>> &{Err:OK Value:6330752317708121624} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:1427361164305553393 Value:1204890958773899745 DoHash:false ClientID:1132640628183846378 OpID:61} 
+ >>>> BEFORE PUT: 1204890958773899745 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:255885359875435314 ClientID:1132640628183846378 OpID:62} 
+ >>>> &{Err:OK Value:1962926579363357407} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:255885359875435314 Value:6901829962242089283 DoHash:false ClientID:1132640628183846378 OpID:63} 
+ >>>> BEFORE PUT: 6901829962242089283 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:6056660606607777033 ClientID:1132640628183846378 OpID:64} 
+ >>>> &{Err:OK Value:4429411038747506934} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:6056660606607777033 Value:820103557845518518 DoHash:false ClientID:1132640628183846378 OpID:65} 
+ >>>> BEFORE PUT: 820103557845518518 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:64296315011878323 ClientID:1132640628183846378 OpID:66} 
+ >>>> &{Err:OK Value:3342414071700304639} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:64296315011878323 Value:9018604471389312272 DoHash:false ClientID:1132640628183846378 OpID:67} 
+ >>>> BEFORE PUT: 9018604471389312272 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:4849596810583213149 ClientID:1132640628183846378 OpID:68} 
+ >>>> &{Err:OK Value:7314148462267705315} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:4849596810583213149 Value:3065080245373623875 DoHash:false ClientID:1132640628183846378 OpID:69} 
+ >>>> BEFORE PUT: 3065080245373623875 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:19 {>>>> GET: &{Key:2529416721723579432 ClientID:1132640628183846378 OpID:70} 
+ >>>> &{Err:OK Value:6545807081503048217} reply 
+}
+2014/04/23 17:24:19 {>>>> PUT: &{Key:2529416721723579432 Value:3152029627344493514 DoHash:false ClientID:1132640628183846378 OpID:71} 
+ >>>> BEFORE PUT: 3152029627344493514 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:8534040548847070366 ClientID:1132640628183846378 OpID:72} 
+ >>>> &{Err:OK Value:2922399849352751220} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:8534040548847070366 Value:6971126835418258042 DoHash:false ClientID:1132640628183846378 OpID:73} 
+ >>>> BEFORE PUT: 6971126835418258042 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:187704516591184695 ClientID:1132640628183846378 OpID:74} 
+ >>>> &{Err:OK Value:8807091299567803782} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:187704516591184695 Value:9129757640707440764 DoHash:false ClientID:1132640628183846378 OpID:75} 
+ >>>> BEFORE PUT: 9129757640707440764 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:4881649788649007981 ClientID:1132640628183846378 OpID:76} 
+ >>>> &{Err:OK Value:2568081201319644493} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:4881649788649007981 Value:5571167862408279375 DoHash:false ClientID:1132640628183846378 OpID:77} 
+ >>>> BEFORE PUT: 5571167862408279375 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:1536965605015697909 ClientID:1132640628183846378 OpID:78} 
+ >>>> &{Err:OK Value:1969570698988957470} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:1536965605015697909 Value:579255673487764256 DoHash:false ClientID:1132640628183846378 OpID:79} 
+ >>>> BEFORE PUT: 579255673487764256 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:1427361164305553393 ClientID:1132640628183846378 OpID:80} 
+ >>>> &{Err:OK Value:1204890958773899745} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:1427361164305553393 Value:1153484255672887028 DoHash:false ClientID:1132640628183846378 OpID:81} 
+ >>>> BEFORE PUT: 1153484255672887028 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:255885359875435314 ClientID:1132640628183846378 OpID:82} 
+ >>>> &{Err:OK Value:6901829962242089283} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:255885359875435314 Value:1552483652221235045 DoHash:false ClientID:1132640628183846378 OpID:83} 
+ >>>> BEFORE PUT: 1552483652221235045 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:6056660606607777033 ClientID:1132640628183846378 OpID:84} 
+ >>>> &{Err:OK Value:820103557845518518} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:6056660606607777033 Value:3794948369668831722 DoHash:false ClientID:1132640628183846378 OpID:85} 
+ >>>> BEFORE PUT: 3794948369668831722 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:64296315011878323 ClientID:1132640628183846378 OpID:86} 
+ >>>> &{Err:OK Value:9018604471389312272} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:64296315011878323 Value:7268864197615404058 DoHash:false ClientID:1132640628183846378 OpID:87} 
+ >>>> BEFORE PUT: 7268864197615404058 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:4849596810583213149 ClientID:1132640628183846378 OpID:88} 
+ >>>> &{Err:OK Value:3065080245373623875} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:4849596810583213149 Value:3412590742783366620 DoHash:false ClientID:1132640628183846378 OpID:89} 
+ >>>> BEFORE PUT: 3412590742783366620 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:2529416721723579432 ClientID:1132640628183846378 OpID:90} 
+ >>>> &{Err:OK Value:3152029627344493514} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:2529416721723579432 Value:5010609002092307934 DoHash:false ClientID:1132640628183846378 OpID:91} 
+ >>>> BEFORE PUT: 5010609002092307934 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+  ... Passed
+Test: Concurrent Put/Get/Move ...
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 method Done has wrong number of ins: 2
+2014/04/23 17:24:22 method Kill has wrong number of ins: 1
+2014/04/23 17:24:22 method Max has wrong number of ins: 1
+2014/04/23 17:24:22 method Min has wrong number of ins: 1
+2014/04/23 17:24:22 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:22 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:22 method Status has wrong number of ins: 2
+2014/04/23 17:24:22 {>>>> PUT: &{Key:7 Value:5908295579204589478 DoHash:true ClientID:4163317216792393176 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:3 Value:1182304358433222471 DoHash:true ClientID:367212897635380565 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:8 Value:8404744221249261322 DoHash:true ClientID:2759805980189045231 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:5 Value:3666166301462221942 DoHash:true ClientID:815182047221075710 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:1 Value:5957214833682425675 DoHash:true ClientID:3874527307958211743 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:10 Value:2490270375417647099 DoHash:true ClientID:4118936659169391143 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:2 Value:2649869249611288796 DoHash:true ClientID:3464501647824568964 OpID:0} 
+ >>>> BEFORE PUT: 1717856636 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:4 Value:4982766154190718873 DoHash:true ClientID:4466815869080407222 OpID:0} 
+ >>>> BEFORE PUT: 3192849407 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:2 ClientID:3464501647824568964 OpID:1} 
+ >>>> &{Err:OK Value:1717856636} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:4 ClientID:4466815869080407222 OpID:1} 
+ >>>> &{Err:OK Value:3192849407} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:0 Value:5168265641324298303 DoHash:true ClientID:2658349265396165634 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:9 Value:9067107111874306161 DoHash:true ClientID:1865351626071096056 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:7 Value:5908295579204589478 DoHash:true ClientID:4163317216792393176 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:3 Value:1182304358433222471 DoHash:true ClientID:367212897635380565 OpID:0} 
+ >>>> BEFORE PUT: 2044479914 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:8 Value:8404744221249261322 DoHash:true ClientID:2759805980189045231 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:3 ClientID:367212897635380565 OpID:1} 
+ >>>> &{Err:OK Value:2044479914} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:5 Value:3666166301462221942 DoHash:true ClientID:815182047221075710 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:1 Value:5957214833682425675 DoHash:true ClientID:3874527307958211743 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:10 Value:2490270375417647099 DoHash:true ClientID:4118936659169391143 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:2 Value:2008006060006295031 DoHash:true ClientID:3464501647824568964 OpID:2} 
+ >>>> BEFORE PUT: 3693460153 
+ >>>> &{Err:OK PreviousValue:1717856636} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:2 ClientID:3464501647824568964 OpID:3} 
+ >>>> &{Err:OK Value:3693460153} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:4 Value:342871529289352516 DoHash:true ClientID:4466815869080407222 OpID:2} 
+ >>>> BEFORE PUT: 3195874322 
+ >>>> &{Err:OK PreviousValue:3192849407} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:3 Value:5421014707021609369 DoHash:true ClientID:367212897635380565 OpID:2} 
+ >>>> BEFORE PUT: 2700129884 
+ >>>> &{Err:OK PreviousValue:2044479914} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:0 Value:5168265641324298303 DoHash:true ClientID:2658349265396165634 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:4 ClientID:4466815869080407222 OpID:3} 
+ >>>> &{Err:OK Value:3195874322} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:9 Value:9067107111874306161 DoHash:true ClientID:1865351626071096056 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:3 ClientID:367212897635380565 OpID:3} 
+ >>>> &{Err:OK Value:2700129884} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:2 Value:3493649630882917659 DoHash:true ClientID:3464501647824568964 OpID:4} 
+ >>>> BEFORE PUT: 513622287 
+ >>>> &{Err:OK PreviousValue:3693460153} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:7 Value:5908295579204589478 DoHash:true ClientID:4163317216792393176 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> GET: &{Key:2 ClientID:3464501647824568964 OpID:5} 
+ >>>> &{Err:OK Value:513622287} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:8 Value:8404744221249261322 DoHash:true ClientID:2759805980189045231 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:5 Value:3666166301462221942 DoHash:true ClientID:815182047221075710 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:22 {>>>> PUT: &{Key:1 Value:5957214833682425675 DoHash:true ClientID:3874527307958211743 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:10 Value:2490270375417647099 DoHash:true ClientID:4118936659169391143 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:4 Value:10852761215405772 DoHash:true ClientID:4466815869080407222 OpID:4} 
+ >>>> BEFORE PUT: 2109763644 
+ >>>> &{Err:OK PreviousValue:3195874322} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:3 Value:8731212533130219102 DoHash:true ClientID:367212897635380565 OpID:4} 
+ >>>> BEFORE PUT: 98343376 
+ >>>> &{Err:OK PreviousValue:2700129884} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:4 ClientID:4466815869080407222 OpID:5} 
+ >>>> &{Err:OK Value:2109763644} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:3 ClientID:367212897635380565 OpID:5} 
+ >>>> &{Err:OK Value:98343376} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:0 Value:5168265641324298303 DoHash:true ClientID:2658349265396165634 OpID:0} 
+ >>>> BEFORE PUT: 968707017 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:9 Value:9067107111874306161 DoHash:true ClientID:1865351626071096056 OpID:0} 
+ >>>> BEFORE PUT: 1430352148 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:7 Value:5908295579204589478 DoHash:true ClientID:4163317216792393176 OpID:0} 
+ >>>> BEFORE PUT: 3556015421 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:0 ClientID:2658349265396165634 OpID:1} 
+ >>>> &{Err:OK Value:968707017} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:9 ClientID:1865351626071096056 OpID:1} 
+ >>>> &{Err:OK Value:1430352148} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:7 ClientID:4163317216792393176 OpID:1} 
+ >>>> &{Err:OK Value:3556015421} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:5 Value:3666166301462221942 DoHash:true ClientID:815182047221075710 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:8 Value:8404744221249261322 DoHash:true ClientID:2759805980189045231 OpID:0} 
+ >>>> BEFORE PUT: 437257282 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:8 ClientID:2759805980189045231 OpID:1} 
+ >>>> &{Err:OK Value:437257282} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:1 Value:5957214833682425675 DoHash:true ClientID:3874527307958211743 OpID:0} 
+ >>>> BEFORE PUT: 4069824109 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:1 ClientID:3874527307958211743 OpID:1} 
+ >>>> &{Err:OK Value:4069824109} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:10 Value:2490270375417647099 DoHash:true ClientID:4118936659169391143 OpID:0} 
+ >>>> BEFORE PUT: 1377517387 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:1} 
+ >>>> &{Err:OK Value:1377517387} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:0 Value:516002912894169424 DoHash:true ClientID:2658349265396165634 OpID:2} 
+ >>>> BEFORE PUT: 2645971261 
+ >>>> &{Err:OK PreviousValue:968707017} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:0 ClientID:2658349265396165634 OpID:3} 
+ >>>> &{Err:OK Value:2645971261} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:7 Value:581237902901102935 DoHash:true ClientID:4163317216792393176 OpID:2} 
+ >>>> BEFORE PUT: 2442172366 
+ >>>> &{Err:OK PreviousValue:3556015421} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:9 Value:3048352598934408488 DoHash:true ClientID:1865351626071096056 OpID:2} 
+ >>>> BEFORE PUT: 1910616539 
+ >>>> &{Err:OK PreviousValue:1430352148} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:8 Value:8361608301599526008 DoHash:true ClientID:2759805980189045231 OpID:2} 
+ >>>> BEFORE PUT: 52129905 
+ >>>> &{Err:OK PreviousValue:437257282} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:7 ClientID:4163317216792393176 OpID:3} 
+ >>>> &{Err:OK Value:2442172366} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:9 ClientID:1865351626071096056 OpID:3} 
+ >>>> &{Err:OK Value:1910616539} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:5 Value:3666166301462221942 DoHash:true ClientID:815182047221075710 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:1 Value:4899377045304903709 DoHash:true ClientID:3874527307958211743 OpID:2} 
+ >>>> BEFORE PUT: 1202628291 
+ >>>> &{Err:OK PreviousValue:4069824109} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:8 ClientID:2759805980189045231 OpID:3} 
+ >>>> &{Err:OK Value:52129905} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:0 Value:7951844074842090218 DoHash:true ClientID:2658349265396165634 OpID:4} 
+ >>>> BEFORE PUT: 993605457 
+ >>>> &{Err:OK PreviousValue:2645971261} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:10 Value:5588073761227396181 DoHash:true ClientID:4118936659169391143 OpID:2} 
+ >>>> BEFORE PUT: 1946725457 
+ >>>> &{Err:OK PreviousValue:1377517387} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:1 ClientID:3874527307958211743 OpID:3} 
+ >>>> &{Err:OK Value:1202628291} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:7 Value:7180327401064101003 DoHash:true ClientID:4163317216792393176 OpID:4} 
+ >>>> BEFORE PUT: 3812744190 
+ >>>> &{Err:OK PreviousValue:2442172366} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:0 ClientID:2658349265396165634 OpID:5} 
+ >>>> &{Err:OK Value:993605457} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:9 Value:1371984136289400627 DoHash:true ClientID:1865351626071096056 OpID:4} 
+ >>>> BEFORE PUT: 1830533007 
+ >>>> &{Err:OK PreviousValue:1910616539} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:3} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:7 ClientID:4163317216792393176 OpID:5} 
+ >>>> &{Err:OK Value:3812744190} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:8 Value:2317080940907525389 DoHash:true ClientID:2759805980189045231 OpID:4} 
+ >>>> BEFORE PUT: 1316492206 
+ >>>> &{Err:OK PreviousValue:52129905} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:5 Value:3666166301462221942 DoHash:true ClientID:815182047221075710 OpID:0} 
+ >>>> BEFORE PUT: 1152578205 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:1 Value:3909857603804742274 DoHash:true ClientID:3874527307958211743 OpID:4} 
+ >>>> BEFORE PUT: 1202628291 
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:5 ClientID:815182047221075710 OpID:1} 
+ >>>> &{Err:OK Value:1152578205} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:9 ClientID:1865351626071096056 OpID:5} 
+ >>>> &{Err:OK Value:1830533007} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:8 ClientID:2759805980189045231 OpID:5} 
+ >>>> &{Err:OK Value:1316492206} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:5 Value:6142709469982973644 DoHash:true ClientID:815182047221075710 OpID:2} 
+ >>>> BEFORE PUT: 2475515583 
+ >>>> &{Err:OK PreviousValue:1152578205} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:5 ClientID:815182047221075710 OpID:3} 
+ >>>> &{Err:OK Value:2475515583} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:5 Value:4034015863577605596 DoHash:true ClientID:815182047221075710 OpID:4} 
+ >>>> BEFORE PUT: 2113510102 
+ >>>> &{Err:OK PreviousValue:2475515583} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:3} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:5 ClientID:815182047221075710 OpID:5} 
+ >>>> &{Err:OK Value:2113510102} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:1 Value:3909857603804742274 DoHash:true ClientID:3874527307958211743 OpID:4} 
+ >>>> BEFORE PUT: 1202628291 
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:3} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:1 Value:3909857603804742274 DoHash:true ClientID:3874527307958211743 OpID:4} 
+ >>>> BEFORE PUT: 1202628291 
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:3} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:1 Value:3909857603804742274 DoHash:true ClientID:3874527307958211743 OpID:4} 
+ >>>> BEFORE PUT: 1202628291 
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:23 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:24 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:3} 
+ >>>> &{Err:OK Value:1946725457} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:1 Value:3909857603804742274 DoHash:true ClientID:3874527307958211743 OpID:4} 
+ >>>> BEFORE PUT: 2225302224 
+ >>>> &{Err:OK PreviousValue:1202628291} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:24 {>>>> GET: &{Key:1 ClientID:3874527307958211743 OpID:5} 
+ >>>> &{Err:OK Value:2225302224} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:10 Value:4079778803812374429 DoHash:true ClientID:4118936659169391143 OpID:4} 
+ >>>> BEFORE PUT: 1304117202 
+ >>>> &{Err:OK PreviousValue:1946725457} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:24 {>>>> GET: &{Key:10 ClientID:4118936659169391143 OpID:5} 
+ >>>> &{Err:OK Value:1304117202} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:24 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:25 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:26 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:27 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:27 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:27 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:27 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:27 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:27 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:9046733599845717448 DoHash:true ClientID:2578076439173197314 OpID:0} 
+ >>>> BEFORE PUT: 1301085722 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> GET: &{Key:6 ClientID:2578076439173197314 OpID:1} 
+ >>>> &{Err:OK Value:1301085722} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:4136976790372782650 DoHash:true ClientID:2578076439173197314 OpID:2} 
+ >>>> BEFORE PUT: 4170426644 
+ >>>> &{Err:OK PreviousValue:1301085722} reply 
+}
+2014/04/23 17:24:28 {>>>> GET: &{Key:6 ClientID:2578076439173197314 OpID:3} 
+ >>>> &{Err:OK Value:4170426644} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:3077081892997673929 DoHash:true ClientID:2578076439173197314 OpID:4} 
+ >>>> BEFORE PUT: 3710402665 
+ >>>> &{Err:OK PreviousValue:4170426644} reply 
+}
+2014/04/23 17:24:28 {>>>> GET: &{Key:6 ClientID:2578076439173197314 OpID:5} 
+ >>>> &{Err:OK Value:3710402665} reply 
+}
+  ... Passed
+Test: Concurrent Put/Get/Move (unreliable) ...
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method MakeConfigFromGroupToShards reply type not a pointer: map[int64][]int
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+2014/04/23 17:24:28 method Done has wrong number of ins: 2
+2014/04/23 17:24:28 method Kill has wrong number of ins: 1
+2014/04/23 17:24:28 method Max has wrong number of ins: 1
+2014/04/23 17:24:28 method Min has wrong number of ins: 1
+2014/04/23 17:24:28 method Start reply type not a pointer: interface {}
+2014/04/23 17:24:28 method StartPaxosInstance reply type not a pointer: interface {}
+2014/04/23 17:24:28 method Status has wrong number of ins: 2
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:3 Value:6941993861334505238 DoHash:true ClientID:4396575138697812035 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:10 Value:3843013740428596739 DoHash:true ClientID:1021550938526187709 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:7 Value:9172367929422698006 DoHash:true ClientID:4385953496187838071 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:1 Value:4531655291796625009 DoHash:true ClientID:724409714021897311 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+2014/04/23 17:24:28 {>>>> PUT: &{Key:4 Value:8366106869048426795 DoHash:true ClientID:3571408043712971811 OpID:0} 
+ >>>> BEFORE PUT: 651892009 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:2 Value:7567584371095562400 DoHash:true ClientID:214537780675725348 OpID:0} 
+ >>>> BEFORE PUT: 777627933 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:0 Value:6456992916871784213 DoHash:true ClientID:3924751165807945977 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+2014/04/23 17:24:28 {>>>> GET: &{Key:4 ClientID:3571408043712971811 OpID:1} 
+ >>>> &{Err:OK Value:651892009} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:8 Value:4475283513220301717 DoHash:true ClientID:2218881176931397253 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> GET: &{Key:2 ClientID:214537780675725348 OpID:1} 
+ >>>> &{Err:OK Value:777627933} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:3 Value:6941993861334505238 DoHash:true ClientID:4396575138697812035 OpID:0} 
+ >>>> BEFORE PUT: 485317906 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+2014/04/23 17:24:28 {>>>> GET: &{Key:3 ClientID:4396575138697812035 OpID:1} 
+ >>>> &{Err:OK Value:485317906} reply 
+}
+2014/04/23 17:24:28 {>>>> GET: &{Key:3 ClientID:4396575138697812035 OpID:1} 
+ >>>> &{Err:OK Value:485317906} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+2014/04/23 17:24:28 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:7 Value:9172367929422698006 DoHash:true ClientID:4385953496187838071 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-7: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:10 Value:3843013740428596739 DoHash:true ClientID:1021550938526187709 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+2014/04/23 17:24:28 {>>>> PUT: &{Key:5 Value:1611899672135045479 DoHash:true ClientID:3143695474788811688 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:1 Value:4531655291796625009 DoHash:true ClientID:724409714021897311 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:3 Value:1686442051522371635 DoHash:true ClientID:4396575138697812035 OpID:2} 
+ >>>> BEFORE PUT: 1006838855 
+ >>>> &{Err:OK PreviousValue:485317906} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:0 Value:6456992916871784213 DoHash:true ClientID:3924751165807945977 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:8 Value:4475283513220301717 DoHash:true ClientID:2218881176931397253 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:2 Value:433343005731180745 DoHash:true ClientID:214537780675725348 OpID:2} 
+ >>>> BEFORE PUT: 1715335519 
+ >>>> &{Err:OK PreviousValue:777627933} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> GET: &{Key:3 ClientID:4396575138697812035 OpID:3} 
+ >>>> &{Err:OK Value:1006838855} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:7 Value:9172367929422698006 DoHash:true ClientID:4385953496187838071 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> GET: &{Key:2 ClientID:214537780675725348 OpID:3} 
+ >>>> &{Err:OK Value:1715335519} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:10 Value:3843013740428596739 DoHash:true ClientID:1021550938526187709 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:28 {>>>> PUT: &{Key:4 Value:4334343888358484795 DoHash:true ClientID:3571408043712971811 OpID:2} 
+ >>>> BEFORE PUT: 2893072390 
+ >>>> &{Err:OK PreviousValue:651892009} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> GET: &{Key:3 ClientID:4396575138697812035 OpID:3} 
+ >>>> &{Err:OK Value:1006838855} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+               unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-8: broken pipe
+2014/04/23 17:24:28 {>>>> PUT: &{Key:2 Value:1229766353116066005 DoHash:true ClientID:214537780675725348 OpID:4} 
+ >>>> BEFORE PUT: 446699704 
+ >>>> &{Err:OK PreviousValue:1715335519} reply 
+}
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+2014/04/23 17:24:28 {>>>> PUT: &{Key:5 Value:1611899672135045479 DoHash:true ClientID:3143695474788811688 OpID:0} 
+ >>>> BEFORE PUT: 614906553 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> GET: &{Key:4 ClientID:3571408043712971811 OpID:3} 
+ >>>> &{Err:OK Value:2893072390} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:28 {>>>> GET: &{Key:4 ClientID:3571408043712971811 OpID:3} 
+ >>>> &{Err:OK Value:2893072390} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-7: broken pipe
+2014/04/23 17:24:29 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:10 Value:3843013740428596739 DoHash:true ClientID:1021550938526187709 OpID:0} 
+ >>>> BEFORE PUT: 2789854205 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:10 ClientID:1021550938526187709 OpID:1} 
+ >>>> &{Err:OK Value:2789854205} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:2 ClientID:214537780675725348 OpID:5} 
+ >>>> &{Err:OK Value:446699704} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:5 ClientID:3143695474788811688 OpID:1} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:10 Value:68458863430368486 DoHash:true ClientID:1021550938526187709 OpID:2} 
+ >>>> BEFORE PUT: 1445558915 
+ >>>> &{Err:OK PreviousValue:2789854205} reply 
+}
+2014/04/23 17:24:29 {>>>> GET: &{Key:5 ClientID:3143695474788811688 OpID:1} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:3 Value:7453983056584884967 DoHash:true ClientID:4396575138697812035 OpID:4} 
+ >>>> BEFORE PUT: 2410291198 
+ >>>> &{Err:OK PreviousValue:1006838855} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:4 Value:5027008930315894681 DoHash:true ClientID:3571408043712971811 OpID:4} 
+ >>>> BEFORE PUT: 2717241379 
+ >>>> &{Err:OK PreviousValue:2893072390} reply 
+}
+unexpected EOF
+               unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+4:29 {>>>> GET: &{Key:3 ClientID:4396575138697812035 OpID:5} 
+ >>>> &{Err:OK Value:2410291198} reply 
+}
+               unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:4 ClientID:3571408043712971811 OpID:5} 
+ >>>> &{Err:OK Value:2717241379} reply 
+}
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:1 Value:4531655291796625009 DoHash:true ClientID:724409714021897311 OpID:0} 
+ >>>> BEFORE PUT: 380592182 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-3: socket is not connected
+2014/04/23 17:24:29 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:0 Value:6456992916871784213 DoHash:true ClientID:3924751165807945977 OpID:0} 
+ >>>> BEFORE PUT: 956562177 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:8 Value:4475283513220301717 DoHash:true ClientID:2218881176931397253 OpID:0} 
+ >>>> BEFORE PUT: 4211731514 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+2014/04/23 17:24:29 {>>>> PUT: &{Key:7 Value:9172367929422698006 DoHash:true ClientID:4385953496187838071 OpID:0} 
+ >>>> BEFORE PUT: 446933805 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:10 Value:3843013740428596739 DoHash:true ClientID:1021550938526187709 OpID:0} 
+ >>>> BEFORE PUT: 1445558915 
+ >>>> &{Err:OK PreviousValue:1445558915} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-7: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-8: broken pipe
+2014/04/23 17:24:29 {>>>> PUT: &{Key:10 Value:68458863430368486 DoHash:true ClientID:1021550938526187709 OpID:2} 
+ >>>> BEFORE PUT: 1445558915 
+ >>>> &{Err:OK PreviousValue:1445558915} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:10 ClientID:1021550938526187709 OpID:3} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-8: broken pipe
+2014/04/23 17:24:29 {>>>> GET: &{Key:5 ClientID:3143695474788811688 OpID:1} 
+ >>>> &{Err:ErrNoKey Value:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:2 ClientID:214537780675725348 OpID:5} 
+ >>>> &{Err:OK Value:446699704} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:1 ClientID:724409714021897311 OpID:1} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-8: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-7: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:1 ClientID:724409714021897311 OpID:1} 
+ >>>> &{Err:ErrWrongGroup Value:} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:0 ClientID:3924751165807945977 OpID:1} 
+ >>>> &{Err:OK Value:956562177} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+2014/04/23 17:24:29 {>>>> GET: &{Key:8 ClientID:2218881176931397253 OpID:1} 
+ >>>> &{Err:OK Value:4211731514} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+2014/04/23 17:24:29 {>>>> GET: &{Key:7 ClientID:4385953496187838071 OpID:1} 
+ >>>> &{Err:OK Value:446933805} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-8: broken pipe
+2014/04/23 17:24:29 {>>>> PUT: &{Key:8 Value:439469334707925566 DoHash:true ClientID:2218881176931397253 OpID:2} 
+ >>>> BEFORE PUT: 2446731286 
+ >>>> &{Err:OK PreviousValue:4211731514} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-7: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-1: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+write unix /var/tmp/824-501/skv-59114-conctrues-6: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+2014/04/23 17:24:29 {>>>> GET: &{Key:10 ClientID:1021550938526187709 OpID:3} 
+ >>>> &{Err:ErrNoKey Value:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:8 Value:439469334707925566 DoHash:true ClientID:2218881176931397253 OpID:2} 
+ >>>> BEFORE PUT: 2446731286 
+ >>>> &{Err:OK PreviousValue:2446731286} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-3: broken pipe
+2014/04/23 17:24:29 {>>>> PUT: &{Key:0 Value:2902996621944253141 DoHash:true ClientID:3924751165807945977 OpID:2} 
+ >>>> BEFORE PUT: 2511865436 
+ >>>> &{Err:OK PreviousValue:956562177} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+2014/04/23 17:24:29 {>>>> PUT: &{Key:7 Value:2331121291912021130 DoHash:true ClientID:4385953496187838071 OpID:2} 
+ >>>> BEFORE PUT: 2082414927 
+ >>>> &{Err:OK PreviousValue:446933805} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-5: broken pipe
+2014/04/23 17:24:29 {>>>> GET: &{Key:8 ClientID:2218881176931397253 OpID:3} 
+ >>>> &{Err:OK Value:2446731286} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:1 ClientID:724409714021897311 OpID:1} 
+ >>>> &{Err:ErrNoKey Value:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:7 ClientID:4385953496187838071 OpID:3} 
+ >>>> &{Err:OK Value:2082414927} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:9 Value:8125613327025404274 DoHash:true ClientID:910889340634861200 OpID:0} 
+ >>>> BEFORE PUT: 2556379621 
+ >>>> &{Err:OK PreviousValue:} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:0 ClientID:3924751165807945977 OpID:3} 
+ >>>> &{Err:OK Value:2511865436} reply 
+}
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:8 Value:2262210785677973596 DoHash:true ClientID:2218881176931397253 OpID:4} 
+ >>>> BEFORE PUT: 1849958012 
+ >>>> &{Err:OK PreviousValue:2446731286} reply 
+}
+2014/04/23 17:24:29 {>>>> GET: &{Key:9 ClientID:910889340634861200 OpID:1} 
+ >>>> &{Err:OK Value:2556379621} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:8 Value:2262210785677973596 DoHash:true ClientID:2218881176931397253 OpID:4} 
+ >>>> BEFORE PUT: 1849958012 
+ >>>> &{Err:OK PreviousValue:1849958012} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-2: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:7 Value:3316665229198376437 DoHash:true ClientID:4385953496187838071 OpID:4} 
+ >>>> BEFORE PUT: 2040174231 
+ >>>> &{Err:OK PreviousValue:2082414927} reply 
+}
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:7 ClientID:4385953496187838071 OpID:5} 
+ >>>> &{Err:OK Value:2040174231} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-4: broken pipe
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:0 Value:8240341969789748315 DoHash:true ClientID:3924751165807945977 OpID:4} 
+ >>>> BEFORE PUT: 3044878604 
+ >>>> &{Err:OK PreviousValue:2511865436} reply 
+}
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:9 Value:6146973608251118592 DoHash:true ClientID:910889340634861200 OpID:2} 
+ >>>> BEFORE PUT: 1026746289 
+ >>>> &{Err:OK PreviousValue:2556379621} reply 
+}
+write unix /var/tmp/824-501/skv-59114-conctrues-7: socket is not connected
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-8: broken pipe
+2014/04/23 17:24:29 {>>>> GET: &{Key:0 ClientID:3924751165807945977 OpID:5} 
+ >>>> &{Err:OK Value:3044878604} reply 
+}
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> GET: &{Key:9 ClientID:910889340634861200 OpID:3} 
+ >>>> &{Err:OK Value:1026746289} reply 
+}
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+2014/04/23 17:24:29 {>>>> PUT: &{Key:6 Value:6868994872255012176 DoHash:true ClientID:4359118375237835066 OpID:0} 
+ >>>> BEFORE PUT:  
+ >>>> &{Err:ErrWrongGroup PreviousValue:} reply 
+}
+unexpected EOF
+write unix /var/tmp/824-501/skv-59114-conctrues-0: broken pipe
+unexpected EOF
+unexpected EOF
+unexpected EOF
+unexpected EOF
+--- FAIL: TestConcurrentUnreliable (1.78 seconds)
+	test_test.go:298: Get(5) expected 614906553 got 
+	test_test.go:298: Get(10) expected 1445558915 got 
+	test_test.go:298: Get(1) expected 380592182 got 
+	test_test.go:292: PutHash(8) expected 2446731286 got 1849958012
+	test_test.go:312: something is wrong
+FAIL
+exit status 1
+FAIL	shardkv	37.178s
