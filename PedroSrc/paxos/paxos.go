@@ -54,12 +54,9 @@ type Paxos struct {
   // Your data here.
   maxSeq int
   minSeq int
-  //TODO: convert to map[int]*Proposer
-  proposers map[int]Proposer
-  //TODO: convert to map[int]*Acceptor
-  acceptors map[int]Acceptor
-  //TODO: convert to map[int]*Learner
-  learners map[int]Learner
+  proposers map[int]*Proposer
+  acceptors map[int]*Acceptor
+  learners map[int]*Learner
   mins map[int]int
 }
 
@@ -124,10 +121,9 @@ func (px *Paxos) isMajority(x int) bool {
 }
 
 func (px *Paxos) nextProposalNum(seq int) int {
-  px.mu.Lock()
-  defer px.mu.Unlock()
-
-  proposer := px.proposers[seq]
+//  px.mu.Lock()
+//  defer px.mu.Unlock()
+  proposer := px.summonProposer(seq)
   maxN := proposer.MaxN
   l := len(px.peers)
   // generate unique n higher than any n we have seen so far
@@ -136,16 +132,17 @@ func (px *Paxos) nextProposalNum(seq int) int {
 }
 
 func (px *Paxos) logProposalNum(seq int, n int) {
-  px.mu.Lock()
-  defer px.mu.Unlock()
+//  px.mu.Lock()
+//  defer px.mu.Unlock()
 
-  proposer := px.proposers[seq]
-  defer func(){px.proposers[seq] = proposer}()
+  proposer := px.summonProposer(seq)
+//  defer func(){px.proposers[seq] = proposer}()
   if n > proposer.MaxN {
     proposer.MaxN = n
   }
 }
 
+/*
 func (px *Paxos) assertProposer(seq int) {
   px.mu.Lock()
   defer px.mu.Unlock()
@@ -155,24 +152,52 @@ func (px *Paxos) assertProposer(seq int) {
     px.proposers[seq] = proposer
   }
 }
+*/
+
+func (px *Paxos) summonProposer(seq int) *Proposer {
+  //TODO: Lock and unlock
+  proposer, exists := px.proposers[seq]
+  if !exists {
+    proposer = &Proposer{MaxN: 0}
+  }
+  return proposer
+}
+
+func (px *Paxos) summonAcceptor(seq int) *Acceptor {
+  //TODO: Lock and unlock
+  acceptor, exists := px.acceptors[seq]
+  if !exists {
+    acceptor = &Acceptor{MaxN: 0}
+  }
+  return acceptor
+}
+
+func (px *Paxos) summonLearner(seq int) *Learner {
+  //TODO: Lock and unlock
+  learner, exists := px.learners[seq]
+  if !exists {
+    learner = &Learner{MaxN: 0}
+  }
+  return learner
+}
 
 func (px *Paxos) propose(seq int, v interface{}) {
-  px.assertProposer(seq)
+//  px.assertProposer(seq)
 
   n := px.me
 
   undecided:
   for !px.dead {
-    prepareMajority, v_prime := px.prepareMajority(seq, n)
+    prepareMajority, v_prime := px.preparePhase(seq, n)
     if v_prime == nil {
       v_prime = v
     }
 
     if prepareMajority {
-      acceptMajority := px.acceptMajority(seq, n, v_prime)
+      acceptMajority := px.acceptPhase(seq, n, v_prime)
 
       if acceptMajority {
-        px.decideAll(seq, v_prime)
+        px.decidePhase(seq, v_prime)
         break undecided
       }
     }
@@ -181,16 +206,7 @@ func (px *Paxos) propose(seq int, v interface{}) {
   }
 }
 
-func (px *Paxos) sendPrepare(pxnode string, prepareArgs *PrepareArgs, prepareReply *PrepareReply) bool {
-  if pxnode == px.peers[px.me] {
-    px.PrepareHandler(prepareArgs, prepareReply)
-    return true
-  }else {
-    return call(pxnode, "Paxos.PrepareHandler", prepareArgs, prepareReply)
-  }
-}
-
-func (px *Paxos) prepareMajority(seq int, n int) (bool, interface{}) {
+func (px *Paxos) preparePhase(seq int, n int) (bool, interface{}) {
     prepareOKs := 0
     n_a := 0
     var v_a interface{}
@@ -214,16 +230,16 @@ func (px *Paxos) prepareMajority(seq int, n int) (bool, interface{}) {
     return px.isMajority(prepareOKs), v_a
 }
 
-func (px *Paxos) sendAccept(pxnode string, acceptArgs *AcceptArgs, acceptReply *AcceptReply) bool {
+func (px *Paxos) sendPrepare(pxnode string, prepareArgs *PrepareArgs, prepareReply *PrepareReply) bool {
   if pxnode == px.peers[px.me] {
-    px.AcceptHandler(acceptArgs, acceptReply)
+    px.PrepareHandler(prepareArgs, prepareReply)
     return true
   }else {
-    return call(pxnode, "Paxos.AcceptHandler", acceptArgs, acceptReply)
+    return call(pxnode, "Paxos.PrepareHandler", prepareArgs, prepareReply)
   }
 }
 
-func (px *Paxos) acceptMajority(seq int, n int, v interface{}) bool {
+func (px *Paxos) acceptPhase(seq int, n int, v interface{}) bool {
   acceptOKs := 0
   for _, pxnode := range px.peers {
     acceptArgs := AcceptArgs{Seq: seq, N: n, V: v}
@@ -241,6 +257,16 @@ func (px *Paxos) acceptMajority(seq int, n int, v interface{}) bool {
   return px.isMajority(acceptOKs)
 }
 
+
+func (px *Paxos) sendAccept(pxnode string, acceptArgs *AcceptArgs, acceptReply *AcceptReply) bool {
+  if pxnode == px.peers[px.me] {
+    px.AcceptHandler(acceptArgs, acceptReply)
+    return true
+  }else {
+    return call(pxnode, "Paxos.AcceptHandler", acceptArgs, acceptReply)
+  }
+}
+
 func (px *Paxos) sendDecide(pxnode string, decideArgs *DecideArgs, decideReply *DecideReply) bool {
   if pxnode == px.peers[px.me] {
     px.DecideHandler(decideArgs, decideReply)
@@ -250,7 +276,7 @@ func (px *Paxos) sendDecide(pxnode string, decideArgs *DecideArgs, decideReply *
   }
 }
 
-func (px *Paxos) decideAll(seq int, v interface{}) {
+func (px *Paxos) decidePhase(seq int, v interface{}) {
   for _, pxnode := range px.peers {
     decideArgs := DecideArgs{Seq: seq, V: v}
     decideArgs.PBDone = PBDone{Me: px.me, MinSeq: px.minSeq}
@@ -264,17 +290,13 @@ func (px *Paxos) PrepareHandler(args *PrepareArgs, reply *PrepareReply) error {
   seq, n, pbdone := args.Seq, args.N, args.PBDone
   px.processPBDone(pbdone)
 
-  px.mu.Lock()
-  defer px.mu.Unlock()
+//  px.mu.Lock()
+//  defer px.mu.Unlock()
   if seq > px.maxSeq {
     px.maxSeq = seq
   }
 
-  acceptor, exists := px.acceptors[seq]
-  if !exists {
-    acceptor = Acceptor{N_P: 0, N_A: 0}
-  }
-  defer func(){px.acceptors[seq] = acceptor}()
+  acceptor := px.summonAcceptor(seq)
 
   if n > acceptor.N_P {
     acceptor.N_P = n
@@ -293,17 +315,13 @@ func (px *Paxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
   seq, n, v, pbdone := args.Seq, args.N, args.V, args.PBDone
   px.processPBDone(pbdone)
 
-  px.mu.Lock()
-  defer px.mu.Unlock()
+//  px.mu.Lock()
+//  defer px.mu.Unlock()
   if seq > px.maxSeq {
     px.maxSeq = seq
   }
 
-  acceptor, exists := px.acceptors[seq]
-  if !exists {
-    acceptor = Acceptor{N_P: 0, N_A: 0}
-  }
-  defer func(){px.acceptors[seq] = acceptor}()
+  acceptor := px.summonAcceptor(seq)
 
   if n >= acceptor.N_P {
     acceptor.N_P = n
@@ -328,11 +346,7 @@ func (px *Paxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
     px.maxSeq = seq
   }
 
-  learner, exists := px.learners[seq]
-  if !exists {
-    learner = Learner{}
-  }
-  defer func(){px.learners[seq] = learner}()
+  learner := px.summonLearner(seq)
 
   learner.Decided = true
   learner.V = v
@@ -459,11 +473,7 @@ func (px *Paxos) Status(seq int) (bool, interface{}) {
   if seq < px.Min() {
     return false, nil
   }
-  learner, exists := px.learners[seq]
-  if !exists {
-    learner = Learner{}
-  }
-  defer func(){px.learners[seq] = learner}()
+  learner := px.summonLearner(seq)
 
   return learner.Decided, learner.V
 }
@@ -494,9 +504,9 @@ func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
   // Your initialization code here.
   px.minSeq = -1
   px.maxSeq = -1
-  px.proposers = make(map[int]Proposer)
-  px.acceptors = make(map[int]Acceptor)
-  px.learners = make(map[int]Learner)
+  px.proposers = make(map[int]*Proposer)
+  px.acceptors = make(map[int]*Acceptor)
+  px.learners = make(map[int]*Learner)
   px.mins = make(map[int]int)
   for pxindex, _ := range px.peers {
     px.mins[pxindex] = -1
