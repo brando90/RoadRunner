@@ -5,7 +5,7 @@ import "net"
 
 type Acceptor struct{
   N_p int //highest prepare seem
-  N_a int //highest_prepare
+  N_a int
   V_a interface{} //highest_accept_seq
 }
 
