@@ -1,3 +1,15 @@
+prepare_epoch(e, seq):
+    send 1 prepare rpc to each server in the group, telling them to prepare all sequences >= seq with round number e 
+
+prepare_epoch_handler(e, seq):
+    if e > current_epoch:
+        current_epoch = e
+    for each acceptor from seq to the highest sequence number we know of:
+        process prepare with round number e
+        record response (ok/reject, n_a, v_a) in response map (mapping sequence numbers to their responses)
+    reply with response map 
+    //NB: we must take care to immediately prepare any newly initialized acceptors with seq number >= seq with round number e (saved in current_epoch)
+
 periodic_ping:
     ping all servers
     if a server has not responded to our pings for longer than twice the ping interval:
