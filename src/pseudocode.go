@@ -10,7 +10,7 @@ prepare_epoch_handler(e, seq):
     reply with response map 
     //NB: we must take care to immediately prepare any newly initialized acceptors with seq number >= seq with round number e (saved in current_epoch)
 
-periodic_ping:
+tick: // called periodically
     ping all servers
     if a server has not responded to our pings for longer than twice the ping interval:
         consider them dead
