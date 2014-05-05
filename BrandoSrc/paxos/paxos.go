@@ -35,6 +35,21 @@ import "math"
 const PROCESSED = "PROCESSED"
 const NOT_PROCSSED = "NOT_PROCSSED"
 
+type Paxos struct {
+  mu sync.Mutex
+  l net.Listener
+  dead bool
+  unreliable bool
+  rpcCount int
+  peers []string
+  me int // index into peers[]
+  Minv int
+  Maxv int
+  acceptorInst map[int]Acceptor
+  decidedValues map[int]interface{}
+  decidedInst map[int]bool
+}
+
 //
 // call() sends an RPC to the rpcname handler on server srv
 // with arguments args, waits for the reply, and leaves the
@@ -304,6 +319,9 @@ func (px *Paxos) Max() int {
   return px.Maxv
 }
 
+//
+// Min() returns the smallest (global) sequence number ever
+// called by to done by the system (of processes). 
 //
 // Min() should return one more than the minimum among z_i,
 // where z_i is the highest number ever passed
