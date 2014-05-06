@@ -168,18 +168,24 @@ func (mpx *MultiPaxos) tick() {
   //       catch_up
 }
 
+func (mpx *MultiPaxos) catchUp() {
+  //TODO: implement this
+}
+
 /*
 Called when this server starts considering itself a leader
 */
 func (mpx *MultiPaxos) actAsLeader() {
-  //TODO: implement this
+  mpx.actingAsLeader = true
+  //TODO: send prepare_epoch
 }
 
 /*
 Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
-  //TODO: implement this
+  mpx.actingAsLeader = false
+  //TODO: handle/respond to in-progress requests correctly
 }
 
 // -- Summoners (lazy instantiators) --
