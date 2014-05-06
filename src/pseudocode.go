@@ -12,6 +12,7 @@ prepare_epoch_handler(e, seq):
 
 tick: // called periodically
     ping all servers
+    keep track of highest local min we hear // highest local mins piggy-backed in ping responses
     if a server has not responded to our pings for longer than twice the ping interval:
         consider them dead
     if I have the largest id amongst servers that I consider living:
