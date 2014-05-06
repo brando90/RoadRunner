@@ -22,7 +22,7 @@ type MultiPaxos struct {
   me int
 
   localMin int
-  localMax int
+  knownMax int
 
   proposers map[int]*Proposer
   acceptors map[int]*Acceptor
@@ -37,7 +37,6 @@ type MultiPaxos struct {
 // ---
 
 // API
-
 
 /*
 Tries to send accept
@@ -61,8 +60,8 @@ func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
 //
 func (mpx *MultiPaxos) Done(seq int) {
   //TODO: locking
-  if seq > mpx.localMin {
-    mpx.localMin = seq // update local min
+  if seq >= mpx.localMin { // done up to or beyond our local min
+    mpx.localMin = seq + 1 // update local min
   }
   mpx.forgetUntil(mpx.proposers, seq)
   mpx.forgetUntil(mpx.learners, seq)
@@ -74,7 +73,7 @@ func (mpx *MultiPaxos) Done(seq int) {
 // this peer.
 //
 func (mpx *MultiPaxos) Max() int {
-  //TODO: implement this
+  return mpx.knownMax
 }
 
 //
@@ -106,16 +105,14 @@ func (mpx *MultiPaxos) Max() int {
 // instances.
 // 
 func (mpx *MultiPaxos) GlobalMin() int {
-  //TODO: locking (is using a pointer safe here? what if a min value gets updated mid-execution)
-  var globalMin *int
+  //TODO: locking
+  globalMin := mpx.localMin
   for _, min := range mpx.mins {
-    if globalMin == nil {
-      globalMin = &min
-    }else if min < *globalMin {
-      globalMin = &min
+    if min < globalMin {
+      globalMin = min
     }
   }
-  return *globalMin
+  return globalMin
 }
 
 //
@@ -156,6 +153,9 @@ func (mpx *MultiPaxos) Kill() {
 
 // Internal methods
 
+/*
+Periodic tick function
+*/
 func (mpx *MultiPaxos) tick() {
   //TODO:
   //   ping all servers
@@ -166,6 +166,20 @@ func (mpx *MultiPaxos) tick() {
   //       act as new leader (increment epoch/round number)
   //   else:
   //       catch_up
+}
+
+/*
+Called when this server starts considering itself a leader
+*/
+func (mpx *MultiPaxos) actAsLeader() {
+  //TODO: implement this
+}
+
+/*
+Called when this server no longer considers itself a leader
+*/
+func (mpx *MultiPaxos) relinquishLeadership() {
+  //TODO: implement this
 }
 
 // -- Summoners (lazy instantiators) --

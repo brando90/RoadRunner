@@ -33,7 +33,7 @@ type Acceptor struct {
 
 type Learner struct {
 	Decided bool
-	Value interface{}
+	V interface{}
 }
 
 //
