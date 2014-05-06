@@ -23,6 +23,7 @@ type MultiPaxos struct {
 
   localMin int
   knownMax int
+  maxKnownMin int
 
   proposers map[int]*Proposer
   acceptors map[int]*Acceptor
@@ -143,11 +144,42 @@ func (mpx *MultiPaxos) Kill() {
   }
 }
 
+// -----
+
+// RPC's 
+//TODO: piggy-back values in RPC's
+
+/*
+Sends prepare epoch for sequences >= seq to all acceptors
+*/
+func (mpx *MultiPaxos) prepareEpochAll(seq int) {
+  //TODO: implement this
+}
+
+/*
+Sends prepare epoch for sequence >= seq to one server
+*/
+func (mpx *MultiPaxos) sendPrepareEpoch(server ServerName, seq int) {
+  //TODO: implement this
+}
+
+/*
+Sends accept with round number = epoch to all acceptors at sequence = seq
+Returns true if a majority accepted; false otherwise
+*/
+func (mpx *MultiPaxos) acceptMajority(seq int, v interface{}) bool {
+  //TODO: implement this
+}
+
+func (mpx *MultiPaxos) sendAccept(seq int, v interface{})
+
 // ------------
 
 // RPC handlers
 
-//TODO: define rpc handlers
+func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
+  //TODO: reply with a response map (filled with prepare responses for all existing acceptors at sequence >= args seq)
+}
 
 // ----------------
 
