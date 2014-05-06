@@ -39,7 +39,7 @@ Tries to send accept
 If this server considers itself a leader, send accepts
 Otherwise, DO NOT send accepts. Relay potential leader information to client instead
 */
-func (mpx *MultiPaxos) TryAccept(seq int, v interface{}) (Err, ServerName) {
+func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
   if actingAsLeader {
     //TODO: send accept
     return nil, ""
@@ -116,7 +116,22 @@ func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
 // please do not change this function.
 //
 func (mpx *MultiPaxos) Kill() {
-  //TODO: implement this
+  mpx.dead = true
+  if mpx.l != nil {
+    mpx.l.Close()
+  }
+}
+
+func (mpx *MultiPaxos) tick() {
+  //TODO:
+  //   ping all servers
+  //   keep track of highest local min we hear // highest local mins piggy-backed in ping responses
+  //   if a server has not responded to our pings for longer than twice the ping interval:
+  //       consider them dead
+  //   if I have the largest id amongst servers that I consider living:
+  //       act as new leader (increment epoch/round number)
+  //   else:
+  //       catch_up
 }
 
 //
