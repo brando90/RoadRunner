@@ -149,6 +149,8 @@ func (mpx *MultiPaxos) Kill() {
 // RPC's 
 //TODO: piggy-back values in RPC's
 
+// -- Prepare Phase --
+
 /*
 Sends prepare epoch for sequences >= seq to all acceptors
 */
@@ -159,19 +161,33 @@ func (mpx *MultiPaxos) prepareEpochAll(seq int) {
 /*
 Sends prepare epoch for sequence >= seq to one server
 */
-func (mpx *MultiPaxos) sendPrepareEpoch(server ServerName, seq int) {
+func (mpx *MultiPaxos) sendPrepareEpoch(server ServerAddr, args, reply) {
   //TODO: implement this
 }
+
+// -- Accept Phase --
 
 /*
 Sends accept with round number = epoch to all acceptors at sequence = seq
 Returns true if a majority accepted; false otherwise
 */
 func (mpx *MultiPaxos) acceptMajority(seq int, v interface{}) bool {
-  //TODO: implement this
+  //TODO: implement this (should be similar to basic paxos)
 }
 
-func (mpx *MultiPaxos) sendAccept(seq int, v interface{})
+func (mpx *MultiPaxos) sendAccept(server ServerAddr, args, reply) bool {
+  //TODO: implement this (should be similar to basic paxos)
+}
+
+// -- Decide Phase --
+
+func (mpx *MultiPaxos) decideAll(seq int, v interface{}) {
+  //TODO: implement this (should be similar to basic paxos)
+}
+
+func (mpx *MultiPaxos) sendDecide(server ServerAddr, args, reply) {
+  //TODO: implement this (should be similar to basic paxos)
+}
 
 // ------------
 
@@ -179,6 +195,14 @@ func (mpx *MultiPaxos) sendAccept(seq int, v interface{})
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
   //TODO: reply with a response map (filled with prepare responses for all existing acceptors at sequence >= args seq)
+}
+
+func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
+  //TODO: implement this (should be similar to basic paxos)
+}
+
+func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
+  //TODO: implement this (should be similar to basic paxos)
 }
 
 // ----------------
