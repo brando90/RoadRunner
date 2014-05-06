@@ -28,11 +28,16 @@ type MultiPaxos struct {
   acceptors map[int]*Acceptor
   learners  map[int]*Learner
 
-  localMins map[int]int // for calculating GlobalMin()
+  mins map[int]int // for calculating GlobalMin()
 
   actingAsLeader bool
   epoch int
 }
+
+// ---
+
+// API
+
 
 /*
 Tries to send accept
@@ -55,7 +60,12 @@ func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
 // see the comments for Min() for more explanation.
 //
 func (mpx *MultiPaxos) Done(seq int) {
-  //TODO: implement this
+  //TODO: locking
+  if seq > mpx.localMin {
+    mpx.localMin = seq // update local min
+  }
+  mpx.forgetUntil(mpx.proposers, seq)
+  mpx.forgetUntil(mpx.learners, seq)
 }
 
 //
@@ -96,7 +106,16 @@ func (mpx *MultiPaxos) Max() int {
 // instances.
 // 
 func (mpx *MultiPaxos) GlobalMin() int {
-  //TODO: implement this
+  //TODO: locking (is using a pointer safe here? what if a min value gets updated mid-execution)
+  var globalMin *int
+  for _, min := range mpx.mins {
+    if globalMin == nil {
+      globalMin = &min
+    }else if min < *globalMin {
+      globalMin = &min
+    }
+  }
+  return *globalMin
 }
 
 //
@@ -107,7 +126,12 @@ func (mpx *MultiPaxos) GlobalMin() int {
 // it should not contact other Paxos peers.
 //
 func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
-  //TODO: implement this
+  //TODO: locking
+  if seq < mpx.GlobalMin() { //TODO: is this check necessary
+    return false, nil
+  }
+  learner := mpx.summonLearner(seq)
+  return learner.Decided, learner.Value
 }
 
 //
@@ -122,6 +146,16 @@ func (mpx *MultiPaxos) Kill() {
   }
 }
 
+// ------------
+
+// RPC handlers
+
+//TODO: define rpc handlers
+
+// ----------------
+
+// Internal methods
+
 func (mpx *MultiPaxos) tick() {
   //TODO:
   //   ping all servers
@@ -133,6 +167,56 @@ func (mpx *MultiPaxos) tick() {
   //   else:
   //       catch_up
 }
+
+// -- Summoners (lazy instantiators) --
+
+func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
+  //TODO: locking
+  proposer, exists := mpx.proposers[seq]
+  if !exists {
+    proposer = &Proposer{} //TODO: initialize properly
+    mpx.proposers[seq] = proposer
+  }
+  return proposer
+}
+
+func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
+  //TODO: locking
+  acceptor, exists := mpx.acceptors[seq]
+  if !exists {
+    acceptor = &Acceptor{}
+    //TODO: initialize properly (prepare with epoch as round number if seq > promised epoch sequence start)
+    //TODO: might need to initialize from disk
+    mpx.acceptors = acceptor
+  }
+  return acceptor
+}
+
+func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
+  //TODO: locking
+  learner, exists := mpx.learners[seq]
+  if !exists {
+    learner = &Learner{} //TODO: initialize properly
+    mpx.learners[seq] = learner
+  }
+  return learner
+}
+
+// -- Garbage collection --
+// Deletes anything within the paxos map (e.g. proposers, acceptors, learners)
+// from a sequence <= the threshold
+// No server will need this information in the future
+func (mpx *MultiPaxos) forgetUntil(pxMap map[int]interface{}, threshold int) {
+  for s, _ := range pxMap {
+    if s <= threshold {
+      delete(pxMap, s)
+    }
+  }
+}
+
+// -----------
+
+// Constructor
 
 //
 // the application wants to create a paxos peer.

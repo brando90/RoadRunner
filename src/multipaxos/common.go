@@ -1,5 +1,7 @@
 package multipaxos
 
+// Errors
+
 type Err struct {
 	Msg string
 }
@@ -8,8 +10,31 @@ const (
 	NotLeader = "ErrNotLeader"
 )
 
+// -----------------
+
+// Convenience types
+
 type ServerID int
 type ServerName string
+
+// -----
+
+// Paxos
+
+type Proposer struct {
+	//TODO: define this
+}
+
+type Acceptor struct {
+	N_p int
+	N_a int
+	V_a interface{}
+}
+
+type Learner struct {
+	Decided bool
+	Value interface{}
+}
 
 //
 // call() sends an RPC to the rpcname handler on server srv
