@@ -36,6 +36,38 @@ type Learner struct {
 	V interface{}
 }
 
+// --------
+
+// RPC args & replies
+
+type PrepareEpochArgs struct {
+  //TODO: define this
+}
+
+type PrepareEpochReply struct {
+  //TODO: define this
+}
+
+type AcceptArgs struct {
+  //TODO: define this (similar to basic paxos)
+}
+
+type AcceptReply struct {
+  //TODO: define this (similar to basic paxos)
+}
+
+type DecideArgs struct {
+  //TODO: define this (similar to basic paxos)
+}
+
+type DecideReply struct {
+  //TODO: define this (similar to basic paxos)
+}
+
+type PiggyBack struct {
+  //TODO: define this & include in relevant args/replies
+}
+
 //
 // call() sends an RPC to the rpcname handler on server srv
 // with arguments args, waits for the reply, and leaves the

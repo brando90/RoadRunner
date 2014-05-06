@@ -74,37 +74,13 @@ func (mpx *MultiPaxos) Done(seq int) {
 // this peer.
 //
 func (mpx *MultiPaxos) Max() int {
+  //TODO: update knownMax in other methods where ever relevant
   return mpx.knownMax
 }
 
-//
-// Min() should return one more than the minimum among z_i,
-// where z_i is the highest number ever passed
-// to Done() on peer i. A peers z_i is -1 if it has
-// never called Done().
-//
-// Paxos is required to have forgotten all information
-// about any instances it knows that are < Min().
-// The point is to free up memory in long-running
-// Paxos-based servers.
-//
-// Paxos peers need to exchange their highest Done()
-// arguments in order to implement Min(). These
-// exchanges can be piggybacked on ordinary Paxos
-// agreement protocol messages, so it is OK if one
-// peers Min does not reflect another Peers Done()
-// until after the next instance is agreed to.
-//
-// The fact that Min() is defined as a minimum over
-// *all* Paxos peers means that Min() cannot increase until
-// all peers have been heard from. So if a peer is dead
-// or unreachable, other peers Min()s will not increase
-// even if all reachable peers call Done. The reason for
-// this is that when the unreachable peer comes back to
-// life, it will need to catch up on instances that it
-// missed -- the other peers therefore cannot forget these
-// instances.
-// 
+/*
+Returns the lowest known min
+*/
 func (mpx *MultiPaxos) GlobalMin() int {
   //TODO: locking
   globalMin := mpx.localMin
