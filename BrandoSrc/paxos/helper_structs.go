@@ -57,18 +57,3 @@ type MinReply struct{
 	Min int
 	//OK bool
 }
-
-type Paxos struct {
-  mu sync.Mutex
-  l net.Listener
-  dead bool
-  unreliable bool
-  rpcCount int
-  peers []string
-  me int // index into peers[]
-  Minv int
-  Maxv int
-  acceptorInst map[int]Acceptor
-  decidedValues map[int]interface{}
-  decidedInst map[int]bool
-}
