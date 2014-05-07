@@ -47,6 +47,7 @@ Otherwise, DO NOT send accepts. Relay potential leader information to client ins
 func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
   if actingAsLeader {
     //TODO: send accept
+    //TODO: sending accepts should be concurrent
     return nil, ""
   }else {
     return Err{Msg: NotLeader}, //TODO: return servername of who we think is the leader
@@ -101,9 +102,11 @@ func (mpx *MultiPaxos) GlobalMin() int {
 //
 func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
   //TODO: locking
-  if seq < mpx.GlobalMin() { //TODO: is this check necessary
+  /*TODO: reevaluate this commented code. pretty sure its not needed (this case should never happen in non-byzantine settings... i think)
+  if seq < mpx.GlobalMin() {
     return false, nil
   }
+  */
   learner := mpx.summonLearner(seq)
   return learner.Decided, learner.Value
 }
@@ -153,7 +156,20 @@ Sends accept with round number = epoch to all acceptors at sequence = seq
 Returns true if a majority accepted; false otherwise
 */
 func (mpx *MultiPaxos) acceptMajority(seq int, v interface{}) bool {
-  //TODO: implement this (should be similar to basic paxos)
+  acceptOKs := 0
+  for _, peer := range mpx.peers {
+    acceptArgs := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
+    //TODO: piggy-backing
+    acceptReply := AcceptReply{}
+    replyReceived := mpx.sendAccept(peer, &acceptArgs, &acceptReply)
+    if replyReceived {
+      if acceptReply.OK {
+        acceptOKs += 1
+      }
+      //TODO: do we need to keep track of max proposal number? (as in 3a)
+    }
+  }
+  return mpx.isMajority(acceptOKs)
 }
 
 func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *AcceptReply) bool {
@@ -223,6 +239,10 @@ func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error
 // ----------------
 
 // Internal methods
+
+func (mpx *MultiPaxos) isMajority(x int) bool {
+  return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
+}
 
 /*
 Periodic tick function
