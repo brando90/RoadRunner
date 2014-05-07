@@ -122,8 +122,8 @@ func (mpx *MultiPaxos) Kill() {
 
 // -----
 
-// RPC's 
-//TODO: piggy-back values in RPC's
+// RPC's
+//TODO: piggy-back values in Paxos RPC's
 
 // -- Prepare Phase --
 
@@ -137,8 +137,13 @@ func (mpx *MultiPaxos) prepareEpochAll(seq int) {
 /*
 Sends prepare epoch for sequence >= seq to one server
 */
-func (mpx *MultiPaxos) sendPrepareEpoch(server ServerAddr, args, reply) {
-  //TODO: implement this
+func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, args *PrepareEpochArgs, reply *PrepareEpochReply) {
+  if peerID == mpx.me {
+    mpx.PrepareEpochHandler(args, reply)
+    return true
+  }else {
+    return call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
+  }
 }
 
 // -- Accept Phase --
@@ -151,18 +156,33 @@ func (mpx *MultiPaxos) acceptMajority(seq int, v interface{}) bool {
   //TODO: implement this (should be similar to basic paxos)
 }
 
-func (mpx *MultiPaxos) sendAccept(server ServerAddr, args, reply) bool {
-  //TODO: implement this (should be similar to basic paxos)
+func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *AcceptReply) bool {
+  if peerID == mpx.me {
+    mpx.AcceptHandler(args, reply)
+    return true
+  }else {
+    return call(mpx.peers[peerID], "MultiPaxos.AcceptHandler", args, reply)
+  }
 }
 
 // -- Decide Phase --
 
 func (mpx *MultiPaxos) decideAll(seq int, v interface{}) {
-  //TODO: implement this (should be similar to basic paxos)
+  for _, peer := range mpx.peers {
+    decideArgs := DecideArgs{Seq: seq, V: v}
+    //TODO: piggy-backing
+    decideReply := DecideReply{}
+    mpx.sendDecide(peer, &decideArgs, &decideReply)
+  }
 }
 
-func (mpx *MultiPaxos) sendDecide(server ServerAddr, args, reply) {
-  //TODO: implement this (should be similar to basic paxos)
+func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *DecideReply) {
+  if peerID == mpx.me {
+    mpx.DecideHandler(args, reply)
+    return true
+  }else {
+    return call(mpx.peers[peerID], "MultiPaxos.DecideHandler", args, reply)
+  }
 }
 
 // ------------
@@ -170,15 +190,34 @@ func (mpx *MultiPaxos) sendDecide(server ServerAddr, args, reply) {
 // RPC handlers
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
+  //TODO: locking
   //TODO: reply with a response map (filled with prepare responses for all existing acceptors at sequence >= args seq)
 }
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
-  //TODO: implement this (should be similar to basic paxos)
+  //TODO: locking
+  //TODO: process piggy-backed info
+  //TODO: update knownMax if necessary
+  acceptor := mpx.summonAcceptor(args.Seq)
+  if args.N >= acceptor.N_p {
+    acceptor.N_p = n
+    acceptor.N_a = n
+    acceptor.V_a = v
+    reply.OK = true
+  }else {
+    reply.OK = false
+  }
+  return nil
 }
 
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
-  //TODO: implement this (should be similar to basic paxos)
+  //TODO: locking
+  //TODO: process piggy-backed info
+  //TODO: update knownMax if necessary
+  learner := mpx.summonLearner(args.Seq)
+  learner.Decided = true
+  learner.V = args.V
+  return nil
 }
 
 // ----------------

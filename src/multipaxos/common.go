@@ -49,19 +49,26 @@ type PrepareEpochReply struct {
 }
 
 type AcceptArgs struct {
-  //TODO: define this (similar to basic paxos)
+  Seq int
+  N int
+  V interface{}
+  //TODO: include piggy-back if necessary
 }
 
 type AcceptReply struct {
-  //TODO: define this (similar to basic paxos)
+  OK bool
+  //TODO: do we need to give any information on our highest seen proposal number? (as in 3a)
+  //TODO: include piggy-back if necessary
 }
 
 type DecideArgs struct {
-  //TODO: define this (similar to basic paxos)
+  Seq int
+  V interface{}
+  //TODO: include piggy-back if necessary
 }
 
 type DecideReply struct {
-  //TODO: define this (similar to basic paxos)
+  // Empty
 }
 
 type PiggyBack struct {
