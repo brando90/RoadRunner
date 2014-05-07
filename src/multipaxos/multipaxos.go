@@ -48,6 +48,7 @@ func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
   if actingAsLeader {
     //TODO: send accept
     //TODO: sending accepts should be concurrent
+    go mpx.preparedPropose()
     return nil, ""
   }else {
     return Err{Msg: NotLeader}, //TODO: return servername of who we think is the leader
@@ -244,6 +245,10 @@ func (mpx *MultiPaxos) isMajority(x int) bool {
   return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
 }
 
+func (mpx *MultiPaxos) preparedPropose() {
+  //TODO: implement this
+}
+
 /*
 Periodic tick function
 */
@@ -256,11 +261,7 @@ func (mpx *MultiPaxos) tick() {
   //   if I have the largest id amongst servers that I consider living:
   //       act as new leader (increment epoch/round number)
   //   else:
-  //       catch_up
-}
-
-func (mpx *MultiPaxos) catchUp() {
-  //TODO: implement this
+  //       catch_up (done at the rrkv level)
 }
 
 /*
