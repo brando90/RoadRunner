@@ -29,7 +29,7 @@ type MultiPaxos struct {
   acceptors map[int]*Acceptor
   learners  map[int]*Learner
 
-  mins map[int]int // for calculating GlobalMin()
+  mins []int // for calculating GlobalMin()
 
   actingAsLeader bool
   epoch int
