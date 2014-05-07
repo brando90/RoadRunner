@@ -66,6 +66,7 @@ func (mpx *MultiPaxos) Done(seq int) {
   if seq >= mpx.localMin { // done up to or beyond our local min
     mpx.localMin = seq + 1 // update local min
   }
+  //forgets until seq (inclusive)
   mpx.forgetUntil(mpx.proposers, seq)
   mpx.forgetUntil(mpx.learners, seq)
 }
