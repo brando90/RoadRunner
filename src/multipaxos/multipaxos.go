@@ -31,6 +31,7 @@ type MultiPaxos struct {
 
   mins []int // for calculating GlobalMin()
 
+  presence []Presence
   actingAsLeader bool
   epoch int
 }
@@ -44,18 +45,18 @@ Tries to send accept
 If this server considers itself a leader, send accepts
 Otherwise, DO NOT send accepts. Relay potential leader information to client instead
 */
-func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
+func (mpx *MultiPaxos) Push(seq int, v interface{}) Err {
   if actingAsLeader {
     //TODO: send accept
     //TODO: sending accepts should be concurrent
-    go mpx.preparedPropose()
-    return nil, ""
+    go mpx.leaderPropose(seq, v)
+    return nil
   }else {
-    return Err{Msg: NotLeader}, //TODO: return servername of who we think is the leader
+    return Err{Msg: NotLeader}
   }
 }
 
-/*TODO: write a better comment 
+/*TODO: write a better comment
   The application on this machine is done with
   all instances <= seq.
   If this machine were to die, then it wouldn't need to know about operations commited at or bellow seq
@@ -125,45 +126,12 @@ func (mpx *MultiPaxos) Kill() {
   }
 }
 
-/*
-Catches up from the localMin to the highest local min known to this server.
-Remember, only local mins guarantee that a decision has been made, so to guarantee correctness,
-its better to just catch up to the maxKnownMin (largest known localMin).
-Make sure mpx.maxKnownMin  and mpx.localMin has already been updated (process PB).
-*/
-func (mpx *MultiPaxos) catchUp(){
-  seq := mpx.localMin
-  for !mpx.dead{
-    for seq <= mpx.maxKnownMin{ //while not caught up
-      //TODO: OPTIMIZATION: we could query all the learners first before doing a "normal" px prepare.
-      decided, decidedVal := mpx.Status(seq)
-      if !decided{
-        decidedVal := mpx.prepare(seq , INFINITY) //TODO: choose globally highest round-number, change name? weird that the prepare func. returns the decision. propose returns decision
-        if decidedVal == nil{
-          panic("If we are querying a value that was already decide, the val should be some OP not NIL!")
-        }
-        decideArgs := DecideArgs{Seq: seq, V: decidedVal, PB: nil}
-        mpx.sendDecide(mpx.me, decidedVal, &decideArgs, decideReply{}) //TODO: should we send to everyone?
-        acceptArgs := AcceptArgs{Seq: seq, V: decidedVal, PB: nil}
-        mpx.sendAccept(mpx.me, decidedVal, &decideArgs, decideReply{})
-        //make decision Persistent
-        mpx.makeAcceptorsPersistent() //TODO: we want new accepted value to persist.
-        mpx.makelearnersPersistent() //TODO: we want new decided value to persist.
-        seq += 1
-      }
-    }
-  }
-
-}
-
 func (mpx *MultiPaxos) makeAcceptorsPersistent(){
   //TODO
-
 }
 
 func (mpx *MultiPaxos) makeLearnersPersistent(){
   //TODO
-
 }
 
 // -----
@@ -176,8 +144,12 @@ func (mpx *MultiPaxos) makeLearnersPersistent(){
 /*
 Sends prepare epoch for sequences >= seq to all acceptors
 */
-func (mpx *MultiPaxos) prepareEpochAll(seq int) {
+func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   //TODO: implement this
+  //if we get any rejects from acceptors who have accepted for round number E > e this leader's epoch
+  // update this leader's epoch to E+1
+
+  //loop through the sequence number we got back
 }
 
 /*
@@ -198,7 +170,7 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, args *PrepareEpochArgs,
 Sends accept with round number = epoch to all acceptors at sequence = seq
 Returns true if a majority accepted; false otherwise
 */
-func (mpx *MultiPaxos) acceptMajority(seq int, v interface{}) bool {
+func (mpx *MultiPaxos) acceptPhase(seq int, v interface{}) bool {
   acceptOKs := 0
   for _, peer := range mpx.peers {
     acceptArgs := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
@@ -226,7 +198,7 @@ func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *Acce
 
 // -- Decide Phase --
 
-func (mpx *MultiPaxos) decideAll(seq int, v interface{}) {
+func (mpx *MultiPaxos) decidePhase(seq int, v interface{}) {
   for _, peer := range mpx.peers {
     decideArgs := DecideArgs{Seq: seq, V: v}
     //TODO: piggy-backing
@@ -241,6 +213,32 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
     return true
   }else {
     return call(mpx.peers[peerID], "MultiPaxos.DecideHandler", args, reply)
+  }
+}
+
+func (mpx *MultiPaxos) ping(peerID ServerID, rollcall chan int, done chan bool) {
+  if peerID != mpx.me {
+    args := PingArgs{}
+    reply := PingReply{}
+    replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
+    if replyReceived {
+      mpx.processPiggyBack(reply.PiggyBack)
+      mpx.presence[peerID] = Alive
+    }else {
+      if mpx.presence[peerID] == Alive {
+        mpx.presence[peerID] = Missing
+      }
+      if mpx.presence[peerID] == Missing {
+        mpx.presence[peerID] = Dead
+      }
+    }
+  }
+  // account for pinged server
+  count := <- rollcall
+  count += 1
+  rollcall <- count
+  if count == len(mpx.peers) { // accounted for all servers
+    done <- true
   }
 }
 
@@ -279,6 +277,12 @@ func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error
   return nil
 }
 
+func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
+  //TODO: locking
+  reply.PiggyBack = PiggyBack{Me: mpx.me, LocalMin: mpx.localMin, MaxKnownMin: mpx.maxKnownMin}
+  return nil
+}
+
 // ----------------
 
 // Internal methods
@@ -287,37 +291,64 @@ func (mpx *MultiPaxos) isMajority(x int) bool {
   return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
 }
 
-func (mpx *MultiPaxos) preparedPropose() {
-  //TODO: implement this
+func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
+  proposer := mpx.summonProposer(seq)
+  undecided:
+  for !mpx.dead {
+    //TODO: if we received any rejects from acceptors (since it has accepted an epoch number E > e, this leader's current epoch number),
+    // then this leader should prepareEpoch(e, seq) AFTER e = E+1
+  }
 }
 
 /*
 Periodic tick function
+Ping all servers
+Once we have accounted for all servers, run the leader election protocol
+If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
-  //TODO:
-  //   ping all servers
-  //   keep track of highest local min we hear // highest local mins piggy-backed in ping responses
-  //   if a server has not responded to our pings for longer than twice the ping interval:
-  //       consider them dead
-  //   if I have the largest id amongst servers that I consider living:
-  //       act as new leader (increment epoch/round number)
-  //   else:
-  //       catch_up (done at the rrkv level)
+  rollcall := make(chan int, 1)
+  rollcall <- 0
+  done := make(chan bool, 1)
+  for _, peer := range mpx.peers {
+    go ping(peer, rollcall, done)
+  }
+  <- done
+  // leader decision protocol
+  //TODO: refactor below into helper methods
+  highestID := mpx.me
+  for peerID, presence := range mpx.presence {
+    if presence == Alive || presence == Missing {
+      if peerID > highestID {
+        highestID = peerID
+      }
+    }
+  }
+  if highestID == mpx.me {
+    if !mpx.actingAsLeader {
+      mpx.actAsLeader()
+    }
+  }else {
+    if mpx.actingAsLeader {
+      mpx.relinquishLeadership()
+    }
+  }
 }
 
 /*
 Called when this server starts considering itself a leader
 */
 func (mpx *MultiPaxos) actAsLeader() {
+  //TODO: locking
   mpx.actingAsLeader = true
-  //TODO: send prepare_epoch
+  mpx.prepareEpochAll(e, mpx.localMin) //TODO: what sequence number should we prepareEpoch
 }
 
 /*
 Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
+  //TODO: locking
   mpx.actingAsLeader = false
   //TODO: handle/respond to in-progress requests correctly
 }
@@ -359,19 +390,16 @@ func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
 /*
 Processes the current state of the PB information.
 */
-func (mpx *MultiPaxos) processPB(pb PiggyBack){
+func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
   //TODO: locks
-  mpx.mins[pb.Me] = pb.LocalMin
-  min := mpx.GlobalMin()
-  if pb.MaxKnownMin > mpx.maxKnownMin{
+  if piggyBack.LocalMin > mpx.mins[piggyBack.Me] {
+    mpx.mins[piggyBack.Me] = piggyBack.LocalMin
+  }
+  if piggyBack.MaxKnownMin > mpx.maxKnownMin {
     mpx.maxKnownMin = mpx.MaxKnownMin
   }
-
-  for s, _ := range px.acceptors {
-    if s < min {
-      delete(px.acceptors, s)
-    }
-  }
+  min := mpx.GlobalMin()
+  mpx.forgetUntil(mpx.acceptors, min)
 }
 
 // -- Garbage collection --
