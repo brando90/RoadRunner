@@ -45,14 +45,14 @@ Tries to send accept
 If this server considers itself a leader, send accepts
 Otherwise, DO NOT send accepts. Relay potential leader information to client instead
 */
-func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
+func (mpx *MultiPaxos) Push(seq int, v interface{}) Err {
   if actingAsLeader {
     //TODO: send accept
     //TODO: sending accepts should be concurrent
-    go mpx.preparedPropose()
-    return nil, ""
+    go mpx.leaderPropose(seq, v)
+    return nil
   }else {
-    return Err{Msg: NotLeader}, //TODO: return servername of who we think is the leader
+    return Err{Msg: NotLeader}
   }
 }
 
@@ -144,10 +144,12 @@ func (mpx *MultiPaxos) makeLearnersPersistent(){
 /*
 Sends prepare epoch for sequences >= seq to all acceptors
 */
-func (mpx *MultiPaxos) prepareEpochAll(seq int) {
+func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   //TODO: implement this
   //if we get any rejects from acceptors who have accepted for round number E > e this leader's epoch
   // update this leader's epoch to E+1
+
+  //loop through the sequence number we got back
 }
 
 /*
