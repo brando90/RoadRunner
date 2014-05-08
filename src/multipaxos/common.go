@@ -73,6 +73,7 @@ type DecideReply struct {
 
 type PiggyBack struct {
   //TODO: define this & include in relevant args/replies
+  Me int
   MaxKnownMin int
   LocalMin int
 }
