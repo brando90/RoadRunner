@@ -10,6 +10,16 @@ const (
 	NotLeader = "ErrNotLeader"
 )
 
+// Presence
+
+type Presence string
+
+const (
+	Alive = "Alive"
+	Missing = "Missing"
+	Dead = "Dead"
+)
+
 // -----------------
 
 // Convenience types
@@ -22,15 +32,19 @@ type ServerName string
 
 type Proposer struct {
 	//TODO: define this
+	Mu sync.Mutex
+	V_prime interface{}
 }
 
 type Acceptor struct {
+	Mu sync.Mutex
 	N_p int
 	N_a int
 	V_a interface{}
 }
 
 type Learner struct {
+	Mu sync.Mutex
 	Decided bool
 	V interface{}
 }
@@ -70,10 +84,19 @@ type DecideReply struct {
   // Empty
 }
 
+type PingArgs struct {
+	// Empty
+}
+
+type PingReply struct {
+	PiggyBack PiggyBack
+}
+
 type PiggyBack struct {
   //TODO: define this & include in relevant args/replies
-  MaxKnownMin int
+	Me int
   LocalMin int
+  MaxKnownMin int
 }
 
 //

@@ -31,7 +31,7 @@ type MultiPaxos struct {
 
   mins []int // for calculating GlobalMin()
 
-  living []bool
+  presence []Presence
   actingAsLeader bool
   epoch int
 }
@@ -146,6 +146,8 @@ Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochAll(seq int) {
   //TODO: implement this
+  //if we get any rejects from acceptors who have accepted for round number E > e this leader's epoch
+  // update this leader's epoch to E+1
 }
 
 /*
@@ -212,20 +214,29 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
   }
 }
 
-func (mpx *MultiPaxos) ping(peerID ServerID) {
+func (mpx *MultiPaxos) ping(peerID ServerID, rollcall chan int, done chan bool) {
   if peerID != mpx.me {
     args := PingArgs{}
     reply := PingReply{}
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
     if replyReceived {
-      //TODO: what to do with reply?
+      mpx.processPiggyBack(reply.PiggyBack)
+      mpx.presence[peerID] = Alive
+    }else {
+      if mpx.presence[peerID] == Alive {
+        mpx.presence[peerID] = Missing
+      }
+      if mpx.presence[peerID] == Missing {
+        mpx.presence[peerID] = Dead
+      }
     }
-    count := <- rollcall
-    count += 1
-    if count == len(mpx.peers) {
-      done <- true
-    }
-    rollcall <- count
+  }
+  // account for pinged server
+  count := <- rollcall
+  count += 1
+  rollcall <- count
+  if count == len(mpx.peers) { // accounted for all servers
+    done <- true
   }
 }
 
@@ -265,7 +276,9 @@ func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error
 }
 
 func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
-  //TODO: implement this
+  //TODO: locking
+  reply.PiggyBack = PiggyBack{Me: mpx.me, LocalMin: mpx.localMin, MaxKnownMin: mpx.maxKnownMin}
+  return nil
 }
 
 // ----------------
@@ -276,22 +289,22 @@ func (mpx *MultiPaxos) isMajority(x int) bool {
   return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
 }
 
-func (mpx *MultiPaxos) preparedPropose() {
-  //TODO: implement this
+func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
+  proposer := mpx.summonProposer(seq)
+  undecided:
+  for !mpx.dead {
+    //TODO: if we received any rejects from acceptors (since it has accepted an epoch number E > e, this leader's current epoch number),
+    // then this leader should prepareEpoch(e, seq) AFTER e = E+1
+  }
 }
 
 /*
 Periodic tick function
+Ping all servers
+Once we have accounted for all servers, run the leader election protocol
+If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
-  //TODO: locking
-  //   keep track of highest local min we hear // highest local mins piggy-backed in ping responses
-  //   if a server has not responded to our pings for longer than twice the ping interval:
-  //       consider them dead
-  //   if I have the largest id amongst servers that I consider living:
-  //       act as new leader (increment epoch/round number)
-  //   else:
-  //       catch_up (done at the rrkv level)
   rollcall := make(chan int, 1)
   rollcall <- 0
   done := make(chan bool, 1)
@@ -299,7 +312,25 @@ func (mpx *MultiPaxos) tick() {
     go ping(peer, rollcall, done)
   }
   <- done
-  //TODO: check if this server has the highest id among those it considers living
+  // leader decision protocol
+  //TODO: refactor below into helper methods
+  highestID := mpx.me
+  for peerID, presence := range mpx.presence {
+    if presence == Alive || presence == Missing {
+      if peerID > highestID {
+        highestID = peerID
+      }
+    }
+  }
+  if highestID == mpx.me {
+    if !mpx.actingAsLeader {
+      mpx.actAsLeader()
+    }
+  }else {
+    if mpx.actingAsLeader {
+      mpx.relinquishLeadership()
+    }
+  }
 }
 
 /*
@@ -308,13 +339,14 @@ Called when this server starts considering itself a leader
 func (mpx *MultiPaxos) actAsLeader() {
   //TODO: locking
   mpx.actingAsLeader = true
-  mpx.prepareEpochAll(e, 0) //TODO: what sequence number should we prepareEpoch
+  mpx.prepareEpochAll(e, mpx.localMin) //TODO: what sequence number should we prepareEpoch
 }
 
 /*
 Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
+  //TODO: locking
   mpx.actingAsLeader = false
   //TODO: handle/respond to in-progress requests correctly
 }
@@ -356,12 +388,12 @@ func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
 /*
 Processes the current state of the PB information.
 */
-func (mpx *MultiPaxos) processPB(pb PiggyBack){
+func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
   //TODO: locks
-  if pb.LocalMin > mpx.mins[pb.Me] {
-    mpx.mins[pb.Me] = pb.LocalMin
+  if piggyBack.LocalMin > mpx.mins[piggyBack.Me] {
+    mpx.mins[piggyBack.Me] = piggyBack.LocalMin
   }
-  if pb.MaxKnownMin > mpx.maxKnownMin {
+  if piggyBack.MaxKnownMin > mpx.maxKnownMin {
     mpx.maxKnownMin = mpx.MaxKnownMin
   }
   min := mpx.GlobalMin()
