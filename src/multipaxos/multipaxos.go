@@ -31,6 +31,7 @@ type MultiPaxos struct {
 
   mins []int // for calculating GlobalMin()
 
+  living []bool
   actingAsLeader bool
   epoch int
 }
@@ -55,7 +56,7 @@ func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
   }
 }
 
-/*TODO: write a better comment 
+/*TODO: write a better comment
   The application on this machine is done with
   all instances <= seq.
   If this machine were to die, then it wouldn't need to know about operations commited at or bellow seq
@@ -125,45 +126,12 @@ func (mpx *MultiPaxos) Kill() {
   }
 }
 
-/*
-Catches up from the localMin to the highest local min known to this server.
-Remember, only local mins guarantee that a decision has been made, so to guarantee correctness,
-its better to just catch up to the maxKnownMin (largest known localMin).
-Make sure mpx.maxKnownMin  and mpx.localMin has already been updated (process PB).
-*/
-func (mpx *MultiPaxos) catchUp(){
-  seq := mpx.localMin
-  for !mpx.dead{
-    for seq <= mpx.maxKnownMin{ //while not caught up
-      //TODO: OPTIMIZATION: we could query all the learners first before doing a "normal" px prepare.
-      decided, decidedVal := mpx.Status(seq)
-      if !decided{
-        decidedVal := mpx.prepare(seq , INFINITY) //TODO: choose globally highest round-number, change name? weird that the prepare func. returns the decision. propose returns decision
-        if decidedVal == nil{
-          panic("If we are querying a value that was already decide, the val should be some OP not NIL!")
-        }
-        decideArgs := DecideArgs{Seq: seq, V: decidedVal, PB: nil}
-        mpx.sendDecide(mpx.me, decidedVal, &decideArgs, decideReply{}) //TODO: should we send to everyone?
-        acceptArgs := AcceptArgs{Seq: seq, V: decidedVal, PB: nil}
-        mpx.sendAccept(mpx.me, decidedVal, &decideArgs, decideReply{})
-        //make decision Persistent
-        mpx.makeAcceptorsPersistent() //TODO: we want new accepted value to persist.
-        mpx.makelearnersPersistent() //TODO: we want new decided value to persist.
-        seq += 1
-      }
-    }
-  }
-
-}
-
 func (mpx *MultiPaxos) makeAcceptorsPersistent(){
   //TODO
-
 }
 
 func (mpx *MultiPaxos) makeLearnersPersistent(){
   //TODO
-
 }
 
 // -----
@@ -198,7 +166,7 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, args *PrepareEpochArgs,
 Sends accept with round number = epoch to all acceptors at sequence = seq
 Returns true if a majority accepted; false otherwise
 */
-func (mpx *MultiPaxos) acceptMajority(seq int, v interface{}) bool {
+func (mpx *MultiPaxos) acceptPhase(seq int, v interface{}) bool {
   acceptOKs := 0
   for _, peer := range mpx.peers {
     acceptArgs := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
@@ -226,7 +194,7 @@ func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *Acce
 
 // -- Decide Phase --
 
-func (mpx *MultiPaxos) decideAll(seq int, v interface{}) {
+func (mpx *MultiPaxos) decidePhase(seq int, v interface{}) {
   for _, peer := range mpx.peers {
     decideArgs := DecideArgs{Seq: seq, V: v}
     //TODO: piggy-backing
@@ -241,6 +209,23 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
     return true
   }else {
     return call(mpx.peers[peerID], "MultiPaxos.DecideHandler", args, reply)
+  }
+}
+
+func (mpx *MultiPaxos) ping(peerID ServerID) {
+  if peerID != mpx.me {
+    args := PingArgs{}
+    reply := PingReply{}
+    replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
+    if replyReceived {
+      //TODO: what to do with reply?
+    }
+    count := <- rollcall
+    count += 1
+    if count == len(mpx.peers) {
+      done <- true
+    }
+    rollcall <- count
   }
 }
 
@@ -279,6 +264,10 @@ func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error
   return nil
 }
 
+func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
+  //TODO: implement this
+}
+
 // ----------------
 
 // Internal methods
@@ -295,8 +284,7 @@ func (mpx *MultiPaxos) preparedPropose() {
 Periodic tick function
 */
 func (mpx *MultiPaxos) tick() {
-  //TODO:
-  //   ping all servers
+  //TODO: locking
   //   keep track of highest local min we hear // highest local mins piggy-backed in ping responses
   //   if a server has not responded to our pings for longer than twice the ping interval:
   //       consider them dead
@@ -304,14 +292,23 @@ func (mpx *MultiPaxos) tick() {
   //       act as new leader (increment epoch/round number)
   //   else:
   //       catch_up (done at the rrkv level)
+  rollcall := make(chan int, 1)
+  rollcall <- 0
+  done := make(chan bool, 1)
+  for _, peer := range mpx.peers {
+    go ping(peer, rollcall, done)
+  }
+  <- done
+  //TODO: check if this server has the highest id among those it considers living
 }
 
 /*
 Called when this server starts considering itself a leader
 */
 func (mpx *MultiPaxos) actAsLeader() {
+  //TODO: locking
   mpx.actingAsLeader = true
-  //TODO: send prepare_epoch
+  mpx.prepareEpochAll(e, 0) //TODO: what sequence number should we prepareEpoch
 }
 
 /*
@@ -361,17 +358,14 @@ Processes the current state of the PB information.
 */
 func (mpx *MultiPaxos) processPB(pb PiggyBack){
   //TODO: locks
-  mpx.mins[pb.Me] = pb.LocalMin
-  min := mpx.GlobalMin()
-  if pb.MaxKnownMin > mpx.maxKnownMin{
+  if pb.LocalMin > mpx.mins[pb.Me] {
+    mpx.mins[pb.Me] = pb.LocalMin
+  }
+  if pb.MaxKnownMin > mpx.maxKnownMin {
     mpx.maxKnownMin = mpx.MaxKnownMin
   }
-
-  for s, _ := range px.acceptors {
-    if s < min {
-      delete(px.acceptors, s)
-    }
-  }
+  min := mpx.GlobalMin()
+  mpx.forgetUntil(mpx.acceptors, min)
 }
 
 // -- Garbage collection --
