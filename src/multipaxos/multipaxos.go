@@ -21,9 +21,9 @@ type MultiPaxos struct {
   peers []string
   me int
 
-  localMin int
-  knownMax int
-  maxKnownMin int
+  localMin int //one more than the lowest sequence number that we have called Done() on
+  knownMax int //TODO: what is this for?
+  maxKnownMin int //needed to to know up to watch seq to process in the log.
 
   proposers map[int]*Proposer
   acceptors map[int]*Acceptor
@@ -55,12 +55,12 @@ func (mpx *MultiPaxos) Push(seq int, v interface{}) (Err, ServerName) {
   }
 }
 
-//
-// the application on this machine is done with
-// all instances <= seq.
-//
-// see the comments for Min() for more explanation.
-//
+/*TODO: write a better comment 
+  The application on this machine is done with
+  all instances <= seq.
+  If this machine were to die, then it wouldn't need to know about operations commited at or bellow seq
+  (since it has already applied all the Ops to its state for <=seq).
+*/
 func (mpx *MultiPaxos) Done(seq int) {
   //TODO: locking
   if seq >= mpx.localMin { // done up to or beyond our local min
@@ -82,7 +82,7 @@ func (mpx *MultiPaxos) Max() int {
 }
 
 /*
-Returns the lowest known min
+Returns the lowest known min.
 */
 func (mpx *MultiPaxos) GlobalMin() int {
   //TODO: locking
@@ -123,6 +123,47 @@ func (mpx *MultiPaxos) Kill() {
   if mpx.l != nil {
     mpx.l.Close()
   }
+}
+
+/*
+Catches up from the localMin to the highest local min known to this server.
+Remember, only local mins guarantee that a decision has been made, so to guarantee correctness,
+its better to just catch up to the maxKnownMin (largest known localMin).
+Make sure mpx.maxKnownMin  and mpx.localMin has already been updated (process PB).
+*/
+func (mpx *MultiPaxos) catchUp(){
+  seq := mpx.localMin
+  for !mpx.dead{
+    for seq <= mpx.maxKnownMin{ //while not caught up
+      //TODO: OPTIMIZATION: we could query all the learners first before doing a "normal" px prepare.
+      decided, decidedVal := mpx.Status(seq)
+      if !decided{
+        decidedVal := mpx.prepare(seq , INFINITY) //TODO: choose globally highest round-number, change name? weird that the prepare func. returns the decision. propose returns decision
+        if decidedVal == nil{
+          panic("If we are querying a value that was already decide, the val should be some OP not NIL!")
+        }
+        decideArgs := DecideArgs{Seq: seq, V: decidedVal, PB: nil}
+        mpx.sendDecide(mpx.me, decidedVal, &decideArgs, decideReply{}) //TODO: should we send to everyone?
+        acceptArgs := AcceptArgs{Seq: seq, V: decidedVal, PB: nil}
+        mpx.sendAccept(mpx.me, decidedVal, &decideArgs, decideReply{})
+        //make decision Persistent
+        mpx.makeAcceptorsPersistent() //TODO: we want new accepted value to persist.
+        mpx.makelearnersPersistent() //TODO: we want new decided value to persist.
+        seq += 1
+      }
+    }
+  }
+
+}
+
+func (mpx *MultiPaxos) makeAcceptorsPersistent(){
+  //TODO
+
+}
+
+func (mpx *MultiPaxos) makeLearnersPersistent(){
+  //TODO
+
 }
 
 // -----
@@ -313,6 +354,24 @@ func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
     mpx.learners[seq] = learner
   }
   return learner
+}
+
+/*
+Processes the current state of the PB information.
+*/
+func (mpx *MultiPaxos) processPB(pb PiggyBack){
+  //TODO: locks
+  mpx.mins[pb.Me] = pb.LocalMin
+  min := mpx.GlobalMin()
+  if pb.MaxKnownMin > mpx.maxKnownMin{
+    mpx.maxKnownMin = mpx.MaxKnownMin
+  }
+
+  for s, _ := range px.acceptors {
+    if s < min {
+      delete(px.acceptors, s)
+    }
+  }
 }
 
 // -- Garbage collection --

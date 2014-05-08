@@ -284,7 +284,7 @@ func (px *Paxos) Done(seq int) {
   px.mu.Lock()
   for i := 0; i < len(px.decidedInst); i++{
     if i <= px.Minv {
-      delete(px.acceptorInst, i)
+      delete(px.acceptorInst, i) //TODO fix. Done should not get rid of acceptors. It should be deleted at Min() i.e. at Globalmin, when we know when no-one needs any of our acceptors.
       delete(px.decidedValues, i)
       delete(px.decidedInst, i)
     }
@@ -321,7 +321,7 @@ func (px *Paxos) Max() int {
 
 //
 // Min() returns the smallest (global) sequence number ever
-// called by to done by the system (of processes). 
+// called by done by the system (of processes). 
 //
 // Min() should return one more than the minimum among z_i,
 // where z_i is the highest number ever passed
