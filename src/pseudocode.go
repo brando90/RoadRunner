@@ -1,5 +1,16 @@
-prepare_epoch(e, seq):
-    send 1 prepare rpc to each server in the group, telling them to prepare all sequences >= seq with round number e 
+leader_propose(seq, v):
+    send accepts to all acceptors with round number e. 
+    if we receive any rejects with epoch E;
+        then e=E+1, prepare_phase(seq)
+    else if we didnt receive any rejects but didnt form a majority;
+        then try leader_propose again.
+    else; //we got a majority
+        move to the decide phase //send decides to all learners.
+
+prepare_epoch_phase(seq):
+    send prepare rpc to each server until at least a majority is formed on each sequence >= seq.
+    if we received a reject for e cuz E > e, then change epoch to e = E+1;
+        then try prepare_epoch_phase again
 
 prepare_epoch_handler(e, seq):
     if e > current_epoch:
