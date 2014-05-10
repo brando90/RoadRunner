@@ -26,35 +26,59 @@ const (
 
 type ServerName string
 
-type SharedMap struct {
-	Map map[interface{}]interface{}
-	Mu sync.Mutex
-}
-
 // -- Shared Map : built-in concurrency support --
 
 func MakeSharedMap() *SharedMap {
-	return &SharedMap{Map: make(map[interface{}]interface)}
+	return &SharedMap{_map: make(map[interface{}]interface)}
+}
+
+type SharedMap struct {
+	_map map[interface{}]interface{}
+	_mu sync.Mutex
 }
 
 func (m *SharedMap) Get(key interface{}) (interface, bool) {
-	m.Mu.Lock()
-	value, exists := m.Map[key]
-	m.Mu.Unlock()
+	m._mu.Lock()
+	value, exists := m._map[key]
+	m._mu.Unlock()
 	return value, exists
 }
 
 func (m *SharedMap) Put(key interface{}, value interface{}) {
-	m.Mu.Lock()
-	m.Map[key] = value
-	m.Mu.Unlock()
+	m._mu.Lock()
+	m._map[key] = value
+	m._mu.Unlock()
 }
 
 func (m *SharedMap) Len() int {
-	m.Mu.Lock()
-	length := len(m.Map)
-	m.Mu.Unlock()
+	m._mu.Lock()
+	length := len(m._map)
+	m._mu.Unlock()
 	return length
+}
+
+// -- Shared Counter : built-in concurrency support --
+
+func MakeSharedCounter() *SharedCounter {
+	return &SharedCounter{_n: 0}
+}
+
+type SharedCounter struct {
+	_n int
+	_mu int
+}
+
+func (c *SharedCounter) count() int {
+	c._mu.Lock()
+	count := c._n
+	c._mu.Unlock()
+	return count
+}
+
+func (c *SharedCounter) incr() {
+	c._mu.Lock()
+	c._n += 1
+	c._mu.Unlock()
 }
 
 // -----

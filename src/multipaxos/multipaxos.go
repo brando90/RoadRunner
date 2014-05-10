@@ -149,20 +149,23 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   for _, peer := range mpx.peers {
     //TODO: args & reply
     responses := MakeSharedMap()
+    rollcall := MakeSharedCounter()
     done := make(chan bool)
-    go sendPrepareEpoch(peerID ServerID, args, reply, responses, done)
+    go sendPrepareEpoch(peerID ServerID, args, reply, responses, rollcall, done)
   }
   <- done
   //loop through the sequence number we got back
+  //TODO: process responses
 }
 
 /*
 Sends prepare epoch for sequence >= seq to one server
 */
-func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, responses *SharedMap, done chan bool)
+func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, responses *SharedMap, rollcall *SharedCounter, done chan bool)
   //TODO: args & reply
   if peerID == mpx.me {
     mpx.PrepareEpochHandler(args, reply)
+    // TODO: process reply
     return true
   }else {
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
@@ -177,8 +180,10 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, responses *SharedMap, d
       //TODO: account for unreachable server
     }
   }
-  
-  //TODO: determine if we are done; if so, signal done channel
+  rollcall.incr()
+  if rollcall.count() == len(mpx.peers) {
+    done <- true
+  }
 }
 
 // -- Accept Phase --
