@@ -1,5 +1,4 @@
 package paxos
-//TODO: PANIC! when updating epoch number, take care to choose a UNIQUE epoch/round number
 
 //
 // Paxos library, to be included in an application.

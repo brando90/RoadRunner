@@ -104,8 +104,8 @@ func (c *SharedCounter) SafeIncr() {
 // Paxos
 
 type Proposer struct {
-	//TODO: define this
 	Mu sync.Mutex
+	N_prime int
 	V_prime interface{}
 }
 
@@ -127,14 +127,14 @@ type Learner struct {
 // RPC args & replies
 
 type PrepareEpochArgs struct {
-	//TODO: include piggy-back if necessary
 	Epoch int
 	Seq int
+	PiggyBack PiggyBack
 }
 
 type PrepareEpochReply struct {
-  //TODO: include piggy-back if necessary
 	EpochReplies map[int]PrepareReply
+	PiggyBack PiggyBack
 }
 
 type PrepareReply struct {
@@ -142,34 +142,36 @@ type PrepareReply struct {
 	V_a interface{}
 	OK bool
 	N_p int // the round number that may have caused a reject
-	//TODO: include piggy-back if necessary
+	PiggyBack PiggyBack
 }
 
 type AcceptArgs struct {
   Seq int
   N int
   V interface{}
-  //TODO: include piggy-back if necessary
+	PiggyBack PiggyBack
 }
 
 type AcceptReply struct {
   OK bool
   //TODO: do we need to give any information on our highest seen proposal number? (as in 3a)
-  //TODO: include piggy-back if necessary
+	PiggyBack PiggyBack
 }
 
 type DecideArgs struct {
   Seq int
   V interface{}
-  //TODO: include piggy-back if necessary
+	PiggyBack PiggyBack
 }
 
 type DecideReply struct {
   // Empty
+	PiggyBack PiggyBack
 }
 
 type PingArgs struct {
 	// Empty
+	PiggyBack PiggyBack
 }
 
 type PingReply struct {
@@ -177,7 +179,6 @@ type PingReply struct {
 }
 
 type PiggyBack struct {
-  //TODO: define this & include in relevant args/replies
   Me int
   LocalMin int
   MaxKnownMin int

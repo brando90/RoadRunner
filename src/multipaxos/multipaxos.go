@@ -1,5 +1,5 @@
 package multipaxos
-
+//TODO: PANIC! when updating epoch number, take care to choose a UNIQUE epoch/round number
 import (
   "net"
   "net/rpc"
@@ -13,7 +13,7 @@ import (
 )
 
 type MultiPaxos struct {
-  //TODO: mutexes
+  mu sync.Mutex
   l net.Listener
   dead bool
   unreliable bool
@@ -23,8 +23,7 @@ type MultiPaxos struct {
 
   localMin int // one more than the lowest sequence number that we have called Done() on
   localMax int // highest sequence number this server knows of //TODO: update this where ever necessary
-  maxKnownEpoch int // for generating a higher, unique epoch number
-  maxKnownMin int // needed to to know up to watch seq to process in the log.
+  //TODO: OPTIMIZATION :: maxKnownMin int // needed to to know up to watch seq to process in the log.
 
   proposers map[int]*Proposer
   acceptors map[int]*Acceptor
@@ -34,7 +33,9 @@ type MultiPaxos struct {
 
   presence []Presence
   actingAsLeader bool
+
   epoch int
+  maxKnownEpoch int // for generating a higher, unique epoch number
 }
 
 // ---
@@ -62,10 +63,11 @@ func (mpx *MultiPaxos) Push(seq int, v interface{}) Err {
   (since it has already applied all the Ops to its state for <=seq).
 */
 func (mpx *MultiPaxos) Done(seq int) {
-  //TODO: locking
+  mpx.mu.Lock()
   if seq >= mpx.localMin { // done up to or beyond our local min
     mpx.localMin = seq + 1 // update local min
   }
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for localMin
   //forgets until seq (inclusive)
   mpx.forgetUntil(mpx.proposers, seq)
   mpx.forgetUntil(mpx.learners, seq)
@@ -85,7 +87,8 @@ func (mpx *MultiPaxos) Max() int {
 Returns the lowest known min.
 */
 func (mpx *MultiPaxos) GlobalMin() int {
-  //TODO: locking
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: array lock for mins
   globalMin := mpx.localMin
   for _, min := range mpx.mins {
     if min < globalMin {
@@ -103,13 +106,14 @@ func (mpx *MultiPaxos) GlobalMin() int {
 // it should not contact other Paxos peers.
 //
 func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
-  //TODO: locking
   /*TODO: reevaluate this commented code. pretty sure its not needed (this case should never happen in non-byzantine settings... i think)
   if seq < mpx.GlobalMin() {
     return false, nil
   }
   */
   learner := mpx.summonLearner(seq)
+  learner.Mu.Lock()
+  defer learner.Mu.Unlock()
   return learner.Decided, learner.Value
 }
 
@@ -128,7 +132,6 @@ func (mpx *MultiPaxos) Kill() {
 // -----
 
 // RPC's
-//TODO: piggy-back values in Paxos RPC's
 
 // -- Prepare Phase --
 
@@ -145,6 +148,7 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
     }
     <- done
     // Process aggregated replies
+    //TODO: refactor below into helper methods
     witnessedReject := false
     witnessedMajority := false
     responses.Mu.Lock()
@@ -152,15 +156,14 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
       sn := k.(int)
       prepareReplies := v.([]PrepareReply) // accumulated replies for sequence number = s
       proposer := summonProposer(sn)
+      proposer.Mu.Lock()
       prepareOKs := 0
-      n_a := 0
-      var v_a interface{}
       for _, prepareReply := range prepareReplies {
         if prepareReply.OK {
           prepareOKs += 1
-          if prepareReply.N_a > n_a && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
-            n_a = prepareReply.N_a
-            v_a = prepareReply.V_a
+          if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
+            proposer.N_prime = prepareReply.N_a
+            proposer.V_prime = prepareReply.V_a
           }
         }else {
           witnessedReject = true
@@ -170,6 +173,7 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
       if mpx.isMajority(prepareOKs) {
         witnessedMajority = true
       }
+      proposer.Mu.Unlock()
     }
     responses.Mu.Unlock()
     if witnessedReject {
@@ -188,11 +192,13 @@ Sends prepare epoch for sequence >= seq to one server, processes reply, and incr
 */
 func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedMap, rollcall *SharedCounter, done chan bool) {
   args := PrepareEpochArgs{Epoch: mpx.epoch, Seq: seq}
+  args.PiggyBack = PiggyBack{Me: mpx.me, LocalMin: mpx.localMin, MaxKnownMin: mpx.maxKnownMin}
   reply := PrepareEpochReply{}
-  replyReceived := sendPrepareEpoch(peerID, args, reply)
+  replyReceived := sendPrepareEpoch(peerID, &args, &reply)
   if replyReceived {
     responses.aggregate(reply.EpochReplies)
   }
+  //TODO: process responses into proposers (write to V_prime field if necessary)
   rollcall.SafeIncr()
   if rollcall.SafeCount() == len(mpx.peers) {
     done <- true
@@ -201,10 +207,10 @@ func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedM
 
 func (mpx *MultiPaxos) sendPrepareEpoch(peerID serverID, args *PrepareEpochArgs, reply *PrepareEpochArgs) bool {
   if peerID == mpx.me {
-    mpx.PrepareEpochHandler(&args, &reply)
+    mpx.PrepareEpochHandler(args, reply)
     return true
   }else {
-    return call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", &args, &reply)
+    return call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
   }
 }
 
@@ -214,21 +220,24 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID serverID, args *PrepareEpochArgs,
 Sends accept with round number = epoch to all acceptors at sequence = seq
 Returns true if a majority accepted; false otherwise
 */
-func (mpx *MultiPaxos) acceptPhase(seq int, v interface{}) bool {
+func (mpx *MultiPaxos) acceptPhase(seq int, v interface{}) (bool, bool) {
   acceptOKs := 0
+  witnessedReject = false
   for _, peer := range mpx.peers {
-    acceptArgs := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
-    //TODO: piggy-backing
-    acceptReply := AcceptReply{}
-    replyReceived := mpx.sendAccept(peer, &acceptArgs, &acceptReply)
+    args := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
+    args.PiggyBack = PiggyBack{Me: mpx.me, LocalMin: mpx.localMin, MaxKnownMin: mpx.maxKnownMin}
+    reply := AcceptReply{}
+    replyReceived := mpx.sendAccept(peer, &args, &reply)
     if replyReceived {
-      if acceptReply.OK {
+      if reply.OK {
         acceptOKs += 1
+      }else {
+        witnessedReject  = true
       }
       mpx.considerEpoch(reply.N_p) // keeping track of knownMaxEpoch
     }
   }
-  return mpx.isMajority(acceptOKs)
+  return witnessedReject, mpx.isMajority(acceptOKs)
 }
 
 func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *AcceptReply) bool {
@@ -244,10 +253,10 @@ func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *Acce
 
 func (mpx *MultiPaxos) decidePhase(seq int, v interface{}) {
   for _, peer := range mpx.peers {
-    decideArgs := DecideArgs{Seq: seq, V: v}
-    //TODO: piggy-backing
-    decideReply := DecideReply{}
-    mpx.sendDecide(peer, &decideArgs, &decideReply)
+    args := DecideArgs{Seq: seq, V: v}
+    args.PiggyBack = PiggyBack{Me: mpx.me, LocalMin: mpx.localMin, MaxKnownMin: mpx.maxKnownMin}
+    reply := DecideReply{}
+    mpx.sendDecide(peer, &args, &reply)
   }
 }
 
@@ -267,14 +276,17 @@ func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan 
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
     if replyReceived {
       mpx.processPiggyBack(reply.PiggyBack)
+      mpx.mu.Lock()
       mpx.presence[peerID] = Alive
+      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
     }else {
+      mpx.mu.Lock()
       if mpx.presence[peerID] == Alive {
         mpx.presence[peerID] = Missing
-      }
-      if mpx.presence[peerID] == Missing {
+      }else if mpx.presence[peerID] == Missing {
         mpx.presence[peerID] = Dead
       }
+      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
     }
   }
   // account for pinged server
@@ -289,7 +301,7 @@ func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan 
 // RPC handlers
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
-  //TODO: locking
+  mpx.processPiggyBack(args.PiggyBack)
   epochReplies := make(map[int]PrepareReply)
   /*TODO: do this here? or abstract to helper method??
   if args.Epoch > mpx.maxKnownEpoch {
@@ -299,6 +311,8 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   */
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
     acceptor := mpx.summonAcceptor(seq)
+    acceptor.Mu.Lock()
+    //TODO: abstract below to helper method (prepareHandler)
     prepareReply := PrepareReply{}
     if args.Epoch > acceptor.N_p {
       acceptor.N_p = args.Epoch
@@ -308,6 +322,7 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
     }else {
       prepareReply.OK = false
     }
+    acceptor.Mu.Unlock()
     prepareReply.N_p = acceptor.N_p
     epochReplies[seq] = prepareReply
   }
@@ -316,9 +331,9 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 }
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
-  //TODO: locking
-  //TODO: process piggy-backed info
+  mpx.processPiggyBack(args.PiggyBack)
   acceptor := mpx.summonAcceptor(args.Seq)
+  acceptor.Lock()
   if args.N >= acceptor.N_p {
     acceptor.N_p = n
     acceptor.N_a = n
@@ -327,21 +342,24 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   }else {
     reply.OK = false
   }
+  acceptor.Unlock()
   return nil
 }
 
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
-  //TODO: locking
-  //TODO: process piggy-backed info
-  //TODO: update knownMax if necessary
+  mpx.processPiggyBack(args.PiggyBack)
   learner := mpx.summonLearner(args.Seq)
+  learner.Mu.Lock()
   learner.Decided = true
   learner.V = args.V
+  learner.Mu.Unlock()
   return nil
 }
 
 func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
-  //TODO: locking
+  mpx.processPiggyBack(args.PiggyBack)
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for localMin, maxKnownMin
   reply.PiggyBack = PiggyBack{Me: mpx.me, LocalMin: mpx.localMin, MaxKnownMin: mpx.maxKnownMin}
   return nil
 }
@@ -355,26 +373,41 @@ func (mpx *MultiPaxos) isMajority(x int) bool {
 }
 
 func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
-  proposer := mpx.summonProposer(seq)
   undecided:
   for !mpx.dead {
-    //TODO: if we received any rejects from acceptors (since it has accepted an epoch number E > e, this leader's current epoch number),
-    // then this leader should prepareEpoch(e, seq) AFTER e = E+1
+    proposer := mpx.summonProposer(seq)
+    proposer.Lock()
+    v_prime := proposer.V_prime
+    proposer.Unlock()
+    witnessedReject, acceptMajority := mpx.acceptPhase(seq, v_prime)
+    if witnessedReject {
+      mpx.refreshEpoch()
+      mpx.prepareEpochPhase(seq)
+      continue
+    }else if acceptMajority {
+      mpx.decidePhase(seq, v_prime)
+      break undecided
+    }else {
+      continue
+    }
   }
 }
 
 func (mpx *MultiPaxos) considerEpoch(epoch int) {
-  if epoch > mpx.knownMaxEpoch {
-    mpx.knownMaxEpoch = epoch
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownEpoch and maxKnownEpoch
+  if epoch > mpx.maxKnownEpoch {
+    mpx.maxKnownEpoch = epoch
   }
 }
 
 func (mpx *MultiPaxos) refreshEpoch() {
-  //TODO: locking
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
   l := len(mpx.peers)
   // generate unique epoch higher than any epoch we have seen so far
   mpx.epoch := ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
-  //TODO: do we update maxKnownEpoch to be the newly generated, highest epoch?
+  mpx.maxKnownEpoch = mpx.epoch // not strictly necessary, but maintains the implied invariant of maxKnownEpoch
 }
 
 /*
@@ -385,7 +418,7 @@ If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
   rollcall := MakeSharedCounter()
-  done := make(chan bool, 1)
+  done := make(chan bool)
   for _, peer := range mpx.peers {
     go ping(peer, rollcall, done)
   }
@@ -410,6 +443,8 @@ Consider server dead if it has not responded in 2*ping_interval
 Pick highest ID of servers considered living to be the leader
 */
 func (mpx *MultiPaxos) leaderElection() int {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: lock for presence array instead of global lock
   highestLivingID := mpx.me
   for peerID, presence := range mpx.presence {
     if presence == Alive || presence == Missing {
@@ -425,16 +460,21 @@ func (mpx *MultiPaxos) leaderElection() int {
 Called when this server starts considering itself a leader
 */
 func (mpx *MultiPaxos) actAsLeader() {
-  //TODO: locking
+  mpx.mu.Lock()
   mpx.actingAsLeader = true
-  mpx.prepareEpochPhase(mpx.localMin) //TODO: what sequence number should we prepareEpoch? localMin? localMax?
+  seq := mpx.localMin //TODO: what sequence number should we prepareEpoch? localMin? localMax?
+  mpx.mu.Unlock()
+  //OPTIMIZATION: fine-grain locking for actingAsLeader and localMin...?
+  mpx.prepareEpochPhase(seq)
 }
 
 /*
 Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
-  //TODO: locking
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
+  //OPTIMIZATION: fine-grain lock for actingAsLeader...?
   mpx.actingAsLeader = false
   //TODO: handle/respond to in-progress requests correctly
 }
@@ -442,15 +482,21 @@ func (mpx *MultiPaxos) relinquishLeadership() {
 // -- Summoners (lazy instantiators) --
 
 func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
+  //OPTIMIZATION: lock for proposers map instead of global lock
   proposer, exists := mpx.proposers[seq]
   if !exists {
-    proposer = &Proposer{} //TODO: initialize properly
+    proposer = &Proposer{}
     mpx.proposers[seq] = proposer
   }
-  return proposer
+  return proposer.(*Proposer)
 }
 
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
+  //OPTIMIZATION: lock for acceptors map instead of global lock
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
@@ -458,23 +504,27 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
     //TODO: might need to initialize from disk
     mpx.acceptors = acceptor
   }
-  return acceptor
+  return acceptor.(*Acceptor)
 }
 
 func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
+  //OPTIMIZATION: lock for learners map instead of global lock
   learner, exists := mpx.learners[seq]
   if !exists {
-    learner = &Learner{} //TODO: initialize properly
+    learner = &Learner{Decided: false}
     mpx.learners[seq] = learner
   }
-  return learner
+  return learner.(*Learner)
 }
 
 /*
 Processes the current state of the PB information.
 */
 func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
-  //TODO: locks
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownMins and map lock for mins
   if piggyBack.LocalMin > mpx.mins[piggyBack.Me] {
     mpx.mins[piggyBack.Me] = piggyBack.LocalMin
   }
@@ -490,6 +540,8 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
 // from a sequence <= the threshold
 // No server will need this information in the future
 func (mpx *MultiPaxos) forgetUntil(pxMap map[int]interface{}, threshold int) {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //OPTIMIZATION: map lock for pxMap
   for s, _ := range pxMap {
     if s <= threshold {
       delete(pxMap, s)
