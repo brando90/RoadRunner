@@ -59,8 +59,20 @@ func (m *SharedMap) Len() int {
 }
 */
 
+/*
 func MakeSharedResponses() *SharedMap {
 	return &SharedMap(_map: make(map[int]PrepareReply))
+}
+*/
+
+func (m *SharedMap) aggregate(epochReplies map[int]PrepareReply) {
+	m.Mu.Lock()
+	for seq, prepareReply := range epochReplies {
+		prepareReplies := m.Map[seq].([]PrepareReply)
+		prepareReplies = append(prepareReplies, prepareReply)
+		m.Map[seq] = prepareReplies
+	}
+	m.Mu.Unlock()
 }
 
 // -- Shared Counter : built-in concurrency support --
@@ -74,14 +86,14 @@ type SharedCounter struct {
 	_mu int
 }
 
-func (c *SharedCounter) count() int {
+func (c *SharedCounter) SafeCount() int {
 	c._mu.Lock()
 	count := c._n
 	c._mu.Unlock()
 	return count
 }
 
-func (c *SharedCounter) incr() {
+func (c *SharedCounter) SafeIncr() {
 	c._mu.Lock()
 	c._n += 1
 	c._mu.Unlock()
@@ -115,12 +127,14 @@ type Learner struct {
 // RPC args & replies
 
 type PrepareEpochArgs struct {
-  //TODO: define this
+	//TODO: include piggy-back if necessary
+	Epoch int
+	Seq int
 }
 
 type PrepareEpochReply struct {
   //TODO: include piggy-back if necessary
-	map[int]PrepareReply
+	EpochReplies map[int]PrepareReply
 }
 
 type PrepareReply struct {

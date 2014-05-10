@@ -183,26 +183,27 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
 }
 
 /*
-Sends prepare epoch for sequence >= seq to one server
+Sends prepare epoch for sequence >= seq to one server, processes reply, and increments rollcall
 */
-func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, seq int, responses *SharedMap, rollcall *SharedCounter, done chan bool)
-  //TODO: locking
-  //TODO: args & reply
+func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedMap, rollcall *SharedCounter, done chan bool) {
+  args := PrepareEpochArgs{Epoch: mpx.epoch, Seq: seq}
+  reply := PrepareEpochReply{}
+  replyReceived := sendPrepareEpoch(peerID, args, reply)
+  if replyReceived {
+    responses.aggregate(reply.EpochReplies)
+  }
+  rollcall.SafeIncr()
+  if rollcall.SafeCount() == len(mpx.peers) {
+    done <- true
+  }
+}
+
+func (mpx *MultiPaxos) sendPrepareEpoch(peerID serverID, args *PrepareEpochArgs, reply *PrepareEpochArgs) bool {
   if peerID == mpx.me {
-    mpx.PrepareEpochHandler(args, reply)
-    // TODO: process reply
+    mpx.PrepareEpochHandler(&args, &reply)
     return true
   }else {
-    replyReceived := call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
-    if replyReceived {
-      //TODO
-    }else {
-      //TODO: account for unreachable server
-    }
-  }
-  rollcall.incr()
-  if rollcall.count() == len(mpx.peers) {
-    done <- true
+    return call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", &args, &reply)
   }
 }
 
@@ -276,8 +277,8 @@ func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan 
     }
   }
   // account for pinged server
-  rollcall.incr()
-  if rollcall.count() == len(mpx.peers) { // accounted for all servers
+  rollcall.SafeIncr()
+  if rollcall.SafeCount() == len(mpx.peers) { // accounted for all servers
     done <- true
   }
 }
@@ -289,6 +290,7 @@ func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
   //TODO: locking
   //TODO: reply with a response map (filled with prepare responses for all existing acceptors at sequence >= args seq)
+  epochReplies := make(map[int]PrepareReply)
 }
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
