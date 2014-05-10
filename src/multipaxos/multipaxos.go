@@ -146,22 +146,29 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   //TODO: keep trying upon failure
   //if we get any rejects from acceptors who have accepted for round number E > e this leader's epoch
   // update this leader's epoch to E+1
+  responses := MakeSharedMap()
+  rollcall := MakeSharedCounter()
+  done := make(chan bool)
   for _, peer := range mpx.peers {
     //TODO: args & reply
-    responses := MakeSharedMap()
-    rollcall := MakeSharedCounter()
-    done := make(chan bool)
-    go sendPrepareEpoch(peerID ServerID, args, reply, responses, rollcall, done)
+    go sendPrepareEpoch(peerID, args, reply, responses, rollcall, done)
   }
   <- done
-  //loop through the sequence number we got back
-  //TODO: process responses
+  // Process aggregated replies
+  responses.Mu.Lock()
+  for seq, prepareReplies := range responses.Map {
+    for _, prepareReply := range prepareReplies {
+      //TODO: process replies
+    }
+  }
+  responses.Mu.Unlock()
 }
 
 /*
 Sends prepare epoch for sequence >= seq to one server
 */
-func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, responses *SharedMap, rollcall *SharedCounter, done chan bool)
+func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, seq int, responses *SharedMap, rollcall *SharedCounter, done chan bool)
+  //TODO: locking
   //TODO: args & reply
   if peerID == mpx.me {
     mpx.PrepareEpochHandler(args, reply)
@@ -170,11 +177,9 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, responses *SharedMap, r
   }else {
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
     if replyReceived {
-      //TODO: process reply
-      if reply.OK {
-        //
-      }else {
-        //
+      seqResponses, exists := responses.Get(seq)
+      if !exists {
+
       }
     }else {
       //TODO: account for unreachable server
@@ -238,7 +243,7 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
   }
 }
 
-func (mpx *MultiPaxos) ping(peerID ServerID, rollcall chan int, done chan bool) {
+func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan bool) {
   if peerID != mpx.me {
     args := PingArgs{}
     reply := PingReply{}
@@ -256,10 +261,8 @@ func (mpx *MultiPaxos) ping(peerID ServerID, rollcall chan int, done chan bool) 
     }
   }
   // account for pinged server
-  count := <- rollcall
-  count += 1
-  rollcall <- count
-  if count == len(mpx.peers) { // accounted for all servers
+  rollcall.incr()
+  if rollcall.count() == len(mpx.peers) { // accounted for all servers
     done <- true
   }
 }
@@ -329,8 +332,7 @@ Once we have accounted for all servers, run the leader election protocol
 If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
-  rollcall := make(chan int, 1)
-  rollcall <- 0
+  rollcall := MakeSharedCounter()
   done := make(chan bool, 1)
   for _, peer := range mpx.peers {
     go ping(peer, rollcall, done)

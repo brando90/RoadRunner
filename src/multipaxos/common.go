@@ -29,32 +29,38 @@ type ServerName string
 // -- Shared Map : built-in concurrency support --
 
 func MakeSharedMap() *SharedMap {
-	return &SharedMap{_map: make(map[interface{}]interface)}
+	return &SharedMap{Map: make(map[interface{}]interface{})}
 }
 
 type SharedMap struct {
-	_map map[interface{}]interface{}
-	_mu sync.Mutex
+	Map map[interface{}]interface{}
+	Mu sync.Mutex
 }
 
-func (m *SharedMap) Get(key interface{}) (interface, bool) {
-	m._mu.Lock()
-	value, exists := m._map[key]
-	m._mu.Unlock()
+func (m *SharedMap) SafeGet(key interface{}) (interface, bool) {
+	m.Mu.Lock()
+	value, exists := m.Map[key]
+	m.Mu.Unlock()
 	return value, exists
 }
 
-func (m *SharedMap) Put(key interface{}, value interface{}) {
-	m._mu.Lock()
-	m._map[key] = value
-	m._mu.Unlock()
+func (m *SharedMap) SafePut(key interface{}, value interface{}) {
+	m.Mu.Lock()
+	m.Map[key] = value
+	m.Mu.Unlock()
 }
 
+/*
 func (m *SharedMap) Len() int {
 	m._mu.Lock()
 	length := len(m._map)
 	m._mu.Unlock()
 	return length
+}
+*/
+
+func MakeSharedResponses() *SharedMap {
+	return &SharedMap(_map: make(map[int]PrepareReply))
 }
 
 // -- Shared Counter : built-in concurrency support --
