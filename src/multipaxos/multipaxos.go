@@ -22,7 +22,8 @@ type MultiPaxos struct {
   me int
 
   localMin int // one more than the lowest sequence number that we have called Done() on
-  knownMaxEpoch int // for generating a higher, unique epoch number
+  localMax int // highest sequence number this server knows of //TODO: update this where ever necessary
+  maxKnownEpoch int // for generating a higher, unique epoch number
   maxKnownMin int // needed to to know up to watch seq to process in the log.
 
   proposers map[int]*Proposer
@@ -76,8 +77,8 @@ func (mpx *MultiPaxos) Done(seq int) {
 // this peer.
 //
 func (mpx *MultiPaxos) Max() int {
-  //TODO: update knownMaxEpoch in other methods where ever relevant
-  return mpx.knownMaxEpoch
+  //TODO: update localMax in other methods where ever relevant
+  return mpx.localMax
 }
 
 /*
@@ -289,14 +290,34 @@ func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan 
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
   //TODO: locking
-  //TODO: reply with a response map (filled with prepare responses for all existing acceptors at sequence >= args seq)
   epochReplies := make(map[int]PrepareReply)
+  /*TODO: do this here? or abstract to helper method??
+  if args.Epoch > mpx.maxKnownEpoch {
+    mpx.maxKnownEpoch = args.Epoch
+    mpx.refreshEpoch()
+  }
+  */
+  for seq := args.Seq; seq <= mpx.localMax; seq++ {
+    acceptor := mpx.summonAcceptor(seq)
+    prepareReply := PrepareReply{}
+    if args.Epoch > acceptor.N_p {
+      acceptor.N_p = args.Epoch
+      prepareReply.N_a = acceptor.N_a
+      prepareReply.V_a = acceptor.V_a
+      prepareReply.OK = true
+    }else {
+      prepareReply.OK = false
+    }
+    prepareReply.N_p = acceptor.N_p
+    epochReplies[seq] = prepareReply
+  }
+  reply.EpochReplies = epochReplies
+  return nil
 }
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
   //TODO: locking
   //TODO: process piggy-backed info
-  //TODO: update knownMax if necessary
   acceptor := mpx.summonAcceptor(args.Seq)
   if args.N >= acceptor.N_p {
     acceptor.N_p = n
@@ -352,7 +373,8 @@ func (mpx *MultiPaxos) refreshEpoch() {
   //TODO: locking
   l := len(mpx.peers)
   // generate unique epoch higher than any epoch we have seen so far
-  mpx.epoch := ((maxN/l + 1) * l) + mpx.me
+  mpx.epoch := ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
+  //TODO: do we update maxKnownEpoch to be the newly generated, highest epoch?
 }
 
 /*
@@ -368,17 +390,9 @@ func (mpx *MultiPaxos) tick() {
     go ping(peer, rollcall, done)
   }
   <- done
-  // leader decision protocol
-  //TODO: refactor below into helper methods
-  highestID := mpx.me
-  for peerID, presence := range mpx.presence {
-    if presence == Alive || presence == Missing {
-      if peerID > highestID {
-        highestID = peerID
-      }
-    }
-  }
-  if highestID == mpx.me {
+  // leader decision & action
+  leaderID := mpx.leaderElection()
+  if leaderID == mpx.me {
     if !mpx.actingAsLeader {
       mpx.actAsLeader()
     }
@@ -390,12 +404,30 @@ func (mpx *MultiPaxos) tick() {
 }
 
 /*
+Leader Election Protocol
+Consider server dead if it has not responded in 2*ping_interval
+(Missing if not responded in 1*ping_interval)
+Pick highest ID of servers considered living to be the leader
+*/
+func (mpx *MultiPaxos) leaderElection() int {
+  highestLivingID := mpx.me
+  for peerID, presence := range mpx.presence {
+    if presence == Alive || presence == Missing {
+      if peerID > highestLivingID {
+        highestLivingID = peerID
+      }
+    }
+  }
+  return highestLivingID
+}
+
+/*
 Called when this server starts considering itself a leader
 */
 func (mpx *MultiPaxos) actAsLeader() {
   //TODO: locking
   mpx.actingAsLeader = true
-  mpx.prepareEpochAll(e, mpx.localMin) //TODO: what sequence number should we prepareEpoch
+  mpx.prepareEpochPhase(mpx.localMin) //TODO: what sequence number should we prepareEpoch? localMin? localMax?
 }
 
 /*
@@ -410,7 +442,6 @@ func (mpx *MultiPaxos) relinquishLeadership() {
 // -- Summoners (lazy instantiators) --
 
 func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
-  //TODO: locking
   proposer, exists := mpx.proposers[seq]
   if !exists {
     proposer = &Proposer{} //TODO: initialize properly
@@ -420,7 +451,6 @@ func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
 }
 
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
-  //TODO: locking
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
@@ -432,7 +462,6 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
 }
 
 func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
-  //TODO: locking
   learner, exists := mpx.learners[seq]
   if !exists {
     learner = &Learner{} //TODO: initialize properly
