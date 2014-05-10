@@ -31,21 +31,23 @@ type SharedMap struct {
 	Mu sync.Mutex
 }
 
+// -- Shared Map : built-in concurrency support --
+
 func MakeSharedMap() *SharedMap {
 	return &SharedMap{Map: make(map[interface{}]interface)}
 }
 
-func (sm *SharedMap) get(key interface{}) (interface, bool) {
-	sm.Mu.Lock()
-	value, exists := sm.Map[key]
-	sm.Mu.Unlock()
+func (m *SharedMap) get(key interface{}) (interface, bool) {
+	m.Mu.Lock()
+	value, exists := m.Map[key]
+	m.Mu.Unlock()
 	return value, exists
 }
 
-func (sm *SharedMap) put(key interface{}, value interface{}) {
-	sm.Mu.Lock()
-	sm.Map[key] = value
-	sm.Mu.Unlock()
+func (m *SharedMap) put(key interface{}, value interface{}) {
+	m.Mu.Lock()
+	m.Map[key] = value
+	m.Mu.Unlock()
 }
 
 // -----
