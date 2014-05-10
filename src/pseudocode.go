@@ -1,5 +1,5 @@
 leader_propose(seq, v):
-    send accepts to all acceptors with round number e. 
+    send accepts to all acceptors with round number e.
     if we receive any rejects with epoch E;
         then e=E+1, prepare_phase(seq)
     else if we didnt receive any rejects but didnt form a majority;
@@ -11,6 +11,14 @@ prepare_epoch_phase(seq):
     send prepare rpc to each server until at least a majority is formed on each sequence >= seq.
     if we received a reject for e cuz E > e, then change epoch to e = E+1;
         then try prepare_epoch_phase again
+    //TODO: if we receive a reject:
+    //        set epoch number to E+1 (where E is the round number that caused the reject)
+    //        make sure we retry prepareEpochPhase (either now or when loop ends (in case we hear an even higher reject during this same attempt))
+    //      else if we didn't receive a reject, and we received a majority from all sequences number:
+    //        // NB: we only need a majority in one sequence number to guarantee a majority for all sequence numbers in the above condition
+    //        phase success!
+    //      else: (no rejects but no majority)
+    //        try phase again (with same epoch number)
 
 prepare_epoch_handler(e, seq):
     if e > current_epoch:
@@ -18,7 +26,7 @@ prepare_epoch_handler(e, seq):
     for each acceptor from seq to the highest sequence number we know of:
         process prepare with round number e
         record response (ok/reject, n_a, v_a) in response map (mapping sequence numbers to their responses)
-    reply with response map 
+    reply with response map
     //NB: we must take care to immediately prepare any newly initialized acceptors with seq number >= seq with round number e (saved in current_epoch)
 
 tick: // called periodically
@@ -30,7 +38,7 @@ tick: // called periodically
         act as new leader (increment epoch/round number)
     else:
         catch_up
-    
+
 catch_up:
     catch up to the maximum local min that we know about // since local mins guarantee that every sequence before them has been decided
     // a server can piggy-back its local min (for global min updating -> garbage collection) as well as the highest local min it has heard (to improve our catch up routine)

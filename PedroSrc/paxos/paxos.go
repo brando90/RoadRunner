@@ -1,4 +1,5 @@
 package paxos
+//TODO: PANIC! when updating epoch number, take care to choose a UNIQUE epoch/round number
 
 //
 // Paxos library, to be included in an application.
@@ -86,7 +87,7 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
     return false
   }
   defer c.Close()
-    
+
   err = c.Call(name, args, reply)
   if err == nil {
     return true
@@ -282,7 +283,7 @@ func (px *Paxos) decidePhase(seq int, v interface{}) {
     decideArgs.PBDone = PBDone{Me: px.me, MinSeq: px.minSeq}
     decideReply := DecideReply{}
     px.sendDecide(pxnode, &decideArgs, &decideReply)
-  } 
+  }
 }
 
 func (px *Paxos) PrepareHandler(args *PrepareArgs, reply *PrepareReply) error {
@@ -446,7 +447,7 @@ func (px *Paxos) Max() int {
 // life, it will need to catch up on instances that it
 // missed -- the other peers therefore cannot forget these
 // instances.
-// 
+//
 func (px *Paxos) Min() int {
   min := -2
   for _, localMin := range px.mins {
@@ -527,10 +528,10 @@ func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
       log.Fatal("listen error: ", e);
     }
     px.l = l
-    
+
     // please do not change any of the following code,
     // or do anything to subvert it.
-    
+
     // create a thread to accept RPC connections
     go func() {
       for px.dead == false {

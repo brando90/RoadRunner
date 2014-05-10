@@ -37,7 +37,7 @@ type SharedMap struct {
 	Mu sync.Mutex
 }
 
-func (m *SharedMap) SafeGet(key interface{}) (interface, bool) {
+func (m *SharedMap) SafeGet(key interface{}) (interface{}, bool) {
 	m.Mu.Lock()
 	value, exists := m.Map[key]
 	m.Mu.Unlock()

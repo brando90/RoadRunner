@@ -21,9 +21,9 @@ type MultiPaxos struct {
   peers []string
   me int
 
-  localMin int //one more than the lowest sequence number that we have called Done() on
-  knownMax int //TODO: what is this for?
-  maxKnownMin int //needed to to know up to watch seq to process in the log.
+  localMin int // one more than the lowest sequence number that we have called Done() on
+  knownMaxEpoch int // for generating a higher, unique epoch number
+  maxKnownMin int // needed to to know up to watch seq to process in the log.
 
   proposers map[int]*Proposer
   acceptors map[int]*Acceptor
@@ -76,8 +76,8 @@ func (mpx *MultiPaxos) Done(seq int) {
 // this peer.
 //
 func (mpx *MultiPaxos) Max() int {
-  //TODO: update knownMax in other methods where ever relevant
-  return mpx.knownMax
+  //TODO: update knownMaxEpoch in other methods where ever relevant
+  return mpx.knownMaxEpoch
 }
 
 /*
@@ -124,14 +124,6 @@ func (mpx *MultiPaxos) Kill() {
   }
 }
 
-func (mpx *MultiPaxos) makeAcceptorsPersistent(){
-  //TODO: do we need this method?
-}
-
-func (mpx *MultiPaxos) makeLearnersPersistent(){
-  //TODO: do we need this method?
-}
-
 // -----
 
 // RPC's
@@ -143,25 +135,51 @@ func (mpx *MultiPaxos) makeLearnersPersistent(){
 Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
-  //TODO: keep trying upon failure
-  //if we get any rejects from acceptors who have accepted for round number E > e this leader's epoch
-  // update this leader's epoch to E+1
-  responses := MakeSharedMap()
-  rollcall := MakeSharedCounter()
-  done := make(chan bool)
-  for _, peer := range mpx.peers {
-    //TODO: args & reply
-    go sendPrepareEpoch(peerID, args, reply, responses, rollcall, done)
-  }
-  <- done
-  // Process aggregated replies
-  responses.Mu.Lock()
-  for seq, prepareReplies := range responses.Map {
-    for _, prepareReply := range prepareReplies {
-      //TODO: process replies
+  for !mpx.dead {
+    responses := MakeSharedMap()
+    rollcall := MakeSharedCounter()
+    done := make(chan bool)
+    for _, peer := range mpx.peers {
+      go sendPrepareEpoch(peerID, seq, responses, rollcall, done)
+    }
+    <- done
+    // Process aggregated replies
+    witnessedReject := false
+    witnessedMajority := false
+    responses.Mu.Lock()
+    for k, v := range responses.Map {
+      sn := k.(int)
+      prepareReplies := v.([]PrepareReply) // accumulated replies for sequence number = s
+      proposer := summonProposer(sn)
+      prepareOKs := 0
+      n_a := 0
+      var v_a interface{}
+      for _, prepareReply := range prepareReplies {
+        if prepareReply.OK {
+          prepareOKs += 1
+          if prepareReply.N_a > n_a && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
+            n_a = prepareReply.N_a
+            v_a = prepareReply.V_a
+          }
+        }else {
+          witnessedReject = true
+        }
+        mpx.considerEpoch(reply.N_p) // keeping track of knownMaxEpoch
+      }
+      if mpx.isMajority(prepareOKs) {
+        witnessedMajority = true
+      }
+    }
+    responses.Mu.Unlock()
+    if witnessedReject {
+      mpx.refreshEpoch()
+      continue // try again
+    }else if witnessedMajority {
+      return
+    }else {
+      continue // try again
     }
   }
-  responses.Mu.Unlock()
 }
 
 /*
@@ -177,10 +195,7 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, seq int, responses *Sha
   }else {
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
     if replyReceived {
-      seqResponses, exists := responses.Get(seq)
-      if !exists {
-
-      }
+      //TODO
     }else {
       //TODO: account for unreachable server
     }
@@ -208,7 +223,7 @@ func (mpx *MultiPaxos) acceptPhase(seq int, v interface{}) bool {
       if acceptReply.OK {
         acceptOKs += 1
       }
-      //TODO: do we need to keep track of max proposal number? (as in 3a)
+      mpx.considerEpoch(reply.N_p) // keeping track of knownMaxEpoch
     }
   }
   return mpx.isMajority(acceptOKs)
@@ -323,6 +338,19 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
     //TODO: if we received any rejects from acceptors (since it has accepted an epoch number E > e, this leader's current epoch number),
     // then this leader should prepareEpoch(e, seq) AFTER e = E+1
   }
+}
+
+func (mpx *MultiPaxos) considerEpoch(epoch int) {
+  if epoch > mpx.knownMaxEpoch {
+    mpx.knownMaxEpoch = epoch
+  }
+}
+
+func (mpx *MultiPaxos) refreshEpoch() {
+  //TODO: locking
+  l := len(mpx.peers)
+  // generate unique epoch higher than any epoch we have seen so far
+  mpx.epoch := ((maxN/l + 1) * l) + mpx.me
 }
 
 /*
