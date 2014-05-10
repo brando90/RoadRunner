@@ -1,5 +1,5 @@
 package multipaxos
-//TODO: only change epoch when performing actions as leader
+
 import (
   "net"
   "net/rpc"
@@ -36,6 +36,8 @@ type MultiPaxos struct {
 
   epoch int
   maxKnownEpoch int // for generating a higher, unique epoch number
+
+  disk Disk // simulates disk in software for persistence plan
 }
 
 // ---
@@ -361,11 +363,11 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
   }
 }
 
-func (mpx *MultiPaxos) considerEpoch(epoch int) {
+func (mpx *MultiPaxos) considerEpoch(e int) {
   mpx.mu.Lock()
   defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownEpoch and maxKnownEpoch
-  if epoch > mpx.maxKnownEpoch {
-    mpx.maxKnownEpoch = epoch
+  if e > mpx.maxKnownEpoch {
+    mpx.maxKnownEpoch = e
   }
 }
 
@@ -374,7 +376,7 @@ func (mpx *MultiPaxos) refreshEpoch() {
   // generate unique epoch higher than any epoch we have seen so far
   mpx.mu.Lock()
   defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
-  mpx.epoch := ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
+  mpx.epoch = ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
   mpx.maxKnownEpoch = mpx.epoch // not strictly necessary, but maintains the implied invariant of maxKnownEpoch
 }
 
@@ -430,7 +432,7 @@ Called when this server starts considering itself a leader
 func (mpx *MultiPaxos) actAsLeader() {
   mpx.mu.Lock()
   mpx.actingAsLeader = true
-  seq := mpx.localMin //TODO: what sequence number should we prepareEpoch? localMin? localMax?
+  seq := mpx.localMax
   mpx.mu.Unlock()
   //OPTIMIZATION: fine-grain locking for actingAsLeader and localMin...?
   mpx.prepareEpochPhase(seq)
@@ -525,6 +527,74 @@ func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
 // the ports of all the paxos peers (including this one)
 // are in peers[]. this servers port is peers[me].
 //
-func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
-  //TODO: implement this
+func Make(peers []string, me int, rpcs *rpc.Server) *MultiPaxos {
+  mpx := &MultiPaxos{}
+  mpx.peers = peers
+  mpx.me = me
+
+  // Initialization
+  //TODO: initialize
+  mpx.localMin = 0
+  mpx.localMax = 0
+  mpx.proposers = MakeSharedMap()
+  mpx.acceptors = MakeSharedMap()
+  mpx.learners = MakeSharedMap()
+  mpx.mins = MakeSharedSlice()
+  mpx.lifeStates = MakeSharedSlice()
+  mpx.actingAsLeader = false
+  mpx.epoch = 0
+  mpx.maxKnownEpoch = 0
+  mpx.disk = Disk{}
+
+  if rpcs != nil {
+    // caller will create socket &c
+    rpcs.Register(mpx)
+  } else {
+    rpcs = rpc.NewServer()
+    rpcs.Register(mpx)
+
+    // prepare to receive connections from clients.
+    // change "unix" to "tcp" to use over a network.
+    os.Remove(peers[me]) // only needed for "unix"
+    l, e := net.Listen("unix", peers[me]);
+    if e != nil {
+      log.Fatal("listen error: ", e);
+    }
+    mpx.l = l
+
+    // please do not change any of the following code,
+    // or do anything to subvert it.
+
+    // create a thread to accept RPC connections
+    go func() {
+      for mpx.dead == false {
+        conn, err := mpx.l.Accept()
+        if err == nil && mpx.dead == false {
+          if mpx.unreliable && (rand.Int63() % 1000) < 100 {
+            // discard the request.
+            conn.Close()
+          } else if mpx.unreliable && (rand.Int63() % 1000) < 200 {
+            // process the request but force discard of reply.
+            c1 := conn.(*net.UnixConn)
+            f, _ := c1.File()
+            err := syscall.Shutdown(int(f.Fd()), syscall.SHUT_WR)
+            if err != nil {
+              fmt.Printf("shutdown: %v\n", err)
+            }
+            mpx.rpcCount++
+            go rpcs.ServeConn(conn)
+          } else {
+            mpx.rpcCount++
+            go rpcs.ServeConn(conn)
+          }
+        } else if err == nil {
+          conn.Close()
+        }
+        if err != nil && mpx.dead == false {
+          fmt.Printf("Paxos(%v) accept: %v\n", me, err.Error())
+        }
+      }
+    }()
+  }
+  return mpx
 }

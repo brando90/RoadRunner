@@ -233,6 +233,12 @@ type PiggyBack struct {
   MaxKnownMin int
 }
 
+// Disk
+
+type Disk struct {
+	//TODO: define this
+}
+
 //
 // call() sends an RPC to the rpcname handler on server srv
 // with arguments args, waits for the reply, and leaves the
