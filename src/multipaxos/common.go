@@ -26,6 +26,28 @@ const (
 
 type ServerName string
 
+type SharedMap struct {
+	Map map[interface{}]interface{}
+	Mu sync.Mutex
+}
+
+func MakeSharedMap() *SharedMap {
+	return &SharedMap{Map: make(map[interface{}]interface)}
+}
+
+func (sm *SharedMap) get(key interface{}) (interface, bool) {
+	sm.Mu.Lock()
+	value, exists := sm.Map[key]
+	sm.Mu.Unlock()
+	return value, exists
+}
+
+func (sm *SharedMap) put(key interface{}, value interface{}) {
+	sm.Mu.Lock()
+	sm.Map[key] = value
+	sm.Mu.Unlock()
+}
+
 // -----
 
 // Paxos
@@ -58,7 +80,16 @@ type PrepareEpochArgs struct {
 }
 
 type PrepareEpochReply struct {
-  //TODO: define this
+  //TODO: include piggy-back if necessary
+	map[int]PrepareReply
+}
+
+type PrepareReply struct {
+	N_a int
+	V_a interface{}
+	OK bool
+	N_p int // the round number that may have caused a reject
+	//TODO: include piggy-back if necessary
 }
 
 type AcceptArgs struct {

@@ -47,8 +47,6 @@ Otherwise, DO NOT send accepts. Relay potential leader information to client ins
 */
 func (mpx *MultiPaxos) Push(seq int, v interface{}) Err {
   if actingAsLeader {
-    //TODO: send accept
-    //TODO: sending accepts should be concurrent
     go mpx.leaderPropose(seq, v)
     return nil
   }else {
@@ -127,11 +125,11 @@ func (mpx *MultiPaxos) Kill() {
 }
 
 func (mpx *MultiPaxos) makeAcceptorsPersistent(){
-  //TODO
+  //TODO: do we need this method?
 }
 
 func (mpx *MultiPaxos) makeLearnersPersistent(){
-  //TODO
+  //TODO: do we need this method?
 }
 
 // -----
@@ -145,23 +143,41 @@ func (mpx *MultiPaxos) makeLearnersPersistent(){
 Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
-  //TODO: implement this
+  //TODO: keep trying upon failure
   //if we get any rejects from acceptors who have accepted for round number E > e this leader's epoch
   // update this leader's epoch to E+1
-
+  for _, peer := range mpx.peers {
+    //TODO: args & reply
+    responses := MakeSharedMap()
+    done := make(chan bool)
+    go sendPrepareEpoch(peerID ServerID, args, reply, responses, done)
+  }
+  <- done
   //loop through the sequence number we got back
 }
 
 /*
 Sends prepare epoch for sequence >= seq to one server
 */
-func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, args *PrepareEpochArgs, reply *PrepareEpochReply) {
+func (mpx *MultiPaxos) sendPrepareEpoch(peerID ServerID, responses *SharedMap, done chan bool)
+  //TODO: args & reply
   if peerID == mpx.me {
     mpx.PrepareEpochHandler(args, reply)
     return true
   }else {
-    return call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
+    replyReceived := call(mpx.peers[peerID], "MultiPaxos.PrepareEpochHandler", args, reply)
+    if replyReceived {
+      //TODO: process reply
+      if reply.OK {
+        //
+      }else {
+        //
+      }
+    }else {
+      //TODO: account for unreachable server
+    }
   }
+  //TODO: determine if we are done; if so, signal done channel
 }
 
 // -- Accept Phase --
