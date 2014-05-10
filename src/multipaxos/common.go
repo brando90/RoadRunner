@@ -10,9 +10,9 @@ const (
 	NotLeader = "ErrNotLeader"
 )
 
-// Presence
+// Life State (Alive/Missing/Dead)
 
-type Presence string
+type LifeState string
 
 const (
 	Alive = "Alive"
@@ -99,6 +99,17 @@ func (c *SharedCounter) SafeIncr() {
 	c._mu.Unlock()
 }
 
+// -- Shared Slice --
+
+func MakeSharedSlice() *SharedSlice {
+	return &SharedSlice{Slice: []interface{}{}}
+}
+
+type SharedSlice struct {
+	Mu sync.Mutex
+	Slice []interface{}
+}
+
 // -----
 
 // Paxos
@@ -109,11 +120,49 @@ type Proposer struct {
 	V_prime interface{}
 }
 
+/*
+Processes prepare replies for this proposer's sequence number
+*/
+func (proposer *Proposer) SafeProcess(prepareReplies []PrepareReply) (bool, bool) {
+	proposer.Mu.Lock()
+	prepareOKs := 0
+	for _, prepareReply := range prepareReplies {
+		if prepareReply.OK {
+			prepareOKs += 1
+			if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
+				proposer.N_prime = prepareReply.N_a
+				proposer.V_prime = prepareReply.V_a
+			}
+		}else {
+			witnessedReject = true
+		}
+		mpx.considerEpoch(reply.N_p) // keeping track of maxKnownEpoch
+	}
+	proposer.Mu.Unlock()
+	return witnessedReject, mpx.isMajority(prepareOKs)
+}
+
 type Acceptor struct {
 	Mu sync.Mutex
 	N_p int
 	N_a int
 	V_a interface{}
+}
+
+func (acceptor *Acceptor) SafePrepare(n int) PrepareReply{
+	prepareReply := PrepareReply{}
+	acceptor.Mu.Lock()
+	if n > acceptor.N_p {
+		acceptor.N_p = n
+		prepareReply.N_a = acceptor.N_a
+		prepareReply.V_a = acceptor.V_a
+		prepareReply.OK = true
+	}else {
+		prepareReply.OK = false
+	}
+	acceptor.Mu.Unlock()
+	prepareReply.N_p = acceptor.N_p
+	return prepareReply
 }
 
 type Learner struct {
