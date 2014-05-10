@@ -37,17 +37,24 @@ func MakeSharedMap() *SharedMap {
 	return &SharedMap{Map: make(map[interface{}]interface)}
 }
 
-func (m *SharedMap) get(key interface{}) (interface, bool) {
+func (m *SharedMap) Get(key interface{}) (interface, bool) {
 	m.Mu.Lock()
 	value, exists := m.Map[key]
 	m.Mu.Unlock()
 	return value, exists
 }
 
-func (m *SharedMap) put(key interface{}, value interface{}) {
+func (m *SharedMap) Put(key interface{}, value interface{}) {
 	m.Mu.Lock()
 	m.Map[key] = value
 	m.Mu.Unlock()
+}
+
+func (m *SharedMap) Len() int {
+	m.Mu.Lock()
+	length := len(m.Map)
+	m.Mu.Unlock()
+	return length
 }
 
 // -----
