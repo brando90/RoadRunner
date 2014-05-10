@@ -415,7 +415,9 @@ Pick highest ID of servers considered living to be the leader
 func (mpx *MultiPaxos) leaderElection() int {
   highestLivingID := mpx.me
   mpx.lifeStates.Mu.Lock()
-  for peerID, lifeState := range mpx.lifeStates.Slice {
+  for k, v := range mpx.lifeStates.Slice {
+    peerID := k.(int)
+    lifeState := v.(LifeState)
     if lifeState == Alive || lifeState == Missing {
       if peerID > highestLivingID {
         highestLivingID = peerID
