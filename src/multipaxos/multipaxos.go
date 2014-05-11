@@ -22,9 +22,8 @@ Section 3 : RPC Handlers & RPC Handler Helpers
 Section 4 : Internal Methods
 */
 
-/*
-Section 0 : MultiPaxos Object
------------------------------
+/* Section 0 : MultiPaxos Object
+--------------------------------
 -- SubSection 0 : Declaration --
 -- SubSection 1 : Constructor --
 */
@@ -151,9 +150,8 @@ func Make(peers []string, me int, rpcs *rpc.Server, listener net.Listener, disk 
   return mpx
 }
 
-/*
-Section 1 : API
----------------
+/* Section 1 : API
+------------------
 -- SubSection 0 : KV Interface --
 -- SubSection 1 : Failure Simulation Interface --
 */
@@ -273,16 +271,15 @@ Signal server to undergo recovery protocol
 */
 func (mpx *MultiPaxos) Reboot() {
   if diskCrashed {
-    //TODO: foreign disk recovery protocol
+    //TODO: foreign-aid disk recovery protocol
   }else {
     //TODO: local disk recovery protocol
   }
   mpx.dead = false
 }
 
-/*
-Section 2 : RPC's and RPC Helpers
----------------------------------
+/* Section 2 : RPC's and RPC Helpers
+------------------------------------
 -- SubSection 0 : Ping --
 -- SubSection 1 : Prepare Epoch Phase --
 -- SubSection 2 : Accept Phase --
@@ -464,9 +461,8 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
   }
 }
 
-/*
-Section 3 : RPC Handlers & RPC Handler Helpers
-----------------------------------------------
+/* Section 3 : RPC Handlers & RPC Handler Helpers
+-------------------------------------------------
 -- SubSection 0 : Ping Handler --
 -- SubSection 1 : Prepare Handler --
 -- SubSection 2 : Accept Handler --
@@ -529,34 +525,19 @@ func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error
   return nil
 }
 
-// Section 4 : Internal Methods
+/* Section 4 : Internal Methods
+-------------------------------
+-- SubSection 0 : Paxos --
+-- SubSection 1 : MultiPaxos --
+-- SubSection 2 : Tick --
+-- SubSection 3 : Garbage Collection --
+-- SubSection 4 : Persistence --
+*/
+
+// -- SubSection 0 : Paxos --
 
 func (mpx *MultiPaxos) isMajority(x int) bool {
   return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
-}
-
-func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
-  undecided:
-  for !mpx.dead {
-    proposer := mpx.summonProposer(seq)
-    proposer.Lock()
-    v_prime := proposer.V_prime
-    if v_prime == nil {
-      v_prime = v
-    }
-    proposer.Unlock()
-    witnessedReject, acceptMajority := mpx.acceptPhase(seq, v_prime)
-    if witnessedReject {
-      mpx.refreshEpoch()
-      mpx.prepareEpochPhase(seq)
-      continue
-    }else if acceptMajority {
-      mpx.decidePhase(seq, v_prime)
-      break undecided
-    }else {
-      continue
-    }
-  }
 }
 
 func (mpx *MultiPaxos) considerSequence(seq int) {
@@ -567,52 +548,73 @@ func (mpx *MultiPaxos) considerSequence(seq int) {
   mpx.mu.Unlock()
 }
 
-func (mpx *MultiPaxos) considerEpoch(e int) {
-  mpx.mu.Lock()
-  if e > mpx.maxKnownEpoch {
-    mpx.maxKnownEpoch = e
+/*
+Lazy instantiator for proposers
+*/
+func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
+  mpx.proposers.Mu.Lock()
+  proposer, exists := mpx.proposers.Map[seq]
+  if !exists {
+    proposer = &Proposer{}
+    mpx.proposers[seq] = proposer
   }
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownEpoch and maxKnownEpoch
-}
-
-func (mpx *MultiPaxos) refreshEpoch() {
-  l := len(mpx.peers)
-  // generate unique epoch higher than any epoch we have seen so far
-  mpx.mu.Lock()
-  mpx.epoch = ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
-  mpx.maxKnownEpoch = mpx.epoch // not strictly necessary, but maintains the implied invariant of maxKnownEpoch
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
-}
-
-func (mpx *MultiPaxos) recoverFromDisk() {
-  //TODO
+  mpx.proposers.Mu.Unlock()
+  return proposer.(*Proposer)
 }
 
 /*
-Periodic tick function
-Ping all servers
-Once we have accounted for all servers, run the leader election protocol
-If this server considers itself a leader, start acting as a leader
+Lazy instantiator for acceptors
+Prepares acceptors immediately upon creation if server
+has received prepare epoch
 */
-func (mpx *MultiPaxos) tick() {
-  rollcall := MakeSharedCounter()
-  done := make(chan bool)
-  for _, peer := range mpx.peers {
-    go ping(peer, rollcall, done)
+func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
+  mpx.acceptors.Mu.Lock()
+  acceptor, exists := mpx.acceptors.Map[seq]
+  if !exists {
+    acceptor = &Acceptor{}
+    acceptor.SafePrepare(mpx.maxKnownEpoch)
+    //TODO: Lock for maxKnownEpoch
+    mpx.acceptors = acceptor
   }
-  <- done
-  // leader decision & action
-  leaderID := mpx.leaderElection()
-  if leaderID == mpx.me {
-    if !mpx.actingAsLeader { //TODO: locking actingAsLeader
-      mpx.actAsLeader()
-    }
-  }else {
-    if mpx.actingAsLeader {
-      mpx.relinquishLeadership()
-    }
-  }
+  mpx.acceptors.Mu.Unlock()
+  return acceptor.(*Acceptor)
 }
+
+/*
+Lazy instantiator for learners
+*/
+func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
+  mpx.learners.Mu.Lock()
+  learner, exists := mpx.learners.Map[seq]
+  if !exists {
+    learner = &Learner{Decided: false}
+    mpx.learners[seq] = learner
+  }
+  mpx.learners.Mu.Unlock()
+  return learner.(*Learner)
+}
+
+/*
+Processes the current state of the PB information.
+*/
+func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
+  mpx.mins.Mu.Lock()
+  if piggyBack.LocalMin > mpx.mins.Slice[piggyBack.Me] {
+    mpx.mins.Slice[piggyBack.Me] = piggyBack.LocalMin
+  }
+  mpx.mins.Mu.Unlock()
+  mpx.mu.Lock()
+  if piggyBack.MaxKnownMin > mpx.maxKnownMin {
+    mpx.maxKnownMin = mpx.MaxKnownMin
+  }
+  if piggyBack.MaxKnownEpoch > mpx.maxKnownEpoch {
+    mpx.maxKnownEpoch = mpx.MaxKnownEpoch
+  }
+  min := mpx.GlobalMin()
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownMins
+}
+
+// -- SubSection 1 : MultiPaxos --
 
 /*
 Leader Election Protocol
@@ -658,67 +660,82 @@ func (mpx *MultiPaxos) relinquishLeadership() {
   mpx.mu.Unlock() //OPTIMIZATION: fine-grain lock for actingAsLeader...?
 }
 
-// -- Summoners (lazy instantiators) --
-
-func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
-  mpx.proposers.Mu.Lock()
-  proposer, exists := mpx.proposers.Map[seq]
-  if !exists {
-    proposer = &Proposer{}
-    mpx.proposers[seq] = proposer
+func (mpx *MultiPaxos) leaderPropose(seq int, v interface{}) {
+  undecided:
+  for !mpx.dead {
+    proposer := mpx.summonProposer(seq)
+    proposer.Lock()
+    v_prime := proposer.V_prime
+    if v_prime == nil {
+      v_prime = v
+    }
+    proposer.Unlock()
+    witnessedReject, acceptMajority := mpx.acceptPhase(seq, v_prime)
+    if witnessedReject {
+      mpx.refreshEpoch()
+      mpx.prepareEpochPhase(seq)
+      continue
+    }else if acceptMajority {
+      mpx.decidePhase(seq, v_prime)
+      break undecided
+    }else {
+      continue
+    }
   }
-  mpx.proposers.Mu.Unlock()
-  return proposer.(*Proposer)
 }
 
-func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
-  mpx.acceptors.Mu.Lock()
-  acceptor, exists := mpx.acceptors.Map[seq]
-  if !exists {
-    acceptor = &Acceptor{}
-    acceptor.SafePrepare(mpx.maxKnownEpoch)
-    //TODO: Lock for maxKnownEpoch
-    mpx.acceptors = acceptor
+func (mpx *MultiPaxos) considerEpoch(e int) {
+  mpx.mu.Lock()
+  if e > mpx.maxKnownEpoch {
+    mpx.maxKnownEpoch = e
   }
-  mpx.acceptors.Mu.Unlock()
-  return acceptor.(*Acceptor)
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownEpoch and maxKnownEpoch
 }
 
-func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
-  mpx.learners.Mu.Lock()
-  learner, exists := mpx.learners.Map[seq]
-  if !exists {
-    learner = &Learner{Decided: false}
-    mpx.learners[seq] = learner
-  }
-  mpx.learners.Mu.Unlock()
-  return learner.(*Learner)
+func (mpx *MultiPaxos) refreshEpoch() {
+  l := len(mpx.peers)
+  // generate unique epoch higher than any epoch we have seen so far
+  mpx.mu.Lock()
+  mpx.epoch = ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
+  mpx.maxKnownEpoch = mpx.epoch // not strictly necessary, but maintains the implied invariant of maxKnownEpoch
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
 }
+
+// -- SubSection 2 : Tick --
 
 /*
-Processes the current state of the PB information.
+Periodic tick function
+Ping all servers
+Once we have accounted for all servers, run the leader election protocol
+If this server considers itself a leader, start acting as a leader
 */
-func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
-  mpx.mins.Mu.Lock()
-  if piggyBack.LocalMin > mpx.mins.Slice[piggyBack.Me] {
-    mpx.mins.Slice[piggyBack.Me] = piggyBack.LocalMin
+func (mpx *MultiPaxos) tick() {
+  rollcall := MakeSharedCounter()
+  done := make(chan bool)
+  for _, peer := range mpx.peers {
+    go ping(peer, rollcall, done)
   }
-  mpx.mins.Mu.Unlock()
-  mpx.mu.Lock()
-  if piggyBack.MaxKnownMin > mpx.maxKnownMin {
-    mpx.maxKnownMin = mpx.MaxKnownMin
+  <- done
+  // leader decision & action
+  leaderID := mpx.leaderElection()
+  if leaderID == mpx.me {
+    if !mpx.actingAsLeader { //TODO: locking actingAsLeader
+      mpx.actAsLeader()
+    }
+  }else {
+    if mpx.actingAsLeader {
+      mpx.relinquishLeadership()
+    }
   }
-  if piggyBack.MaxKnownEpoch > mpx.maxKnownEpoch {
-    mpx.maxKnownEpoch = mpx.MaxKnownEpoch
-  }
-  min := mpx.GlobalMin()
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownMins
 }
 
-// -- Garbage collection --
-// Deletes anything within the paxos map (e.g. proposers, acceptors, learners)
-// from a sequence <= the threshold
-// No server will need this information in the future
+// -- SubSection 3 : Garbage Collection --
+
+/*
+Deletes anything within the paxos map (e.g. proposers, acceptors, learners)
+from a sequence <= the threshold
+No server will need this information in the future
+*/
 func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
   pxRole.Mu.Lock()
   for s, _ := range pxRole.Map {
@@ -727,4 +744,10 @@ func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
     }
   }
   pxRole.Mu.Unlock()
+}
+
+// -- SubSection 4 : Persistence --
+
+func (mpx *MultiPaxos) recoverFromDisk() {
+  //TODO
 }
