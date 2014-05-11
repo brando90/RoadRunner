@@ -14,7 +14,7 @@
 \maketitle
 
 \begin{abstract}
-RoadRunner is a persistent, fault-tolerant, high-performance key/value store key value store. RoadRunner avoids two round trip times by using our implementation of Multip-Paxos. In common case of a stable leader, our implementation will be able to save round trip times for the prepare phase of paxos by preparing everything in the log in advance. Our implementation of Multi-Paxos is independent of time synchronization or time leases. 
+RoadRunner is a persistent, fault-tolerant, high-performance key-value store. RoadRunner avoids two round trip times by preparing everything in the paxos log in advance from some sequence number to infinity. Our implementation of Multi-Paxos is independent of time synchronization or time leases. Instead it uses epoch rounds to elect leader and only the server with the highest epoch round will be able to send accepts. Our design of multi-Paxos does not need to elect leaders explicitly by having a paxos instance to decide on an sever id number. Instead, from the servers that are alive, the one with the highest epoch number will consider himself the leader and prepare paxos instances in advance (and eventually send accepts too). It is not a problem if multiple servers consider themselves the leaders because leaders will send prepare messages with the epoch number they think they are currently in and thus, servers will easily reject old leaders by sim
 \end{abstract}
 
 
