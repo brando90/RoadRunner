@@ -29,13 +29,26 @@ type ServerName string
 
 // -- SharedInt : built-in concurrency support --
 
-func MakeSharedInt() *SharedInt {
-	return &SharedInt{}
+func MakeSharedInt(i int) *SharedInt {
+	return &SharedInt{Int: i}
 }
 
 type SharedInt struct {
 	Int int
 	Mu sync.Mutex
+}
+
+func (i *SharedInt) SafeGet() int {
+	i.Mu.Lock()
+	j := i.Int
+	i.Mu.Unlock()
+	return j
+}
+
+func (i *SharedInt) SafeSet(j int) {
+	i.Mu.Lock()
+	i.Int = j
+	i.Mu.Unlock()
 }
 
 
