@@ -27,16 +27,31 @@ const (
 type ServerID int
 type ServerName string
 
+/*
 // -- SharedInt : built-in concurrency support --
 
-func MakeSharedInt() *SharedInt {
-	return &SharedInt{}
+func MakeSharedInt(i int) *SharedInt {
+	return &SharedInt{Int: i}
 }
 
 type SharedInt struct {
 	Int int
 	Mu sync.Mutex
 }
+
+func (i *SharedInt) SafeGet() int {
+	i.Mu.Lock()
+	j := i.Int
+	i.Mu.Unlock()
+	return j
+}
+
+func (i *SharedInt) SafeSet(j int) {
+	i.Mu.Lock()
+	i.Int = j
+	i.Mu.Unlock()
+}
+*/
 
 
 // -- Shared Map : built-in concurrency support --
@@ -50,12 +65,15 @@ type SharedMap struct {
 	Mu sync.Mutex
 }
 
+/*
 func (m *SharedMap) SafeReset() {
 	m.Mu.Lock()
 	m.Map = make(map[interface{}]interface{})
 	m.Mu.Unlock()
 }
+*/
 
+//TODO: is this method ever called?
 func (m *SharedMap) SafeGet(key interface{}) (interface{}, bool) {
 	m.Mu.Lock()
 	value, exists := m.Map[key]
@@ -63,27 +81,14 @@ func (m *SharedMap) SafeGet(key interface{}) (interface{}, bool) {
 	return value, exists
 }
 
+//TODO: is this method ever called?
 func (m *SharedMap) SafePut(key interface{}, value interface{}) {
 	m.Mu.Lock()
 	m.Map[key] = value
 	m.Mu.Unlock()
 }
 
-/*
-func (m *SharedMap) Len() int {
-	m._mu.Lock()
-	length := len(m._map)
-	m._mu.Unlock()
-	return length
-}
-*/
-
-/*
-func MakeSharedResponses() *SharedMap {
-	return &SharedMap(_map: make(map[int]PrepareReply))
-}
-*/
-
+//TODOL shpuld this be a helper method of mpx?
 func (m *SharedMap) aggregate(epochReplies map[int]PrepareReply) {
 	m.Mu.Lock()
 	for seq, prepareReply := range epochReplies {
@@ -105,11 +110,13 @@ type SharedCounter struct {
 	_mu int
 }
 
+/*
 func (c *SharedCounter) SafeReset() {
 	c._mu.Lock()
 	c._n = 0
 	c._mu.Unlock()
 }
+*/
 
 func (c *SharedCounter) SafeCount() int {
 	c._mu.Lock()
@@ -135,11 +142,21 @@ type SharedSlice struct {
 	Slice []interface{}
 }
 
+func (s *SharedSlice) SafeFill(length int, content interface{}) {
+	s.Mu.Lock()
+	for i := 0; i < length; i++ {
+		s = append(s, content)
+	}
+	s.Mu.Unlock()
+}
+
+/*
 func (s *SharedSlice) SafeReset() {
 	s.Mu.Lock()
 	s.Slice = []interface{}{}
 	s.Mu.Unlock()
 }
+*/
 
 // -----
 
@@ -148,7 +165,7 @@ func (s *SharedSlice) SafeReset() {
 type Proposer struct {
 	Mu sync.Mutex
 	N_prime int
-	V_prime interface{}
+	V_prime DeepCopyable
 }
 
 /*
@@ -173,34 +190,28 @@ func (proposer *Proposer) SafeProcess(prepareReplies []PrepareReply) (bool, bool
 	return witnessedReject, mpx.isMajority(prepareOKs)
 }
 
-type Acceptor struct {
+type Acceptor DeepCopyable {
 	Mu sync.Mutex
 	N_p int
 	N_a int
-	V_a interface{}
+	V_a DeepCopyable
 }
 
-func (acceptor *Acceptor) SafePrepare(n int, disk *Disk) PrepareReply{
-	prepareReply := PrepareReply{}
+func (acceptor Acceptor) DeepCopy() Acceptor {
 	acceptor.Mu.Lock()
-	if n > acceptor.N_p {
-		acceptor.N_p = n
-		prepareReply.N_a = acceptor.N_a
-		prepareReply.V_a = acceptor.V_a
-		prepareReply.OK = true
-	}else {
-		prepareReply.OK = false
+	copy := Acceptor{
+		N_p: acceptor.N_p,
+		N_a: acceptor.N_a,
+		V_a: acceptor.V_a.DeepCopy()
 	}
-	prepareReply.N_p = acceptor.N_p
-	disk.SafeWriteAcceptor(seq, *acceptor) //TODO: do we need to pass a copy of the *acceptor
 	acceptor.Mu.Unlock()
-	return prepareReply
+	return copy
 }
 
 type Learner struct {
 	Mu sync.Mutex
 	Decided bool
-	V interface{}
+	V DeepCopyable
 }
 
 // --------
@@ -222,7 +233,7 @@ type PrepareEpochReply struct {
 
 type PrepareReply struct {
 	N_a int
-	V_a interface{}
+	V_a DeepCopyable
 	OK bool
 	N_p int // the round number that may have caused a reject
 }
@@ -230,7 +241,7 @@ type PrepareReply struct {
 type AcceptArgs struct {
   Seq int
   N int
-  V interface{}
+  V DeepCopyable
 	PiggyBack PiggyBack
 }
 
@@ -242,7 +253,7 @@ type AcceptReply struct {
 
 type DecideArgs struct {
   Seq int
-  V interface{}
+  V DeepCopyable
 	PiggyBack PiggyBack
 }
 
@@ -282,7 +293,7 @@ type Disk struct {
 	dead bool
 	crashed bool
 	Mu sync.Mutex
-	Acceptors map[int]Acceptors
+	Acceptors map[int]*Acceptors
 	//OPTIMIZATION: keep track of learners... helps KV in common case
 	LocalMin int
 }
@@ -296,7 +307,7 @@ func (d *Disk) SafeDead() {
 func (d *Disk) SafeErase() {
 	d.Mu.Lock()
 	d.crashed = true
-	d.Acceptors = make(map[int]Acceptors)
+	d.Acceptors = make(map[int]*Acceptors)
 	d.LocalMin = 0
 	d.Mu.Unlock()
 }
@@ -314,10 +325,10 @@ func (d *Disk) SafeCrashed() bool {
 	return crashed
 }
 
-func (d *Disk) SafeWriteAcceptor(seq int, acceptor Acceptor) {
+func (d *Disk) SafeWriteAcceptor(seq int, acceptor *Acceptor) {
 	d.Mu.Lock()
 	if (!d.dead) {
-		d.Acceptors[seq] = acceptor
+		d.Acceptors[seq] = &(acceptor.DeepCopy())
 	}
 	d.Mu.Unlock()
 }
