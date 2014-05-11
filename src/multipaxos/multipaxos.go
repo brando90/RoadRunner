@@ -47,10 +47,10 @@ type MultiPaxos struct {
 /*
 Tries to send accept
 If this server considers itself a leader, send accepts
-Otherwise, DO NOT send accepts. Relay potential leader information to client instead
+Otherwise, DO NOT send accepts
 */
 func (mpx *MultiPaxos) Push(seq int, v interface{}) Err {
-  if actingAsLeader {
+  if mpx.actingAsLeader {
     go mpx.leaderPropose(seq, v)
     return nil
   }else {
@@ -82,7 +82,7 @@ func (mpx *MultiPaxos) Done(seq int) {
 // this peer.
 //
 func (mpx *MultiPaxos) Max() int {
-  return mpx.localMax
+  return mpx.localMax //TODO: locking localMax ... ?
 }
 
 /*
@@ -130,20 +130,6 @@ func (mpx *MultiPaxos) Kill() {
   if mpx.l != nil {
     mpx.l.Close()
   }
-}
-
-func (mpx *MultiPaxos) eraseMemory() {
-  mpx.localMin = 0
-  mpx.localMax = 0
-  mpx.maxKnownMin = 0
-  mpx.proposers.SafeReset()
-  mpx.acceptors.SafeReset()
-  mpx.learners.SafeReset()
-  mpx.mins.SafeReset()
-  mpx.lifeStates.SafeReset()
-  mpx.actingAsLeader = false
-  mpx.epoch = 0
-  mpx.maxKnownEpoch = 0
 }
 
 func (mpx *MultiPaxos) MemCrash() {
@@ -459,6 +445,25 @@ func (mpx *MultiPaxos) refreshEpoch() {
   mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
 }
 
+
+func (mpx *MultiPaxos) eraseMemory() {
+  //TODO: maybe memory should be reset upon restart...
+  //TODO: even better... a new instance guarantees the semantics we are looking for!! (no updates applied post-humously)
+  //TODO: makes sense since the server stops listening to requests after death (even if it is rebooted i.e. dead = false)
+  //TODO: change all attributes to be shared. only update values if mpx is alive
+  mpx.localMin = 0
+  mpx.localMax = 0
+  mpx.maxKnownMin = 0
+  mpx.proposers.SafeReset()
+  mpx.acceptors.SafeReset()
+  mpx.learners.SafeReset()
+  mpx.mins.SafeReset()
+  mpx.lifeStates.SafeReset()
+  mpx.actingAsLeader = false
+  mpx.epoch = 0
+  mpx.maxKnownEpoch = 0
+}
+
 /*
 Periodic tick function
 Ping all servers
@@ -475,7 +480,7 @@ func (mpx *MultiPaxos) tick() {
   // leader decision & action
   leaderID := mpx.leaderElection()
   if leaderID == mpx.me {
-    if !mpx.actingAsLeader {
+    if !mpx.actingAsLeader { //TODO: locking actingAsLeader
       mpx.actAsLeader()
     }
   }else {
