@@ -12,6 +12,28 @@ import (
   "math"
 )
 
+/*
+:: TABLE OF CONTENTS ::
+-----------------------
+Section 0 : MultiPaxos Object
+Section 1 : API
+Section 2 : RPC's & RPC Helpers
+Section 3 : RPC Handlers & RPC Handler Helpers
+Section 4 : Internal Methods
+*/
+
+/*
+Section 0 : MultiPaxos Object
+-----------------------------
+-- SubSection 0 : Declaration --
+-- SubSection 1 : Constructor --
+*/
+
+// -- SubSection 0 : Declaration --
+
+/*
+MultiPaxos object definition
+*/
 type MultiPaxos struct {
   mu sync.Mutex
   l net.Listener
@@ -40,9 +62,103 @@ type MultiPaxos struct {
   disk *Disk // simulates disk in software for persistence plan
 }
 
-// ---
+// -- SubSection 1 : Constructor --
 
-// API
+/*
+the application wants to create a multipaxos peer.
+the ports of all the multipaxos peers (including this one)
+are in peers[]. this servers port is peers[me].
+*/
+func Make(peers []string, me int, rpcs *rpc.Server, listener net.Listener, disk *Disk) *MultiPaxos {
+  //TODO: when should rpcs be nil??
+  mpx := &MultiPaxos{}
+  mpx.peers = peers
+  mpx.me = me
+
+  // Initialization
+  mpx.localMin = 0
+  mpx.localMax = 0
+  mpx.maxKnownMin = 0
+  mpx.proposers = MakeSharedMap()
+  mpx.acceptors = MakeSharedMap()
+  mpx.learners = MakeSharedMap()
+  mpx.mins = MakeSharedSlice()
+  mpx.lifeStates = MakeSharedSlice()
+  mpx.actingAsLeader = false
+  mpx.epoch = 0
+  mpx.maxKnownEpoch = 0
+  if disk == nil {
+    mpx.disk = MakeDisk()
+  }else {
+    mpx.disk = disk
+  }
+
+  if rpcs != nil {
+    // caller will create socket &c
+    rpcs.Register(mpx)
+  } else {
+    rpcs = rpc.NewServer()
+    rpcs.Register(mpx)
+
+    // prepare to receive connections from clients.
+    // change "unix" to "tcp" to use over a network.
+    os.Remove(peers[me]) // only needed for "unix"
+    if listener == nil {
+      l, e := net.Listen("unix", peers[me]);
+      if e != nil {
+        log.Fatal("listen error: ", e);
+      }
+      mpx.l = l
+    }else {
+      mpx.l = listener
+    }
+
+    // please do not change any of the following code,
+    // or do anything to subvert it.
+
+    // create a thread to accept RPC connections
+    go func() {
+      for mpx.dead == false {
+        conn, err := mpx.l.Accept()
+        if err == nil && mpx.dead == false {
+          if mpx.unreliable && (rand.Int63() % 1000) < 100 {
+            // discard the request.
+            conn.Close()
+          } else if mpx.unreliable && (rand.Int63() % 1000) < 200 {
+            // process the request but force discard of reply.
+            c1 := conn.(*net.UnixConn)
+            f, _ := c1.File()
+            err := syscall.Shutdown(int(f.Fd()), syscall.SHUT_WR)
+            if err != nil {
+              fmt.Printf("shutdown: %v\n", err)
+            }
+            mpx.rpcCount++
+            go rpcs.ServeConn(conn)
+          } else {
+            mpx.rpcCount++
+            go rpcs.ServeConn(conn)
+          }
+        } else if err == nil {
+          conn.Close()
+        }
+        if err != nil && mpx.dead == false {
+          fmt.Printf("Paxos(%v) accept: %v\n", me, err.Error())
+        }
+      }
+    }()
+  }
+  //TODO: need to call tick periodically
+  return mpx
+}
+
+/*
+Section 1 : API
+---------------
+-- SubSection 0 : KV Interface --
+-- SubSection 1 : Failure Simulation Interface --
+*/
+
+// -- SubSection 0 : KV Interface --
 
 /*
 Tries to send accept
@@ -76,11 +192,11 @@ func (mpx *MultiPaxos) Done(seq int) {
   mpx.safeForgetUntil(mpx.learners, seq)
 }
 
-//
-// the application wants to know the
-// highest instance sequence known to
-// this peer.
-//
+/*
+the application wants to know the
+highest instance sequence known to
+this peer.
+*/
 func (mpx *MultiPaxos) Max() int {
   return mpx.localMax //TODO: locking localMax ... ?
 }
@@ -103,13 +219,13 @@ func (mpx *MultiPaxos) GlobalMin() int {
   return globalMin
 }
 
-//
-// the application wants to know whether this
-// peer thinks an instance has been decided,
-// and if so what the agreed value is. Status()
-// should just inspect the local peer state;
-// it should not contact other Paxos peers.
-//
+/*
+the application wants to know whether this
+peer thinks an instance has been decided,
+and if so what the agreed value is. Status()
+should just inspect the local peer state;
+it should not contact other Paxos peers.
+*/
 func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
   if seq < mpx.GlobalMin() {
     panic("Cannot remember decision at sequence %d after Done(%d) was called for this instance", seq, mpx.localMin-1)
@@ -120,11 +236,14 @@ func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
   return learner.Decided, learner.Value
 }
 
-//
-// tell the peer to shut itself down.
-// for testing.
-// please do not change this function.
-// NB: assumes fail-stop
+// -- SubSection 1 : Failure Simulation Interface --
+
+/*
+tell the peer to shut itself down.
+for testing. (without persistence)
+please do not change this function.
+NB: assumes fail-stop
+*/
 func (mpx *MultiPaxos) Kill() {
   mpx.dead = true
   if mpx.l != nil {
@@ -132,39 +251,73 @@ func (mpx *MultiPaxos) Kill() {
   }
 }
 
-func (mpx *MultiPaxos) MemCrash() {
+/*
+Simulate server crash
+Specifiy whether simulated disk loss should occur
+*/
+func (mpx *MultiPaxos) Crash(loseDisk bool) {
+  //TODO: should rpcs argument be nil?
   mpx.dead = true
-  if mpx.l != nil {
-    mpx.l.Close()
+  // if mpx.l != nil {
+  //   mpx.l.Close()
+  // }
+  if loseDisk {
+    mpx = Make(mpx.peers, mpx.me, nil, mpx.l, nil)
+  }else {
+    mpx = Make(mpx.peers, mpx.me, nil, mpx.l, mpx.disk)
   }
-  mpx.eraseMemory()
-  mpx.disk.SafeDead()
 }
 
-func (mpx *MultiPaxos) DiskMemCrash() {
-  mpx.MemCrash()
-  mpx.disk.SafeErase() // erases disk contents
-}
-
+/*
+Signal server to undergo recovery protocol
+*/
 func (mpx *MultiPaxos) Reboot() {
-  if mpx.disk.SafeCrashed() { // suffered a disk/mem crash
-    //TODO: get disk from someone else
-  }else { // suffered a mem crash
-    mpx.recoverFromDisk()
+  if diskCrashed {
+    //TODO: foreign disk recovery protocol
+  }else {
+    //TODO: local disk recovery protocol
   }
-  mpx.disk.SafeAlive()
   mpx.dead = false
 }
 
-func (mpx *MultiPaxos) recoverFromDisk() {
-  //TODO
+/*
+Section 2 : RPC's and RPC Helpers
+---------------------------------
+-- SubSection 0 : Ping --
+-- SubSection 1 : Prepare Epoch Phase --
+-- SubSection 2 : Accept Phase --
+-- SubSection 3 : Decide Phase --
+*/
+
+// -- SubSection 0 : Ping --
+
+func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan bool) {
+  if peerID != mpx.me {
+    args := PingArgs{}
+    reply := PingReply{}
+    replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
+    if replyReceived {
+      mpx.mu.Lock()
+      mpx.presence[peerID] = Alive
+      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
+    }else {
+      mpx.mu.Lock()
+      if mpx.presence[peerID] == Alive {
+        mpx.presence[peerID] = Missing
+      }else if mpx.presence[peerID] == Missing {
+        mpx.presence[peerID] = Dead
+      }
+      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
+    }
+  }
+  // account for pinged server
+  rollcall.SafeIncr()
+  if rollcall.SafeCount() == len(mpx.peers) { // accounted for all servers
+    done <- true
+  }
 }
 
-// -----
-
-// RPC's
-
-// -- Prepare Phase --
+// -- SubSection 1 : Prepare Phase --
 
 /*
 Sends prepare epoch for sequences >= seq to all acceptors
@@ -246,7 +399,7 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID serverID, args *PrepareEpochArgs,
   }
 }
 
-// -- Accept Phase --
+// -- SubSection 2 : Accept Phase --
 
 /*
 Sends accept with round number = epoch to all acceptors at sequence = seq
@@ -286,7 +439,7 @@ func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *Acce
   }
 }
 
-// -- Decide Phase --
+// -- SubSection 3 : Decide Phase --
 
 func (mpx *MultiPaxos) decidePhase(seq int, v interface{}) {
   for _, peer := range mpx.peers {
@@ -311,35 +464,23 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
   }
 }
 
-func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan bool) {
-  if peerID != mpx.me {
-    args := PingArgs{}
-    reply := PingReply{}
-    replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
-    if replyReceived {
-      mpx.mu.Lock()
-      mpx.presence[peerID] = Alive
-      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
-    }else {
-      mpx.mu.Lock()
-      if mpx.presence[peerID] == Alive {
-        mpx.presence[peerID] = Missing
-      }else if mpx.presence[peerID] == Missing {
-        mpx.presence[peerID] = Dead
-      }
-      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
-    }
-  }
-  // account for pinged server
-  rollcall.SafeIncr()
-  if rollcall.SafeCount() == len(mpx.peers) { // accounted for all servers
-    done <- true
-  }
+/*
+Section 3 : RPC Handlers & RPC Handler Helpers
+----------------------------------------------
+-- SubSection 0 : Ping Handler --
+-- SubSection 1 : Prepare Handler --
+-- SubSection 2 : Accept Handler --
+-- SubSection 3 : Decide Handler --
+*/
+
+// -- SubSection 0 : Ping Handler --
+
+func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
+  mpx.processPiggyBack(args.PiggyBack)
+  return nil
 }
 
-// ------------
-
-// RPC handlers
+// -- SubSection 1 : Prepare Handler --
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
   mpx.considerSequence(args.Seq)
@@ -347,11 +488,14 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   epochReplies := make(map[int]PrepareReply)
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
     acceptor := mpx.summonAcceptor(seq)
+    //TODO: should prepare be a method of acceptor?? -> probably not...
     epochReplies[seq] = acceptor.SafePrepare(args.Epoch, mpx.disk)
   }
   reply.EpochReplies = epochReplies
   return nil
 }
+
+// -- SubSection 2 : Accept Handler --
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
   mpx.considerSequence(args.Seq)
@@ -372,6 +516,8 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   return nil
 }
 
+// -- SubSection 3 : Decide Handler --
+
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
   mpx.considerSequence(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
@@ -383,14 +529,7 @@ func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error
   return nil
 }
 
-func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
-  mpx.processPiggyBack(args.PiggyBack)
-  return nil
-}
-
-// ----------------
-
-// Internal methods
+// Section 4 : Internal Methods
 
 func (mpx *MultiPaxos) isMajority(x int) bool {
   return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
@@ -445,23 +584,8 @@ func (mpx *MultiPaxos) refreshEpoch() {
   mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
 }
 
-
-func (mpx *MultiPaxos) eraseMemory() {
-  //TODO: maybe memory should be reset upon restart...
-  //TODO: even better... a new instance guarantees the semantics we are looking for!! (no updates applied post-humously)
-  //TODO: makes sense since the server stops listening to requests after death (even if it is rebooted i.e. dead = false)
-  //TODO: change all attributes to be shared. only update values if mpx is alive
-  mpx.localMin = 0
-  mpx.localMax = 0
-  mpx.maxKnownMin = 0
-  mpx.proposers.SafeReset()
-  mpx.acceptors.SafeReset()
-  mpx.learners.SafeReset()
-  mpx.mins.SafeReset()
-  mpx.lifeStates.SafeReset()
-  mpx.actingAsLeader = false
-  mpx.epoch = 0
-  mpx.maxKnownEpoch = 0
+func (mpx *MultiPaxos) recoverFromDisk() {
+  //TODO
 }
 
 /*
@@ -603,86 +727,4 @@ func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
     }
   }
   pxRole.Mu.Unlock()
-}
-
-// -----------
-
-// Constructor
-
-//
-// the application wants to create a paxos peer.
-// the ports of all the paxos peers (including this one)
-// are in peers[]. this servers port is peers[me].
-//
-func Make(peers []string, me int, rpcs *rpc.Server) *MultiPaxos {
-  //TODO: when should rpcs be nil??
-  mpx := &MultiPaxos{}
-  mpx.peers = peers
-  mpx.me = me
-
-  // Initialization
-  mpx.localMin = 0
-  mpx.localMax = 0
-  mpx.maxKnownMin = 0
-  mpx.proposers = MakeSharedMap()
-  mpx.acceptors = MakeSharedMap()
-  mpx.learners = MakeSharedMap()
-  mpx.mins = MakeSharedSlice()
-  mpx.lifeStates = MakeSharedSlice()
-  mpx.actingAsLeader = false
-  mpx.epoch = 0
-  mpx.maxKnownEpoch = 0
-  mpx.disk = MakeDisk()
-
-  if rpcs != nil {
-    // caller will create socket &c
-    rpcs.Register(mpx)
-  } else {
-    rpcs = rpc.NewServer()
-    rpcs.Register(mpx)
-
-    // prepare to receive connections from clients.
-    // change "unix" to "tcp" to use over a network.
-    os.Remove(peers[me]) // only needed for "unix"
-    l, e := net.Listen("unix", peers[me]);
-    if e != nil {
-      log.Fatal("listen error: ", e);
-    }
-    mpx.l = l
-
-    // please do not change any of the following code,
-    // or do anything to subvert it.
-
-    // create a thread to accept RPC connections
-    go func() {
-      for mpx.dead == false {
-        conn, err := mpx.l.Accept()
-        if err == nil && mpx.dead == false {
-          if mpx.unreliable && (rand.Int63() % 1000) < 100 {
-            // discard the request.
-            conn.Close()
-          } else if mpx.unreliable && (rand.Int63() % 1000) < 200 {
-            // process the request but force discard of reply.
-            c1 := conn.(*net.UnixConn)
-            f, _ := c1.File()
-            err := syscall.Shutdown(int(f.Fd()), syscall.SHUT_WR)
-            if err != nil {
-              fmt.Printf("shutdown: %v\n", err)
-            }
-            mpx.rpcCount++
-            go rpcs.ServeConn(conn)
-          } else {
-            mpx.rpcCount++
-            go rpcs.ServeConn(conn)
-          }
-        } else if err == nil {
-          conn.Close()
-        }
-        if err != nil && mpx.dead == false {
-          fmt.Printf("Paxos(%v) accept: %v\n", me, err.Error())
-        }
-      }
-    }()
-  }
-  return mpx
 }
