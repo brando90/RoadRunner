@@ -1,0 +1,27 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+
+\title{RoadRunner}
+
+\author{Pedro Cattori and Brando Miranda}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+RoadRunner is a persistent, fault-tolerant, high-performance key-value store. 
+RoadRunner avoids two round trip times by preparing everything in the paxos log in advance from some sequence number to infinity. 
+Our implementation of Multi-Paxos is independent of clock synchronization or time leases. Instead it uses epoch rounds to elect leaders and only the server with the highest epoch round will be able to send accepts. 
+Our design of multi-Paxos does not need to elect leaders explicitly by having a paxos instance to decide on an server id number.
+Instead, from the servers that are alive, the one with the highest server id will consider himself the leader and prepare paxos instances in advance (and eventually send accepts too).
+As I will argue, the correctness of our Multi-Paxos design will not be affected if multiple servers think they are the leader. In fact, if servers constantly die and the leader switches around constantly during RoadRunner's operation, it will degrade gracefully into normal paxos, so RoadRunner is at least as good as our previous Paxos implementations.
+\end{abstract}
+
+
+
+\end{document}
