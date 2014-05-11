@@ -23,5 +23,6 @@
 *.mtc1
 *.out
 *.synctex.gz
+*.pdf
 
 #should we add some stuff for the .gitignore in go?
