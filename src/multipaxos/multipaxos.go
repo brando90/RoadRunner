@@ -375,9 +375,9 @@ func (mpx *MultiPaxos) refreshEpoch() {
   l := len(mpx.peers)
   // generate unique epoch higher than any epoch we have seen so far
   mpx.mu.Lock()
-  defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
   mpx.epoch = ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
   mpx.maxKnownEpoch = mpx.epoch // not strictly necessary, but maintains the implied invariant of maxKnownEpoch
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
 }
 
 /*
@@ -445,28 +445,26 @@ Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
   mpx.mu.Lock()
-  defer mpx.mu.Unlock()
-  //OPTIMIZATION: fine-grain lock for actingAsLeader...?
   mpx.actingAsLeader = false
   //TODO: handle/respond to in-progress requests correctly
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain lock for actingAsLeader...?
 }
 
 // -- Summoners (lazy instantiators) --
 
 func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
   mpx.proposers.Mu.Lock()
-  defer mpx.proposers.Mu.Unlock()
   proposer, exists := mpx.proposers.Map[seq]
   if !exists {
     proposer = &Proposer{}
     mpx.proposers[seq] = proposer
   }
+  mpx.proposers.Mu.Unlock()
   return proposer.(*Proposer)
 }
 
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   mpx.acceptors.Mu.Lock()
-  defer mpx.acceptors.Mu.Unlock()
   acceptor, exists := mpx.acceptors.Map[seq]
   if !exists {
     acceptor = &Acceptor{}
@@ -475,17 +473,18 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
     //TODO: might need to initialize from disk
     mpx.acceptors = acceptor
   }
+  mpx.acceptors.Mu.Unlock()
   return acceptor.(*Acceptor)
 }
 
 func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
   mpx.learners.Mu.Lock()
-  defer mpx.learners.Mu.Unlock()
   learner, exists := mpx.learners.Map[seq]
   if !exists {
     learner = &Learner{Decided: false}
     mpx.learners[seq] = learner
   }
+  mpx.learners.Mu.Unlock()
   return learner.(*Learner)
 }
 
@@ -499,11 +498,11 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
   }
   mpx.mins.Mu.Unlock()
   mpx.mu.Lock()
-  defer mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownMins
   if piggyBack.MaxKnownMin > mpx.maxKnownMin {
     mpx.maxKnownMin = mpx.MaxKnownMin
   }
   min := mpx.GlobalMin()
+  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownMins
 }
 
 // -- Garbage collection --
