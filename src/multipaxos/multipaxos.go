@@ -25,7 +25,7 @@ Section 4 : Internal Methods
 /* Section 0 : MultiPaxos Object
 --------------------------------
 -- SubSection 0 : Declaration --
--- SubSection 1 : Constructor --
+-- SubSection 1 : Constructors --
 */
 
 // -- SubSection 0 : Declaration --
@@ -51,8 +51,9 @@ type MultiPaxos struct {
   learners  SharedMap // internally: map[int]*Learner
 
   mins SharedSlice // internally: []int for calculating GlobalMin()
-
+  //TODO: change to array
   lifeStates SharedSlice // internally: []LifeState keeps track of Alive/Missing/Dead for each peer
+  //TODO: change to array
   actingAsLeader bool
 
   epoch int
@@ -61,14 +62,18 @@ type MultiPaxos struct {
   disk *Disk // simulates disk in software for persistence plan
 }
 
-// -- SubSection 1 : Constructor --
+// -- SubSection 1 : Constructors --
+
+func Make(peers [string], me int) *MultiPaxos {
+  return mpx(peers, me, nil, nil, &Disk{})
+}
 
 /*
 the application wants to create a multipaxos peer.
 the ports of all the multipaxos peers (including this one)
 are in peers[]. this servers port is peers[me].
 */
-func Make(peers []string, me int, rpcs *rpc.Server, listener net.Listener, disk *Disk) *MultiPaxos {
+func mpx(peers []string, me int, rpcs *rpc.Server, listener net.Listener, disk *Disk) *MultiPaxos {
   //TODO: when should rpcs be nil??
   mpx := &MultiPaxos{}
   mpx.peers = peers
@@ -81,16 +86,12 @@ func Make(peers []string, me int, rpcs *rpc.Server, listener net.Listener, disk 
   mpx.proposers = MakeSharedMap()
   mpx.acceptors = MakeSharedMap()
   mpx.learners = MakeSharedMap()
-  mpx.mins = MakeSharedSlice()
-  mpx.lifeStates = MakeSharedSlice()
+  mpx.mins = MakeSharedSlice(len(mpx.peers))
+  mpx.lifeStates = MakeSharedSlice(len(mpx.peers))
   mpx.actingAsLeader = false
   mpx.epoch = 0
   mpx.maxKnownEpoch = 0
-  if disk == nil {
-    mpx.disk = MakeDisk()
-  }else {
-    mpx.disk = disk
-  }
+  mpx.disk = disk
 
   if rpcs != nil {
     // caller will create socket &c
@@ -260,9 +261,9 @@ func (mpx *MultiPaxos) Crash(loseDisk bool) {
   //   mpx.l.Close()
   // }
   if loseDisk {
-    mpx = Make(mpx.peers, mpx.me, nil, mpx.l, nil)
+    mpx = mpx(mpx.peers, mpx.me, nil, mpx.l, nil)
   }else {
-    mpx = Make(mpx.peers, mpx.me, nil, mpx.l, mpx.disk)
+    mpx = mpx(mpx.peers, mpx.me, nil, mpx.l, mpx.disk)
   }
 }
 
@@ -270,10 +271,11 @@ func (mpx *MultiPaxos) Crash(loseDisk bool) {
 Signal server to undergo recovery protocol
 */
 func (mpx *MultiPaxos) Reboot() {
-  if diskCrashed {
-    //TODO: foreign-aid disk recovery protocol
-  }else {
-    //TODO: local disk recovery protocol
+  if mpx.disk == nil { // disk loss
+    mpx.disk = *Disk{} // initialize replacement disk
+    mpx.recoverFromPeers()
+  }else { // disk intact
+    mpx.recoverFromDisk()
   }
   mpx.dead = false
 }
@@ -479,13 +481,15 @@ func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
 // -- SubSection 1 : Prepare Handler --
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
-  mpx.considerSequence(args.Seq)
+  mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   epochReplies := make(map[int]PrepareReply)
+  //OPTIMIZATION: concurrently apply prepares to acceptors
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
     acceptor := mpx.summonAcceptor(seq)
     //TODO: should prepare be a method of acceptor?? -> probably not...
     epochReplies[seq] = acceptor.SafePrepare(args.Epoch, mpx.disk)
+    //OPTIMIZATION: batch acceptor disk writes
   }
   reply.EpochReplies = epochReplies
   return nil
@@ -494,7 +498,7 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 // -- SubSection 2 : Accept Handler --
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
-  mpx.considerSequence(args.Seq)
+  mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   acceptor := mpx.summonAcceptor(args.Seq)
   acceptor.Lock()
@@ -515,7 +519,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
 // -- SubSection 3 : Decide Handler --
 
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
-  mpx.considerSequence(args.Seq)
+  mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   learner := mpx.summonLearner(args.Seq)
   learner.Mu.Lock()
@@ -540,7 +544,7 @@ func (mpx *MultiPaxos) isMajority(x int) bool {
   return x >= (len(mpx.peers)/2) + 1 // integer division == math.Floor()
 }
 
-func (mpx *MultiPaxos) considerSequence(seq int) {
+func (mpx *MultiPaxos) refreshLocalMax(seq int) {
   mpx.mu.Lock()
   if seq > mpx.localMax {
     mpx.localMax = seq
@@ -749,5 +753,42 @@ func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
 // -- SubSection 4 : Persistence --
 
 func (mpx *MultiPaxos) recoverFromDisk() {
+  mpx.disk.Mu.Lock()
+  mpx.localMin = mpx.disk.LocalMin //TODO: incur disk read latency
+  mpx.localMax = mpx.localMin
+  mpx.maxKnownMin = mpx.localMin
+  mpx.proposers = MakeSharedMap()
+  mpx.acceptors = MakeSharedMap()
+  globalMin := mpx.localMin
+  mpx.acceptors.Mu.Lock()
+  for seq, acceptor := mpx.disk.Acceptors {
+    //TODO: incur disk read latency (batched??)
+    //TODO: copy acceptor structs??
+    mpx.acceptors.Map[seq] = &acceptor
+    if seq < globalMin {
+      globalMin = seq
+    }
+  }
+  mpx.acceptors.Mu.Unlock()
+  mpx.learners = MakeSharedMap() //OPTIMIZATION: get directly from disk
+  mpx.mins = MakeSharedSlice(len(mpx.peers))
+  mpx.mins.Mu.Lock()
+  for peerID, _ := range mpx.mins.Slice {
+    mpx.mins.Slice[peerID] = globalMin
+  }
+  mpx.mins.Mu.Unlock()
+  mpx.lifeStates = MakeSharedSlice(len(mpx.peers))
+  mpx.lifeStates.Mu.Lock()
+  for peerID, _ := range mpx.lifeStates.Slice {
+    mpx.lifeStates.Slice[peerID] = Dead
+  }
+  mpx.LifeStates.Mu.Unlock()
+  mpx.actingAsLeader = false
+  mpx.epoch = 0
+  mpx.maxKnownEpoch = 0
+  mpx.disk.Mu.Unlock()
+}
+
+func (mpx *MultiPaxos) recoverFromPeers() {
   //TODO
 }

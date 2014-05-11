@@ -191,9 +191,9 @@ func (acceptor *Acceptor) SafePrepare(n int, disk *Disk) PrepareReply{
 	}else {
 		prepareReply.OK = false
 	}
+	prepareReply.N_p = acceptor.N_p
 	disk.SafeWriteAcceptor(seq, *acceptor) //TODO: do we need to pass a copy of the *acceptor
 	acceptor.Mu.Unlock()
-	prepareReply.N_p = acceptor.N_p
 	return prepareReply
 }
 
