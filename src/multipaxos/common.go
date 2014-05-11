@@ -37,6 +37,12 @@ type SharedMap struct {
 	Mu sync.Mutex
 }
 
+func (m *SharedMap) SafeReset() {
+	m.Mu.Lock()
+	m.Map = make(map[interface{}]interface{})
+	m.Mu.Unlock()
+}
+
 func (m *SharedMap) SafeGet(key interface{}) (interface{}, bool) {
 	m.Mu.Lock()
 	value, exists := m.Map[key]
@@ -86,6 +92,12 @@ type SharedCounter struct {
 	_mu int
 }
 
+func (c *SharedCounter) SafeReset() {
+	c._mu.Lock()
+	c._n = 0
+	c._mu.Unlock()
+}
+
 func (c *SharedCounter) SafeCount() int {
 	c._mu.Lock()
 	count := c._n
@@ -108,6 +120,12 @@ func MakeSharedSlice() *SharedSlice {
 type SharedSlice struct {
 	Mu sync.Mutex
 	Slice []interface{}
+}
+
+func (s *SharedSlice) SafeReset() {
+	s.Mu.Lock()
+	s.Slice = []interface{}{}
+	s.Mu.Unlock()
 }
 
 // -----
@@ -149,7 +167,7 @@ type Acceptor struct {
 	V_a interface{}
 }
 
-func (acceptor *Acceptor) SafePrepare(n int) PrepareReply{
+func (acceptor *Acceptor) SafePrepare(n int, disk *Disk) PrepareReply{
 	prepareReply := PrepareReply{}
 	acceptor.Mu.Lock()
 	if n > acceptor.N_p {
@@ -160,6 +178,7 @@ func (acceptor *Acceptor) SafePrepare(n int) PrepareReply{
 	}else {
 		prepareReply.OK = false
 	}
+	disk.SafeWriteAcceptor(seq, *acceptor) //TODO: do we need to pass a copy of the *acceptor
 	acceptor.Mu.Unlock()
 	prepareReply.N_p = acceptor.N_p
 	return prepareReply
@@ -175,15 +194,17 @@ type Learner struct {
 
 // RPC args & replies
 
+//OPTIMIZATION: piggyback in rpc replies
+
 type PrepareEpochArgs struct {
-	Epoch int
+	N int
 	Seq int
 	PiggyBack PiggyBack
 }
 
 type PrepareEpochReply struct {
 	EpochReplies map[int]PrepareReply
-	PiggyBack PiggyBack
+	//OPTIMIZATION: PiggyBack PiggyBack
 }
 
 type PrepareReply struct {
@@ -191,7 +212,6 @@ type PrepareReply struct {
 	V_a interface{}
 	OK bool
 	N_p int // the round number that may have caused a reject
-	PiggyBack PiggyBack
 }
 
 type AcceptArgs struct {
@@ -203,8 +223,8 @@ type AcceptArgs struct {
 
 type AcceptReply struct {
   OK bool
-  //TODO: do we need to give any information on our highest seen proposal number? (as in 3a)
-	PiggyBack PiggyBack
+	N_p int
+	//OPTIMIZATION: PiggyBack PiggyBack
 }
 
 type DecideArgs struct {
@@ -215,7 +235,7 @@ type DecideArgs struct {
 
 type DecideReply struct {
   // Empty
-	PiggyBack PiggyBack
+	//OPTIMIZATION: PiggyBack PiggyBack
 }
 
 type PingArgs struct {
@@ -224,19 +244,77 @@ type PingArgs struct {
 }
 
 type PingReply struct {
-	PiggyBack PiggyBack
+	//OPTIMIZATION: PiggyBack PiggyBack
 }
 
 type PiggyBack struct {
   Me int
   LocalMin int
   MaxKnownMin int
+	MaxKnownEpoch int
 }
 
 // Disk
 
+func MakeDisk() *Disk {
+	return &Disk{
+		dead: false,
+		crashed: false,
+		Acceptors: make(map[int]Acceptors),
+		LocalMin: 0
+	}
+}
+
 type Disk struct {
-	//TODO: define this
+	dead bool
+	crashed bool
+	Mu sync.Mutex
+	Acceptors map[int]Acceptors
+	//OPTIMIZATION: keep track of learners... helps KV in common case
+	LocalMin int
+}
+
+func (d *Disk) SafeDead() {
+	d.Mu.Lock()
+	d.dead = true
+	d.Mu.Unlock()
+}
+
+func (d *Disk) SafeErase() {
+	d.Mu.Lock()
+	d.crashed = true
+	d.Acceptors = make(map[int]Acceptors)
+	d.LocalMin = 0
+	d.Mu.Unlock()
+}
+
+func (d *Disk) SafeAlive() {
+	d.Mu.Lock()
+	d.dead = false
+	d.Mu.Unlock()
+}
+
+func (d *Disk) SafeCrashed() bool {
+	d.Mu.Lock()
+	crashed := d.crashed
+	d.Mu.Unlock()
+	return crashed
+}
+
+func (d *Disk) SafeWriteAcceptor(seq int, acceptor Acceptor) {
+	d.Mu.Lock()
+	if (!d.dead) {
+		d.Acceptors[seq] = acceptor
+	}
+	d.Mu.Unlock()
+}
+
+func (d *Disk) SafeWriteLocalMin(localMin int) {
+	d.Mu.Lock()
+	if (!d.dead) {
+		d.LocalMin = localMin
+	}
+	d.Mu.Unlock()
 }
 
 //
