@@ -24,7 +24,20 @@ const (
 
 // Convenience types
 
+type ServerID int
 type ServerName string
+
+// -- SharedInt : built-in concurrency support --
+
+func MakeSharedInt() *SharedInt {
+	return &SharedInt{}
+}
+
+type SharedInt struct {
+	Int int
+	Mu sync.Mutex
+}
+
 
 // -- Shared Map : built-in concurrency support --
 
