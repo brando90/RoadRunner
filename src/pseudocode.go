@@ -29,7 +29,7 @@ prepare_epoch_handler(e, seq):
     reply with response map
     //NB: we must take care to immediately prepare any newly initialized acceptors with seq number >= seq with round number e (saved in current_epoch)
 
-tick: // called periodically
+mpx.tick: // called periodically
     ping all servers
     keep track of highest local min we hear // highest local mins piggy-backed in ping responses
     if a server has not responded to our pings for longer than twice the ping interval:
@@ -37,7 +37,13 @@ tick: // called periodically
     if I have the largest id amongst servers that I consider living:
         act as new leader (increment epoch/round number)
     else:
-        catch_up
+        relinquish leadership
+
+kv.tick:
+    if !leader:
+        catch_up to maxLocalMin (because we are behind)
+    else:
+        //do nothing, we are already waiting on client requests
 
 catch_up:
     catch up to the maximum local min that we know about // since local mins guarantee that every sequence before them has been decided
@@ -49,7 +55,7 @@ catch_up:
             if this fails, continue with normal, catch up routine described below
             we expect to be able to contact a learner who knows the decision in most cases (and it only takes 1 RTT) thus immproving our expected performance
         */
-        call status to see if decision is available on the server's local learner
+        call status to see if decision is available on the servers local learner
         if not yet decided:
             prepare NOP with a special, globally highest round number
             wait for decision...
@@ -59,3 +65,17 @@ catch_up:
 persistence:
     before an acceptor replies to a proposer, it must persist changes to its acceptor state
     // before the rpc handler returns, ensure state changes have persisted (in prepare handler, and accept handler)
+
+
+//RecoverFromLocalDisk
+Reboot:
+    if disk is dead:
+        query a majority of localMax, choose max(localMaxes)
+        ping for localMin until one localMin > max(localMaxes);
+            sleep for a bit if cant find localMin > max(localMaxes) //give time to system to progress
+        once localMin > max(localMaxes) == success;
+            then, copy everything about them (get their KV and acceptors, localMin, etc)
+    else: //disk is not dead
+        get the kv from the local disk
+        set the multi-paxos state up 
+        set ourselves to be live
