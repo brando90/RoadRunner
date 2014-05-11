@@ -66,7 +66,6 @@ persistence:
     before an acceptor replies to a proposer, it must persist changes to its acceptor state
     // before the rpc handler returns, ensure state changes have persisted (in prepare handler, and accept handler)
 
-
 //RecoverFromLocalDisk
 Reboot:
     if disk is dead:

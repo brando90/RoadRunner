@@ -20,12 +20,16 @@ Our implementation of Multi-Paxos is independent of clock synchronization or tim
 Our design of Multi-Paxos does not need to elect leaders explicitly by having a Paxos instance to decide on an server id number.
 Instead, from the servers that are alive, the one with the highest server id will consider himself the leader and prepare Paxos instances in advance (and eventually send accepts too).
 The correctness of our Multi-Paxos design will not be affected if multiple servers think they are the leader. 
-Conceptually, the reason for this is because the effective leader will send the highest epoch round along with any prepares or accepts he does, so two things will happen; first, old leader will have a lower epoch round so servers will reject old accepts, second, new leader will always prepare before sending accepts, so they will learn of old decided value if there are any. 
-In fact, if the leader is unstable and the leader switches around constantly during the operation of RoadRunner's, it will degrade gracefully into normal Paxos. 
-Thus, in the worst-case were RoadRunner's servers die constantly, it will offer performance at least as good as normal Paxos.
+In fact, if the leader is unstable and the leader switches around constantly during the operation of RoadRunner, it will degrade gracefully into normal Paxos. 
+Thus, in the worst-case where RoadRunner's servers die constantly, it will offer performance at least as good as normal Paxos.
+For persistence, Multi-Paxos will only reply to the proposers once it has persistence them on disk. This is to not change already decided values. 
+RoadRunner also writes the key-value store to disk.
 \end{abstract}
 
 \section{Protocol Design}
+
+Conceptually, the reason for this is because the effective leader will send the highest epoch round along with any prepares or accepts he does, so two things will happen; first, old leader will have a lower epoch round so servers will reject old accepts, second, new leader will always prepare before sending accepts, so they will learn of old decided value if there are any. 
+
 
 \subsection{Overview}
 
