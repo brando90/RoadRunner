@@ -1,0 +1,22 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+
+\title{RoadRunner}
+
+\author{Pedro Cattori and Brando Miranda}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+RoadRunner is a persistent, fault-tolerant, high-performance key/value store key value store. RoadRunner avoids two round trip times by using our implementation of Multip-Paxos. In common case of a stable leader, our implementation will be able to save round trip times for the prepare phase of paxos by preparing everything in the log in advance. Our implementation of Multi-Paxos is independent of time synchronization or time leases. 
+\end{abstract}
+
+
+
+\end{document}
