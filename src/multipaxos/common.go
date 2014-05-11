@@ -27,6 +27,7 @@ const (
 type ServerID int
 type ServerName string
 
+/*
 // -- SharedInt : built-in concurrency support --
 
 func MakeSharedInt(i int) *SharedInt {
@@ -50,6 +51,7 @@ func (i *SharedInt) SafeSet(j int) {
 	i.Int = j
 	i.Mu.Unlock()
 }
+*/
 
 
 // -- Shared Map : built-in concurrency support --
