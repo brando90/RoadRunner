@@ -131,48 +131,29 @@ func (c *SharedCounter) SafeIncr() {
 	c._mu.Unlock()
 }
 
-// -- Shared Slice --
-
-func MakeSharedSlice() *SharedSlice {
-	return &SharedSlice{Slice: []interface{}{}}
-}
-
-type SharedSlice struct {
-	Mu sync.Mutex
-	Slice []interface{}
-}
-
-func (s *SharedSlice) SafeFill(length int, content interface{}) {
-	s.Mu.Lock()
-	for i := 0; i < length; i++ {
-		s = append(s, content)
-	}
-	s.Mu.Unlock()
-}
-
-/*
-func (s *SharedSlice) SafeReset() {
-	s.Mu.Lock()
-	s.Slice = []interface{}{}
-	s.Mu.Unlock()
-}
-*/
-
-// -----
-
 // Paxos
 
 type Proposer struct {
-	Mu sync.Mutex
+	mu sync.Mutex
 	N_prime int
 	V_prime DeepCopyable
+}
+
+func (propser *Proposer) Lock() {
+	proposer.mu.Lock() //TODO: make mu private
+}
+
+func (proposer *Proposer) Unlock() {
+	proposer.mu.Unlock() //TODO: make mu private
 }
 
 /*
 Processes prepare replies for this proposer's sequence number
 */
 func (proposer *Proposer) SafeProcess(prepareReplies []PrepareReply) (bool, bool) {
+	//TODO: should be a method in MultiPaxos
 	proposer.Mu.Lock()
+	defer proposer.Mu.Unlock()
 	prepareOKs := 0
 	for _, prepareReply := range prepareReplies {
 		if prepareReply.OK {
@@ -186,12 +167,11 @@ func (proposer *Proposer) SafeProcess(prepareReplies []PrepareReply) (bool, bool
 		}
 		mpx.considerEpoch(reply.N_p) // keeping track of maxKnownEpoch
 	}
-	proposer.Mu.Unlock()
 	return witnessedReject, mpx.isMajority(prepareOKs)
 }
 
 type Acceptor DeepCopyable {
-	Mu sync.Mutex
+	mu sync.Mutex
 	N_p int
 	N_a int
 	V_a DeepCopyable
@@ -208,16 +188,29 @@ func (acceptor Acceptor) DeepCopy() Acceptor {
 	return copy
 }
 
+func (acceptor *Acceptor) Lock() {
+	acceptor.mu.Lock() //TODO: make mu private
+}
+
+func (acceptor *Acceptor) Unlock() {
+	acceptor.mu.Unlock() //TODO: make mu private
+}
+
 type Learner struct {
-	Mu sync.Mutex
+	mu sync.Mutex
 	Decided bool
 	V DeepCopyable
 }
 
-// --------
+func (learner *Learner) Lock() {
+	learner.mu.Lock() //TODO: make mu private
+}
+
+func (learner *Learner) Unlock() {
+	learner.mu.Unlock() //TODO: make mu private
+}
 
 // RPC args & replies
-
 //OPTIMIZATION: piggyback in rpc replies
 
 type PrepareEpochArgs struct {
@@ -282,63 +275,56 @@ type PiggyBack struct {
 
 func MakeDisk() *Disk {
 	return &Disk{
-		dead: false,
-		crashed: false,
-		Acceptors: make(map[int]Acceptors),
+		Acceptors: make(map[int]*Acceptors),
 		LocalMin: 0
 	}
 }
 
 type Disk struct {
-	dead bool
-	crashed bool
-	Mu sync.Mutex
+	mu sync.Mutex
 	Acceptors map[int]*Acceptors
 	//OPTIMIZATION: keep track of learners... helps KV in common case
 	LocalMin int
 }
 
-func (d *Disk) SafeDead() {
-	d.Mu.Lock()
-	d.dead = true
-	d.Mu.Unlock()
+func (disk *Disk) Lock() {
+	disk.mu.Lock()
 }
 
-func (d *Disk) SafeErase() {
-	d.Mu.Lock()
-	d.crashed = true
-	d.Acceptors = make(map[int]*Acceptors)
-	d.LocalMin = 0
-	d.Mu.Unlock()
+func (disk *Disk) Unlock() {
+	disk.mu.Unlock()
 }
 
-func (d *Disk) SafeAlive() {
-	d.Mu.Lock()
-	d.dead = false
-	d.Mu.Unlock()
+func (d *Disk) WriteAcceptor(seq int, acceptor *Acceptor) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.Acceptors[seq] = &(acceptor.DeepCopy)
+	//TODO: incur write latency
 }
 
-func (d *Disk) SafeCrashed() bool {
-	d.Mu.Lock()
-	crashed := d.crashed
-	d.Mu.Unlock()
-	return crashed
+func (d *Disk) WriteLocalMin(localMin int) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.LocalMin = localMin
+	//TODO: incur write latency
 }
 
-func (d *Disk) SafeWriteAcceptor(seq int, acceptor *Acceptor) {
-	d.Mu.Lock()
-	if (!d.dead) {
-		d.Acceptors[seq] = &(acceptor.DeepCopy())
+func (d *Disk) ReadAcceptors() map[int]Acceptors {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	copy := make(map[int]Acceptors)
+	for seq, acceptor := range d.Acceptors {
+		copy[seq] = acceptor.DeepCopy()
 	}
-	d.Mu.Unlock()
+	//TODO: incur (batched) read latency
+	return copy
 }
 
-func (d *Disk) SafeWriteLocalMin(localMin int) {
-	d.Mu.Lock()
-	if (!d.dead) {
-		d.LocalMin = localMin
-	}
-	d.Mu.Unlock()
+func (d *Disk) ReadLocalMin() int {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	//TODO: incur read latency
+	return d.LocalMin
 }
 
 //

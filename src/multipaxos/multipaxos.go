@@ -1,6 +1,5 @@
 package multipaxos
 //TODO: check acceptor copies (e.g. in disk writes)
-//TODO: safeForgetUntil... -> different methods for proposer acceptor learner?
 import (
   "net"
   "net/rpc"
@@ -242,8 +241,8 @@ func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
     panic("Cannot remember decision at sequence %d after Done(%d) was called for this instance", seq, mpx.localMin-1)
   }
   learner := mpx.summonLearner(seq)
-  learner.Mu.Lock()
-  defer learner.Mu.Unlock()
+  learner.Lock()
+  defer learner.Unlock()
   return learner.Decided, learner.Value
 }
 
@@ -507,8 +506,8 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 
 func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
   acceptor := mpx.summonAcceptor(seq)
-  acceptor.Mu.Lock()
-  defer acceptor.Mu.Unlock()
+  acceptor.Lock()
+  defer acceptor.Unlock()
   prepareReply := PrepareReply{}
   if n > acceptor.N_p {
     acceptor.N_p = n
@@ -519,7 +518,7 @@ func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
     prepareReply.OK = false
   }
   prepareReply.N_p = acceptor.N_p
-  mpx.disk.SafeWriteAcceptor(seq, acceptor)
+  mpx.disk.WriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
   return prepareReply
 }
 
@@ -527,8 +526,8 @@ func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
   acceptor := mpx.summonAcceptor(args.Seq)
-  acceptor.Mu.Lock()
-  defer acceptor.Mu.Unlock()
+  acceptor.Lock()
+  defer acceptor.Unlock()
   mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   if args.N >= acceptor.N_p {
@@ -540,7 +539,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
     reply.OK = false
   }
   reply.N_p = acceptor.N_p
-  mpx.disk.SafeWriteAcceptor(seq, acceptor)
+  mpx.disk.SafeWriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
   return nil
 }
 
@@ -548,8 +547,8 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
 
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
   learner := mpx.summonLearner(args.Seq)
-  learner.Mu.Lock()
-  defer learner.Mu.Unlock()
+  learner.Lock()
+  defer learner.Unlock()
   mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   learner.Decided = true
@@ -692,12 +691,12 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
   undecided:
   for !mpx.dead {
     proposer := mpx.summonProposer(seq)
-    proposer.Mu.Lock()
+    proposer.Lock()
     v_prime := proposer.V_prime
     if v_prime == nil {
       v_prime = v
     }
-    proposer.Mu.Unlock()
+    proposer.Unlock()
     witnessedReject, acceptMajority := mpx.acceptPhase(seq, v_prime)
     if witnessedReject {
       mpx.refreshEpoch()
@@ -787,8 +786,8 @@ func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
 // -- SubSection 4 : Persistence --
 
 func (mpx *MultiPaxos) recoverFromDisk() {
-  mpx.disk.Mu.Lock()
-  mpx.localMin = mpx.disk.LocalMin //TODO: incur disk read latency
+  mpx.disk.Lock()
+  mpx.localMin = mpx.disk.ReadLocalMin()
   mpx.localMax = mpx.localMin
   mpx.maxKnownMin = mpx.localMin
   mpx.mins = make([]int, len(mpx.peers)) // mins filled in after acceptors
@@ -802,7 +801,7 @@ func (mpx *MultiPaxos) recoverFromDisk() {
   mpx.proposers = make(map[int]*Proposer)
   mpx.acceptors = make(map[int]*Acceptor)
   globalMin := mpx.localMin
-  for seq, acceptor := mpx.disk.Acceptors { //TODO: incur disk read latency (batched??)
+  for seq, acceptor := mpx.disk.ReadAcceptors() {
     mpx.acceptors[seq] = &(acceptor.DeepCopy())
     if seq < globalMin {
       globalMin = seq
@@ -812,7 +811,7 @@ func (mpx *MultiPaxos) recoverFromDisk() {
   for i, _ := range mpx.mins { // fill in mins with globalMin
     mpx.mins[i] = globalMin
   }
-  mpx.disk.Mu.Unlock()
+  mpx.disk.Unlock()
 }
 
 func (mpx *MultiPaxos) recoverFromPeers() {
