@@ -868,5 +868,18 @@ func (mpx *MultiPaxos) recoverFromDisk() {
 }
 
 func (mpx *MultiPaxos) recoverFromPeers() {
-  //TODO
+  /*TODO:
+  Step 1:
+  Ask each server for their localMax
+  if we receive at least a majority of replies (w/o rpc failure):
+    mark = max(localMax) from majority
+
+  Step 2:
+  Ask each server for their localMin
+  if any server has localMin > mark:
+    copy necessary state from server
+    begin operating normally
+  else:
+    try Step 2 again
+  */
 }
