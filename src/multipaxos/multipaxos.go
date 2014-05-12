@@ -269,6 +269,7 @@ Specifiy whether simulated disk loss should occur
 */
 func (mpx *MultiPaxos) Crash(loseDisk bool) {
   //TODO: should rpcs argument be nil?
+  //ANSWER: on piazza -> https://piazza.com/class/hpo4va6kbsh4be?cid=636
   mpx.mu.Lock()
   defer mpx.mu.Unlock()
   mpx.dead = true
