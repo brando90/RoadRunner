@@ -24,7 +24,9 @@ In fact, if the leader is unstable and the leader switches around constantly dur
 Thus, in the worst-case where RoadRunner's servers die constantly, it will offer performance at least as good as normal Paxos.
 
 \indent For persistence, Multi-Paxos will only reply to the proposers once it has persistence the acceptors on disk. This is to not change already decided values. 
-RoadRunner also writes the key-value store to disk and persists the local min, so that it knows what operations from the Multi-Paxos log to not re-apply. 
+RoadRunner also writes the key-value store to disk and persists the local min
+\footnote{Recall local min is one more than the lowest sequence number that a server has called Done() on (where done is the function that garbage collect paxos instances that already reached a decision and also have been applied to our key-value store.}
+, so that it knows what operations from the Multi-Paxos log to not re-apply. 
 Furthermore, if one server has its disk contents crash, we have a mechanism to ensure correctness of the whole service when we add back a functional server to the system.
 \end{abstract}
 
@@ -69,7 +71,7 @@ Thus, for the correct behaviour of the Paxos, we persist acceptors.
 
 RoadRunner is a sharded key-value store (that garbage collects), which means that our system is able to handle very large amounts of data.
 Our system is made fault-tolerent through Multi-Paxos and disk writes.
-The things that we write to disk are: key-value store, the duplicate detection table (history of keys and shards), the Multi-Paxos acceptors and the local min (one more than the last sequence number that was garbage collected, i.e. Done was called on it).
+The main things that we write to disk are: key-value store, the duplicate detection table (history of keys and shards), the Multi-Paxos acceptors and the local min (one more than the last sequence number that was garbage collected, i.e. Done was called on it).
 If one server crashes with its disk intact, then it can return to its normal operation by reading the disk.
 The key-value store he stored will make sure that he doesn't have to re-apply every operation ever done to its key-vale store to get it up to date.
 The fact that he knows the local min means that he knows from which operations he needs to learn decided value and which ones his key-value store might be behind. 
@@ -77,13 +79,15 @@ Remembering the history of the shards makes sure that duplicate detection works 
 Remembering the acceptors  ensures the correct behaviour of multi-Paxos.\\
 \indent If the disk crashes too, one has to be more careful on how the system proceeds.
 The reason is because we have lost all the acceptors for any sequence in the Paxos log.
-Therefore, before the system resumes operation, it needs to make sure that it does not reverse any values that had previously been  decided (or worse, not reverse any values that were already applied to the key-value store).
-Conceptually, it would be nice if we could copy the state of some server such that we could get back the acceptors when we formed any decision.
+Therefore, before the system resumes operation with a recovered server, it needs to make sure that it does not reverse any values that had previously been decided (or worse, not reverse any values that were already applied to the key-value store).
+Conceptually, it would be nice if we could copy the state of some server such that we could get back the acceptors we had when we formed any decision before having our disk crash.
 This is equivalent to knowing the sequence number of the highest decision we have contributed to. 
-In turn, the highest decision we have contributed to is less than or to the sequence number of the highest decision ever made.
-Therefore, if we could go to a state when the highest decision was applied to the key-value store, then we would remove the risk of reverting anything. 
-Thus, its enough to guarantee correctness that our service recovers from disk by pinging all the servers that are alive and finding out the
-
-
+In turn, the highest decision we have contributed to is less than or equal to the sequence number of the highest decision ever made by the system as a whole.
+Thus, to recover correctly, its enough that our service queries some majority for their 
+local max\footnote{local max is the highest sequence number for which this server knows a Paxos instance has been started} 
+and then stores the largest local max from the majority.
+Since the local max is the highest sequence number for which a Paxos instance has started, if a value has been decided, then it has obviously been started.
+Therefore, the largest started sequence number from a majority clearly upper bounds the highest value that has been decided.
+Therefore, now that the server that is trying to recover knows the largest sequence number started by some majority, if it waits for any server's local min to be larger than that value, then it is guaranteed that it will recover to a safe state.
 
 \end{document}
