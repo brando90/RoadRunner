@@ -89,5 +89,7 @@ and then stores the largest local max from the majority.
 Since the local max is the highest sequence number for which a Paxos instance has started, if a value has been decided, then it has obviously been started.
 Therefore, the largest started sequence number from a majority clearly upper bounds the highest value that has been decided.
 Therefore, now that the server that is trying to recover knows the largest sequence number started by some majority, if it waits for any server's local min to be larger than that value, then it is guaranteed that it will recover to a safe state.
+So that is what RoadRunner will do.
+It will wait until some local min is larger than that value and then basically replicate identically that server.
 
 \end{document}
