@@ -1,12 +1,24 @@
 package multipaxos
 
-import "testing"
-import "runtime"
-import "strconv"
-import "os"
-import "time"
-import "fmt"
-import "math/rand"
+import (
+  "testing"
+  "runtime"
+  "strconv"
+  "os"
+  "time"
+  "fmt"
+  //"math/rand"
+)
+
+// testing types
+
+type DeepString struct {
+  Str string
+}
+
+func (dstr DeepString) DeepCopy() DeepCopyable {
+  return DeepString{Str: dstr.Str}
+}
 
 func port(tag string, host int) string {
   s := "/var/tmp/824-"
@@ -75,6 +87,7 @@ func cleanup(pxa []*MultiPaxos) {
   }
 }
 
+/*TODO: rewrite this to work with multipaxos
 func noTestSpeed(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
@@ -93,13 +106,14 @@ func noTestSpeed(t *testing.T) {
   t0 := time.Now()
 
   for i := 0; i < 20; i++ {
-    pxa[0].Start(i, "x")
+    pxa[0].Push(i, "x")
     waitn(t, pxa, i, npaxos)
   }
 
   d := time.Since(t0)
   fmt.Printf("20 agreements %v seconds\n", d.Seconds())
 }
+*/
 
 func TestBasic(t *testing.T) {
   runtime.GOMAXPROCS(4)
@@ -113,12 +127,12 @@ func TestBasic(t *testing.T) {
     pxh[i] = port("basic", i)
   }
   for i := 0; i < npaxos; i++ {
-    pxa[i] = Make(pxh, i)
+    pxa[i] = Make(pxh, i, nil)
   }
 
   fmt.Printf("Test: Single proposer ...\n")
 
-  pxa[0].Push(0, DeepString("hello"))
+  pxa[2].Push(0, DeepString{Str: "hello"})
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")
