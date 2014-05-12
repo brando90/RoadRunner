@@ -176,5 +176,7 @@ This is possible because the acceptors for that server didn't persist, so its po
 
 \subsubsection{Recover when all server crashes}
 
-
+When all servers die and their disk is intact, then its easy to recover because they should only fetch their disk contents.
+If they all crash and only one server loses its disk contents, then the one that lost its disk content should do the procedure already described in the previous section.
+If multiple disk crash, it should not be a problem unless a majority of the disk crash (which nothing can be done because our system has that limit).
 \end{document}
