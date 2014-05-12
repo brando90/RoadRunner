@@ -17,13 +17,15 @@
 RoadRunner is a persistent, fault-tolerant, high-performance key-value store. 
 RoadRunner avoids two round trip times by preparing everything in the Paxos log in advance from some sequence number to infinity. 
 Our implementation of Multi-Paxos is independent of clock synchronization or time leases.
-Our design of Multi-Paxos does not need to elect leaders explicitly by having a Paxos instance to decide on an server id number.
+Our design of Multi-Paxos does not need to elect leaders explicitly by using Paxos instance to decide on an server id number.
 Instead, from the servers that are alive, the one with the highest server id will consider himself the leader and prepare Paxos instances in advance (and eventually send accepts too).
 The correctness of our Multi-Paxos design will not be affected if multiple servers think they are the leader. 
 In fact, if the leader is unstable and the leader switches around constantly during the operation of RoadRunner, it will degrade gracefully into normal Paxos. 
 Thus, in the worst-case where RoadRunner's servers die constantly, it will offer performance at least as good as normal Paxos.
-For persistence, Multi-Paxos will only reply to the proposers once it has persistence them on disk. This is to not change already decided values. 
-RoadRunner also writes the key-value store to disk.
+
+\indent For persistence, Multi-Paxos will only reply to the proposers once it has persistence the acceptors on disk. This is to not change already decided values. 
+RoadRunner also writes the key-value store to disk and persists the local min, so that it knows what operations from the Multi-Paxos log to not re-apply. 
+Furthermore, if one server has its disk contents crash, we have a mechanism to ensure correctness of the whole service when we add back a functional server to the system.
 \end{abstract}
 
 \section{Protocol Design}
@@ -33,6 +35,32 @@ Conceptually, the reason for this is because the effective leader will send the 
 
 \subsection{Overview}
 
+\subsubsection{Overview of Multi-Paxos}
+
+In the case of a stable leader Multi-Paxos will have a performance benefit by avoiding round trip times when starting Paxos instances in the log.
+Multi-Paxos will prepare all sequences in the Paxos log from a given sequence number to infinity with the current round number.
+However, what used to be a round number in normal Paxos will have different semantic in our Multi-Paxos.
+In our design, a round number will still be used to reject old accepts and prepare's, however, they will also correspond to the epoch round of the current leader. 
+Therefore, round numbers will be referred to as epoch numbers and the current acting leader will have the highest epoch round number (corresponding to the round in which he is the leader).
+Therefore, the leader will send prepare and accept messages with his epoch number and, if any other old leader tries to send accept or prepare messages with a lower epoch number, servers that have already been prepared with the current leader will reject and inform him that he should find out who the real leader is.
+Therefore, we ensure that old leader cannot change any already decide values because if a majority of the new servers have been prepared by the new leader, they will reject any old accept or prepare message and inform the confused leader about the new leader (because the majority was prepared with a higher epoch number).
+Furthermore, new leader cannot possibly change old decided values either. 
+This is because when a new leader is formed, he will *always* send prepare messages before sending accept messages.
+Therefore, whenever he tries propose any new values, he will always be learn a decided value by some majority, if one exists.
+\\
+\indent However, how do we make sure that the system agrees on who the leader is? 
+This is enforced through our periodic ticks.
+All the servers will ping each other and if one of the servers does not respond for a long enough time, a server will consider it dead.
+If the dead server was the leader, then the servers will learn that a new leader has to be formed.
+From the pings responses, he knows which  servers are aline and which are not.
+Whoever has the highest server id should act as the leader and that is how servers know who the new leader is.
+If a client needs to know who the leader is, he can be informed by any server of who they believe the leader is and the client can eventually route requests to the true leader.
+Notice that it is possible that in a really bad network situation or if there is no stable leader, that the servers will duel to be the leader.
+In that case, then that case servers will prepare and increasing their epoch number and inevitably duel for Paxos instances.
+A similar scenario was possible normal in Paxos, so in a temporary bad scenario, the system will  behave like normal Paxos.
+
+
+\subsubsection{Overview of the whole Service and Persistance}
 
 
 
