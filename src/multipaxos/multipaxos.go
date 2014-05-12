@@ -1,5 +1,6 @@
 package multipaxos
 //TODO: check acceptor copies (e.g. in disk writes)
+//TODO: safeForgetUntil... -> different methods for proposer acceptor learner?
 import (
   "net"
   "net/rpc"
@@ -46,9 +47,12 @@ type MultiPaxos struct {
   localMax int // highest sequence number for which this server knows a paxos instance has been started
   maxKnownMin int // needed to to know up to watch seq to process in the log.
 
-  proposers SharedMap // internally: map[int]*Proposer
-  acceptors SharedMap // internally: map[int]*Acceptor
-  learners  SharedMap // internally: map[int]*Learner
+  proposers map[int]*Proposer
+  proposersMu sync.Mutex
+  acceptors map[int]*Acceptor
+  acceptorsMu sync.Mutex
+  learners  map[int]*Learner
+  learnersMu sync.Mutex
 
   mins SharedSlice // internally: []int for calculating GlobalMin()
 
@@ -82,11 +86,11 @@ func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
   mpx.localMin = 0
   mpx.localMax = 0
   mpx.maxKnownMin = 0
-  mpx.proposers = MakeSharedMap()
-  mpx.acceptors = MakeSharedMap()
-  mpx.learners = MakeSharedMap()
-  mpx.mins = MakeSharedSlice(len(mpx.peers))
-  mpx.lifeStates = MakeSharedSlice(len(mpx.peers))
+  mpx.proposers = make(map[int]*Proposer)
+  mpx.acceptors = make(map[int]*Acceptor)
+  mpx.learners = make(map[int]*Learner)
+  mpx.mins = [len(mpx.peers)]int{}
+  mpx.lifeStates = [len(mpx.peers)]LifeState{}
   mpx.actingAsLeader = false
   mpx.epoch = 0
   mpx.maxKnownEpoch = 0
@@ -191,14 +195,14 @@ func (mpx *MultiPaxos) Push(seq int, v DeepCopyable) Err {
 */
 func (mpx *MultiPaxos) Done(seq int) {
   mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   if seq >= mpx.localMin { // done up to or beyond our local min
     mpx.localMin = seq + 1 // update local min
   }
   mpx.disk.SafeWriteLocalMin(mpx.localMin)
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for localMin
   //forgets until seq (inclusive)
-  mpx.safeForgetUntil(mpx.proposers, seq)
-  mpx.safeForgetUntil(mpx.learners, seq)
+  mpx.safeForgetUntil(mpx.proposers, mpx.proposersMu, seq)
+  mpx.safeForgetUntil(mpx.learners, mpx.learnersMu, seq)
 }
 
 /*
@@ -207,7 +211,9 @@ highest instance sequence known to
 this peer.
 */
 func (mpx *MultiPaxos) Max() int {
-  return mpx.localMax //Q: localMax access issues? Are int read/writes atomic?
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //Q: is locking necessary here?
+  return mpx.localMax
 }
 
 /*
@@ -215,16 +221,14 @@ Returns the lowest known min.
 */
 func (mpx *MultiPaxos) GlobalMin() int {
   mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   globalMin := mpx.localMin
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for localMin
-  mpx.mins.Mu.Lock()
   for _, min := range mpx.mins.Slice {
     if min < globalMin {
       globalMin = min
     }
   }
-  mpx.mins.Mu.Unlock()
-  mpx.safeForgetUntil(mpx.acceptors, globalMin)
+  mpx.safeForgetUntil(mpx.acceptors, mpx.acceptorsMu, globalMin)
   return globalMin
 }
 
@@ -266,7 +270,7 @@ Specifiy whether simulated disk loss should occur
 */
 func (mpx *MultiPaxos) Crash(loseDisk bool) {
   //TODO: should rpcs argument be nil?
-  mpx.dead = true
+  mpx.dead = true //TODO: check -> writes to disk should be disabled!
   if mpx.l != nil {
     mpx.l.Close()
   }
@@ -301,23 +305,22 @@ func (mpx *MultiPaxos) Reboot() {
 // -- SubSection 0 : Ping --
 
 func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan bool) {
+
   if peerID != mpx.me {
     args := PingArgs{}
     reply := PingReply{}
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
+    mpx.mu.Lock() // -> lifeStates should not be concurrently accessed
     if replyReceived {
-      mpx.mu.Lock()
-      mpx.presence[peerID] = Alive
-      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
+      mpx.lifeStates[peerID] = Alive
     }else {
-      mpx.mu.Lock()
-      if mpx.presence[peerID] == Alive {
-        mpx.presence[peerID] = Missing
-      }else if mpx.presence[peerID] == Missing {
-        mpx.presence[peerID] = Dead
+      if mpx.lifeStates[peerID] == Alive {
+        mpx.lifeStates[peerID] = Missing
+      }else if mpx.lifeStates[peerID] == Missing {
+        mpx.lifeStates[peerID] = Dead
       }
-      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
     }
+    mpx.mu.Unlock()
   }
   // account for pinged server
   rollcall.SafeIncr()
@@ -333,7 +336,7 @@ Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   for !mpx.dead {
-    responses := MakeSharedMap()
+    responses := MakeSharedMap() //TODO: replace with map and lock??
     rollcall := MakeSharedCounter()
     done := make(chan bool)
     for _, peer := range mpx.peers {
@@ -359,13 +362,13 @@ Processes the aggregated responses for a prepare epoch phase
 func (mpx *MultiPaxos) SafeProcessAggregated(responses *SharedMap) (bool, bool) {
   witnessedReject := false
   witnessedMajority := false
-  mpx.SafeProcessAggregated(responses)
   responses.Mu.Lock()
   for k, v := range responses.Map {
-    sn := k.(int)
+    seq := k.(int)
     prepareReplies := v.([]PrepareReply) // accumulated replies for sequence number = s
-    proposer := summonProposer(sn)
+    proposer := summonProposer(seq)
     seqReject, seqMajority := proposer.SafeProcess(prepareReplies)
+    //TODO: should SafeProcess by a method of the mpx server?
     if seqReject {
       witnessedReject = true
     }
@@ -391,7 +394,7 @@ func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedM
   reply := PrepareEpochReply{}
   replyReceived := sendPrepareEpoch(peerID, &args, &reply)
   if replyReceived {
-    responses.aggregate(reply.EpochReplies)
+    responses.aggregate(reply.EpochReplies) //TODO: should this be a function?
   }
   rollcall.SafeIncr()
   if rollcall.SafeCount() == len(mpx.peers) {
@@ -496,13 +499,15 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
-    acceptor := mpx.summonAcceptor(seq)
     epochReplies[seq] = mpx.prepareHandler(seq, args.Epoch)
+    //TODO: should prepareHandler take acceptor as input?
     //OPTIMIZATION: batch acceptor disk writes
   }
   reply.EpochReplies = epochReplies
   return nil
 }
+
+//CHECKPOINT: switching back to arrays and maps (not shared objs)
 
 func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
   prepareReply := PrepareReply{}
@@ -583,14 +588,14 @@ func (mpx *MultiPaxos) refreshLocalMax(seq int) {
 Lazy instantiator for proposers
 */
 func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
-  mpx.proposers.Mu.Lock()
-  proposer, exists := mpx.proposers.Map[seq]
+  mpx.proposersMu.Lock()
+  defer mpx.proposersMu.Unlock()
+  proposer, exists := mpx.proposers[seq]
   if !exists {
     proposer = &Proposer{}
     mpx.proposers[seq] = proposer
   }
-  mpx.proposers.Mu.Unlock()
-  return proposer.(*Proposer)
+  return proposer
 }
 
 /*
@@ -599,29 +604,30 @@ Prepares acceptors immediately upon creation if server
 has received prepare epoch
 */
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
-  mpx.acceptors.Mu.Lock()
-  acceptor, exists := mpx.acceptors.Map[seq]
+  mpx.acceptorsMu.Lock()
+  defer mpx.acceptorsMu.Unlock()
+  acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
+      //TODO mpx should prepare acceptor
     acceptor.SafePrepare(mpx.maxKnownEpoch) //Q: can accessing maxKnownEpoch cause issues? Are int read/writes atomic?
-    mpx.acceptors = acceptor
+    mpx.acceptors[seq] = acceptor
   }
-  mpx.acceptors.Mu.Unlock()
-  return acceptor.(*Acceptor)
+  return acceptor
 }
 
 /*
 Lazy instantiator for learners
 */
 func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
-  mpx.learners.Mu.Lock()
-  learner, exists := mpx.learners.Map[seq]
+  mpx.learnersMu.Lock()
+  defer mpx.learnersMu.Unlock()
+  learner, exists := mpx.learners[seq]
   if !exists {
     learner = &Learner{Decided: false}
     mpx.learners[seq] = learner
   }
-  mpx.learners.Mu.Unlock()
-  return learner.(*Learner)
+  return learner
 }
 
 /*
@@ -765,14 +771,14 @@ Deletes anything within the paxos map (e.g. proposers, acceptors, learners)
 from a sequence <= the threshold
 No server will need this information in the future
 */
-func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
-  pxRole.Mu.Lock()
-  for s, _ := range pxRole.Map {
+func (mpx *MultiPaxos) forgetUntil(pxMap map[int]interface{}, pxMapMu sync.Mutex, threshold int) {
+  pxMapMu.Lock()
+  for s, _ := range pxMap {
     if s <= threshold {
-      delete(pxRole.Map, s)
+      delete(pxMap, s)
     }
   }
-  pxRole.Mu.Unlock()
+  pxMapMu.Unlock()
 }
 
 // -- SubSection 4 : Persistence --
