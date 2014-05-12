@@ -278,14 +278,14 @@ Simulate server crash
 Specifiy whether simulated disk loss should occur
 */
 func (mpx *MultiPaxos) Crash(loseDisk bool) {
-  //TODO: should rpcs argument be nil?
-  //ANSWER: on piazza -> https://piazza.com/class/hpo4va6kbsh4be?cid=636
+  //RPC answer: on piazza -> https://piazza.com/class/hpo4va6kbsh4be?cid=636
   mpx.mu.Lock()
   defer mpx.mu.Unlock()
   mpx.dead = true
   if mpx.l != nil {
     mpx.l.Close()
   }
+  //TODO: need to pass dead as argument
   if loseDisk {
     mpx = mpx(mpx.peers, mpx.me, nil, nil)
   }else {
