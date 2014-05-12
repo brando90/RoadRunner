@@ -201,8 +201,8 @@ func (mpx *MultiPaxos) Done(seq int) {
   }
   mpx.disk.SafeWriteLocalMin(mpx.localMin)
   //forgets until seq (inclusive)
-  mpx.safeForgetUntil(mpx.proposers, mpx.proposersMu, seq)
-  mpx.safeForgetUntil(mpx.learners, mpx.learnersMu, seq)
+  mpx.forgetProposersUntil(seq)
+  mpx.forgetLearnersUntil(seq)
 }
 
 /*
@@ -299,8 +299,11 @@ func (mpx *MultiPaxos) Reboot() {
 ------------------------------------
 -- SubSection 0 : Ping --
 -- SubSection 1 : Prepare Epoch Phase --
--- SubSection 2 : Accept Phase --
--- SubSection 3 : Decide Phase --
+-- SubSection 2 : Prepare Epoch Helpers --
+-- SubSection 3 : Accept Phase --
+-- subSection 4 : Accept Helpers --
+-- SubSection 5 : Decide Phase --
+-- SubSection 6 : Decide Helpers --
 */
 
 // -- SubSection 0 : Ping --
@@ -357,6 +360,8 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   }
 }
 
+// -- SubSection 2 : Prepare Epoch Helpers
+
 /*
 Processes the aggregated responses for a prepare epoch phase
 */
@@ -377,7 +382,7 @@ func (mpx *MultiPaxos) processAggregated(responses *SharedResponses) (bool, bool
   return witnessedReject, witnessedMajority
 }
 
-func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) {
+func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bool) {
   proposer := mpx.summonProposer(seq)
   proposer.Lock()
   defer proposer.Unlock()
@@ -430,7 +435,7 @@ func (mpx *MultiPaxos) sendPrepareEpoch(peerID serverID, args *PrepareEpochArgs,
   }
 }
 
-// -- SubSection 2 : Accept Phase --
+// -- SubSection 3 : Accept Phase --
 
 /*
 Sends accept with round number = epoch to all acceptors at sequence = seq
@@ -461,6 +466,8 @@ func (mpx *MultiPaxos) acceptPhase(seq int, v DeepCopyable) (bool, bool) {
   return witnessedReject, mpx.isMajority(acceptOKs)
 }
 
+// -- SubSection 4 : Accept Helpers --
+
 func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *AcceptReply) bool {
   if peerID == mpx.me {
     mpx.AcceptHandler(args, reply)
@@ -470,7 +477,7 @@ func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *Acce
   }
 }
 
-// -- SubSection 3 : Decide Phase --
+// -- SubSection 5 : Decide Phase --
 
 func (mpx *MultiPaxos) decidePhase(seq int, v DeepCopyable) {
   for _, peer := range mpx.peers {
@@ -486,6 +493,8 @@ func (mpx *MultiPaxos) decidePhase(seq int, v DeepCopyable) {
   }
 }
 
+// -- SubSection 6 : Decide Helpers --
+
 func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *DecideReply) {
   if peerID == mpx.me {
     mpx.DecideHandler(args, reply)
@@ -499,8 +508,9 @@ func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *Deci
 -------------------------------------------------
 -- SubSection 0 : Ping Handler --
 -- SubSection 1 : Prepare Handler --
--- SubSection 2 : Accept Handler --
--- SubSection 3 : Decide Handler --
+-- SubSection 2 : Prepare Handler Helper --
+-- SubSection 3 : Accept Handler --
+-- SubSection 4 : Decide Handler --
 */
 
 // -- SubSection 0 : Ping Handler --
@@ -527,6 +537,8 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   return nil
 }
 
+// -- SubSection 2 : Prepare Handler Helper --
+
 func (mpx *MultiPaxos) prepareAcceptor(acceptor *Acceptor, n int) PrepareReply {
   acceptor.Lock()
   defer acceptor.Unlock()
@@ -544,7 +556,7 @@ func (mpx *MultiPaxos) prepareAcceptor(acceptor *Acceptor, n int) PrepareReply {
   return prepareReply
 }
 
-// -- SubSection 2 : Accept Handler --
+// -- SubSection 3 : Accept Handler --
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
   acceptor := mpx.summonAcceptor(args.Seq)
@@ -565,7 +577,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   return nil
 }
 
-// -- SubSection 3 : Decide Handler --
+// -- SubSection 4 : Decide Handler --
 
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
   learner := mpx.summonLearner(args.Seq)
@@ -662,7 +674,7 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack) {
   }
   mpx.mu.Unlock()
   // potential mins entry update may have increased GlobalMin
-  mpx.safeForgetUntil(mpx.acceptors, mpx.acceptorsMu, GlobalMin())
+  mpx.forgetAcceptorsUntil(GlobalMin())
 }
 
 // -- SubSection 1 : MultiPaxos --
@@ -811,6 +823,16 @@ func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
     }
   }
   mpx.acceptorsMu.Unlock()
+}
+
+func (mpx *MultiPaxos) forgetLearnersUntil(threshold int) {
+  mpx.learnersMu.Lock()
+  for s, _ := range mpx.learners {
+    if s <= threshold {
+      delete(mpx.learners, s)
+    }
+  }
+  mpx.learnersMu.Unlock()
 }
 
 // -- SubSection 4 : Persistence --
