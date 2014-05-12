@@ -110,7 +110,7 @@ The prepare phase conceptually prepares all sequences from a staring sequence to
 
 Pseudocode:
 
-\textbf{func} (MultiPaxos) prepareEpochPhase(seq):\\
+\textbf{func} (MultiPaxos) prepareEpochPhase(seq) \{ \\
 \indent \indent \textbf{until} a majority is formed on each sequence $\geq$ seq \{ \\
 \indent \indent \indent \textbf{send} prepare rpc to each server with seq and epoch e \\
 \indent \indent  \} \\
@@ -150,10 +150,27 @@ For more implementation details see the comments, pseudocode or actual code of t
 In this section I will discuss the three most important cases for recovery and how we are persisting things on disk.
 
 \subsubsection{Recover when one server crashes but disk is intact}
-The most important things that we will be storing on disk are the acceptors for multi-Paxos, the local min, 
-When a server crashes and loses its memory, it will simply copy its disk
+The most important things that we will be storing on disk are the acceptors for multi-Paxos, the local min, the key-value store and the duplicate detection table (the history of the shards and keys).
+The reason why we needed to store these have already been discussed in the Overview of the protocol.
+When a server crashes and loses its memory, it will simply fetch a copy of its disk and restore his key-value store and make sure its multi-Paxos is in a state that doesn't corrupt.
+The tick() function at the key-value store level will try to catch up and make sure its in sync with the rest of the system.
 
-\subsubsection{Recover when one server crashes but disk crashes}
+\subsubsection{Recover when one server crashes but the disk crashes}
+This is a more interesting case to consider and the correctness of this step was covered in detail in the overview of the protocol.
+Here is the recovery procedure for if one disk crashes:
+            
+\textbf{func} (MultiPaxos) Reboot() \{ \\
+\indent \indent \textbf{if} disk is dead \{ \\
+\indent \indent \indent \textbf{query} a majority for their  localMax  \textbf{and} choose $max_{i}(localMax_i)$ \\
+\indent \indent \indent \textbf{ping} for localMin until one localMin $> $ $max_{i}(localMax_i)$; \\
+\indent \indent \indent \textbf{if} cant find localMin $>$ max(localMaxes) \{ \\
+\indent \indent \indent \indent \textbf{then;} sleep for a bit to give time to system to progress \\
+\indent \indent \indent  \} \\
+\indent \indent \indent \textbf{once} localMin $>$ max(localMaxes) is found (success) \{ \\
+\indent  \indent \indent \indent \textbf{then}, copy everything from that servers state\\
+\indent \indent  \} \\
+\indent \}
+
 
 \subsubsection{Recover when all server crashes}
 

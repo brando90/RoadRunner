@@ -132,7 +132,10 @@ func TestBasic(t *testing.T) {
 
   fmt.Printf("Test: Single proposer ...\n")
 
+  pxa[0].Push(0, DeepString{Str: "hello"})
+  pxa[1].Push(0, DeepString{Str: "hello"})
   pxa[2].Push(0, DeepString{Str: "hello"})
+  time.Sleep(1000 * time.Millisecond)
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")
