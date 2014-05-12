@@ -171,6 +171,8 @@ Here is the recovery procedure for if one disk crashes:
 \indent \indent  \} \\
 \indent \}
 
+The intuition on why this function is not as simple as just querying one server and copying his state is the following: that the recovering server has to be very careful when he recovers from a disk crash because he doesn't want to reverse a value that has already been chosen.
+This is possible because the acceptors for that server didn't persist, so its possible for him to reverse a decision unless he is guaranteed that he gets some acceptor that did participate in any majority that he formed.
 
 \subsubsection{Recover when all server crashes}
 
