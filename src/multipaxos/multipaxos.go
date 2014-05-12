@@ -1,5 +1,5 @@
 package multipaxos
-
+//TODO: check seq vs. round number
 import (
   "net"
   "net/rpc"
@@ -8,8 +8,9 @@ import (
   "syscall"
   "sync"
   "fmt"
+  "time"
+  //"math"
   "math/rand"
-  "math"
 )
 
 /*
@@ -67,8 +68,8 @@ type MultiPaxos struct {
 
 // -- SubSection 1 : Constructors --
 
-func Make(peers [string], me int) *MultiPaxos {
-  return mpx(peers, me, nil, nil, &Disk{})
+func Make(peers []string, me int, rpcs *rpc.Server) *MultiPaxos {
+  return makeWithDisk(peers, me, rpcs, &Disk{})
 }
 
 /*
@@ -76,7 +77,7 @@ the application wants to create a multipaxos peer.
 the ports of all the multipaxos peers (including this one)
 are in peers[]. this servers port is peers[me].
 */
-func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
+func makeWithDisk(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
   mpx := &MultiPaxos{}
   mpx.peers = peers
   mpx.me = me
@@ -173,16 +174,6 @@ type DeepCopyable interface {
   DeepCopy() DeepCopyable
 }
 
-// testing types
-
-type DeepString DeepCopyable {
-  Str string
-}
-
-func (dstr *DeepString) DeepCopy(){
-  return dstr.Str
-}
-
 /*
 Tries to send a propose
 If this server considers itself a leader, send accepts
@@ -191,9 +182,9 @@ Otherwise, DO NOT send accepts
 func (mpx *MultiPaxos) Push(seq int, v DeepCopyable) Err {
   if mpx.actingAsLeader {
     go mpx.leaderPropose(seq, v.DeepCopy())
-    return nil
+    return Err{Nil: true}
   }else {
-    return Err{Msg: NotLeader}
+    return Err{Msg: NotLeader, Nil: false}
   }
 }
 
@@ -209,7 +200,7 @@ func (mpx *MultiPaxos) Done(seq int) {
   if seq >= mpx.localMin { // done up to or beyond our local min
     mpx.localMin = seq + 1 // update local min
   }
-  mpx.disk.SafeWriteLocalMin(mpx.localMin)
+  mpx.disk.WriteLocalMin(mpx.localMin)
   //forgets until seq (inclusive)
   mpx.forgetProposersUntil(seq)
   mpx.forgetLearnersUntil(seq)
@@ -250,12 +241,12 @@ it should not contact other Paxos peers.
 */
 func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
   if seq < mpx.GlobalMin() {
-    panic("Cannot remember decision at sequence %d after Done(%d) was called for this instance", seq, mpx.localMin-1)
+    panic(fmt.Sprintf("Cannot remember decision at sequence %d after Done(%d) was called for this instance", seq, mpx.localMin-1))
   }
   learner := mpx.summonLearner(seq)
   learner.Lock()
   defer learner.Unlock()
-  return learner.Decided, learner.Value
+  return learner.Decided, learner.V
 }
 
 // -- SubSection 1 : Failure Simulation Interface --
@@ -287,9 +278,9 @@ func (mpx *MultiPaxos) Crash(loseDisk bool) {
   }
   //TODO: need to pass dead as argument
   if loseDisk {
-    mpx = mpx(mpx.peers, mpx.me, nil, nil)
+    mpx = makeWithDisk(mpx.peers, mpx.me, nil, nil)
   }else {
-    mpx = mpx(mpx.peers, mpx.me, nil, mpx.disk)
+    mpx = makeWithDisk(mpx.peers, mpx.me, nil, mpx.disk)
   }
 }
 
@@ -298,7 +289,7 @@ Signal server to undergo recovery protocol
 */
 func (mpx *MultiPaxos) Reboot() {
   if mpx.disk == nil { // disk loss
-    mpx.disk = *Disk{} // initialize replacement disk
+    mpx.disk = &Disk{} // initialize replacement disk
     mpx.recoverFromPeers()
   }else { // disk intact
     mpx.recoverFromDisk()
@@ -319,8 +310,7 @@ func (mpx *MultiPaxos) Reboot() {
 
 // -- SubSection 0 : Ping --
 
-func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan bool) {
-
+func (mpx *MultiPaxos) ping(peerID int, rollcall *SharedCounter, done chan bool) {
   if peerID != mpx.me {
     args := PingArgs{}
     reply := PingReply{}
@@ -354,8 +344,8 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
     responses := MakeSharedResponses()
     rollcall := MakeSharedCounter()
     done := make(chan bool)
-    for _, peer := range mpx.peers {
-      go sendPrepareEpoch(peerID, seq, responses, rollcall, done)
+    for peerID, _ := range mpx.peers {
+      go mpx.prepareEpoch(peerID, seq, responses, rollcall, done)
     }
     <- done
     // Process aggregated replies
@@ -381,7 +371,7 @@ func (mpx *MultiPaxos) processAggregated(responses *SharedResponses) (bool, bool
   defer responses.Unlock()
   witnessedReject := false
   witnessedMajority := false
-  for seq, prepareReplies := range responses.Aggregate {
+  for seq, prepareReplies := range responses.Aggregated {
     seqReject, seqMajority := mpx.process(seq, prepareReplies)
     if seqReject {
       witnessedReject = true
@@ -394,6 +384,7 @@ func (mpx *MultiPaxos) processAggregated(responses *SharedResponses) (bool, bool
 }
 
 func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bool) {
+  witnessedReject := false
   proposer := mpx.summonProposer(seq)
   proposer.Lock()
   defer proposer.Unlock()
@@ -408,7 +399,7 @@ func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bo
     }else {
       witnessedReject = true
     }
-    mpx.refreshMaxKnownEpoch(reply.N_p) // keeping track of maxKnownEpoch
+    mpx.refreshMaxKnownEpoch(prepareReply.N_p) // keeping track of maxKnownEpoch
   }
   return witnessedReject, mpx.isMajority(prepareOKs)
 }
@@ -416,16 +407,16 @@ func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bo
 /*
 Sends prepare epoch for sequence >= seq to one server, processes reply, and increments rollcall
 */
-func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses SharedResponses, rollcall *SharedCounter, done chan bool) {
+func (mpx *MultiPaxos) prepareEpoch(peerID int, seq int, responses *SharedResponses, rollcall *SharedCounter, done chan bool) {
   args := PrepareEpochArgs{N: mpx.epoch, Seq: seq}
   args.PiggyBack = PiggyBack{
     Me: mpx.me,
     LocalMin: mpx.localMin,
     MaxKnownMin: mpx.maxKnownMin,
-    MaxKnownEpoch: mpx.maxKnownEpoch
+    MaxKnownEpoch: mpx.maxKnownEpoch, //GO: for some reason the go compiler needs a comma here
   }
   reply := PrepareEpochReply{}
-  replyReceived := sendPrepareEpoch(peerID, &args, &reply)
+  replyReceived := mpx.sendPrepareEpoch(peerID, &args, &reply)
   if replyReceived {
     responses.Lock()
     aggregate(responses, reply.EpochReplies)
@@ -437,7 +428,7 @@ func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses SharedRe
   }
 }
 
-func (mpx *MultiPaxos) sendPrepareEpoch(peerID serverID, args *PrepareEpochArgs, reply *PrepareEpochArgs) bool {
+func (mpx *MultiPaxos) sendPrepareEpoch(peerID int, args *PrepareEpochArgs, reply *PrepareEpochReply) bool {
   if peerID == mpx.me {
     mpx.PrepareEpochHandler(args, reply)
     return true
@@ -454,24 +445,24 @@ Returns true if a majority accepted; false otherwise
 */
 func (mpx *MultiPaxos) acceptPhase(seq int, v DeepCopyable) (bool, bool) {
   acceptOKs := 0
-  witnessedReject = false
-  for _, peer := range mpx.peers {
+  witnessedReject := false
+  for peerID, _ := range mpx.peers {
     args := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
     args.PiggyBack = PiggyBack{
       Me: mpx.me,
       LocalMin: mpx.localMin,
       MaxKnownMin: mpx.maxKnownMin,
-      MaxKnownEpoch: mpx.maxKnownEpoch
+      MaxKnownEpoch: mpx.maxKnownEpoch, //GO: for some reason the go compiler needs a comma here
     }
     reply := AcceptReply{}
-    replyReceived := mpx.sendAccept(peer, &args, &reply)
+    replyReceived := mpx.sendAccept(peerID, &args, &reply)
     if replyReceived {
       if reply.OK {
         acceptOKs += 1
       }else {
         witnessedReject  = true
       }
-      mpx.refreshMaxKnwonEpoch(reply.N_p) // keeping track of knownMaxEpoch
+      mpx.refreshMaxKnownEpoch(reply.N_p) // keeping track of knownMaxEpoch
     }
   }
   return witnessedReject, mpx.isMajority(acceptOKs)
@@ -479,7 +470,7 @@ func (mpx *MultiPaxos) acceptPhase(seq int, v DeepCopyable) (bool, bool) {
 
 // -- SubSection 4 : Accept Helpers --
 
-func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *AcceptReply) bool {
+func (mpx *MultiPaxos) sendAccept(peerID int, args *AcceptArgs, reply *AcceptReply) bool {
   if peerID == mpx.me {
     mpx.AcceptHandler(args, reply)
     return true
@@ -491,27 +482,26 @@ func (mpx *MultiPaxos) sendAccept(peerID ServerID, args *AcceptArgs, reply *Acce
 // -- SubSection 5 : Decide Phase --
 
 func (mpx *MultiPaxos) decidePhase(seq int, v DeepCopyable) {
-  for _, peer := range mpx.peers {
+  for peerID, _ := range mpx.peers {
     args := DecideArgs{Seq: seq, V: v}
     args.PiggyBack = PiggyBack{
       Me: mpx.me,
       LocalMin: mpx.localMin,
       MaxKnownMin: mpx.maxKnownMin,
-      MaxKnownEpoch: mpx.maxKnownEpoch
+      MaxKnownEpoch: mpx.maxKnownEpoch, //GO: for some reason the go compiler needs a comma here
     }
     reply := DecideReply{}
-    mpx.sendDecide(peer, &args, &reply)
+    mpx.sendDecide(peerID, &args, &reply)
   }
 }
 
 // -- SubSection 6 : Decide Helpers --
 
-func (mpx *MultiPaxos) sendDecide(peerID ServerID, args *DecideArgs, reply *DecideReply) {
+func (mpx *MultiPaxos) sendDecide(peerID int, args *DecideArgs, reply *DecideReply) {
   if peerID == mpx.me {
     mpx.DecideHandler(args, reply)
-    return true
   }else {
-    return call(mpx.peers[peerID], "MultiPaxos.DecideHandler", args, reply)
+    call(mpx.peers[peerID], "MultiPaxos.DecideHandler", args, reply)
   }
 }
 
@@ -534,14 +524,14 @@ func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
 // -- SubSection 1 : Prepare Handler --
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
-  mpx.refreshHighestPrepareEpoch(args.Seq)
+  mpx.refreshHighestPrepareEpoch(args.N)
   mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
     acceptor := mpx.summonAcceptor(seq)
-    epochReplies[seq] = mpx.prepareAcceptor(acceptor, args.Epoch)
+    epochReplies[seq] = mpx.prepareAcceptor(seq, acceptor, args.N)
     //OPTIMIZATION: batch acceptor disk writes
   }
   reply.EpochReplies = epochReplies
@@ -550,7 +540,7 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 
 // -- SubSection 2 : Prepare Handler Helper --
 
-func (mpx *MultiPaxos) prepareAcceptor(acceptor *Acceptor, n int) PrepareReply {
+func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) PrepareReply {
   acceptor.Lock()
   defer acceptor.Unlock()
   prepareReply := PrepareReply{}
@@ -584,7 +574,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
     reply.OK = false
   }
   reply.N_p = acceptor.N_p
-  mpx.disk.SafeWriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
+  mpx.disk.WriteAcceptor(args.Seq, acceptor) // write will deep-copy acceptor internally for safety
   return nil
 }
 
@@ -648,7 +638,7 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
-    mpx.prepareAcceptor(acceptor, mpx.highestPrepareEpoch)
+    mpx.prepareAcceptor(seq, acceptor, mpx.highestPrepareEpoch)
     mpx.acceptors[seq] = acceptor
   }
   mpx.acceptorsMu.Unlock()
@@ -678,14 +668,14 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack) {
     mpx.mins[piggyBack.Me] = piggyBack.LocalMin
   }
   if piggyBack.MaxKnownMin > mpx.maxKnownMin {
-    mpx.maxKnownMin = mpx.MaxKnownMin
+    mpx.maxKnownMin = piggyBack.MaxKnownMin
   }
   if piggyBack.MaxKnownEpoch > mpx.maxKnownEpoch {
-    mpx.maxKnownEpoch = mpx.MaxKnownEpoch
+    mpx.maxKnownEpoch = piggyBack.MaxKnownEpoch
   }
   mpx.mu.Unlock()
   // potential mins entry update may have increased GlobalMin
-  mpx.forgetAcceptorsUntil(GlobalMin())
+  mpx.forgetAcceptorsUntil(mpx.GlobalMin())
 }
 
 // -- SubSection 1 : MultiPaxos --
@@ -699,9 +689,7 @@ Pick highest ID of servers considered living to be the leader
 func (mpx *MultiPaxos) leaderElection() int {
   highestLivingID := mpx.me
   mpx.mu.Lock()
-  for k, v := range mpx.lifeStates {
-    peerID := k.(int)
-    lifeState := v.(LifeState)
+  for peerID, lifeState := range mpx.lifeStates {
     if lifeState == Alive || lifeState == Missing {
       if peerID > highestLivingID {
         highestLivingID = peerID
@@ -792,8 +780,8 @@ If this server considers itself a leader, start acting as a leader
 func (mpx *MultiPaxos) tick() {
   rollcall := MakeSharedCounter()
   done := make(chan bool)
-  for _, peer := range mpx.peers {
-    go ping(peer, rollcall, done)
+  for peerID, _ := range mpx.peers {
+    go mpx.ping(peerID, rollcall, done)
   }
   <- done
   // leader decision & action
@@ -812,8 +800,7 @@ func (mpx *MultiPaxos) tick() {
 // -- SubSection 3 : Garbage Collection --
 
 /*
-Deletes anything within the paxos map (e.g. proposers, acceptors, learners)
-from a sequence <= the threshold
+Deletes proposers from a sequence <= the threshold
 No server will need this information in the future
 */
 func (mpx *MultiPaxos) forgetProposersUntil(threshold int) {
@@ -865,13 +852,14 @@ func (mpx *MultiPaxos) recoverFromDisk() {
   mpx.proposers = make(map[int]*Proposer)
   mpx.acceptors = make(map[int]*Acceptor)
   globalMin := mpx.localMin
-  for seq, acceptor := mpx.disk.ReadAcceptors() {
-    mpx.acceptors[seq] = &(acceptor.DeepCopy())
+  for seq, acceptor := range mpx.disk.ReadAcceptors() {
+    acceptorCopy := acceptor.DeepCopy()
+    mpx.acceptors[seq] = &acceptorCopy
     if seq < globalMin {
       globalMin = seq
     }
   }
-  mpx.learners = make(map[int]*Learners) //OPTIMIZATION: get directly from disk
+  mpx.learners = make(map[int]*Learner) //OPTIMIZATION: get directly from disk
   for i, _ := range mpx.mins { // fill in mins with globalMin
     mpx.mins[i] = globalMin
   }

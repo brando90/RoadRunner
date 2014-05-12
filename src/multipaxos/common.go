@@ -1,8 +1,18 @@
 package multipaxos
 
+import (
+	"sync"
+	"time"
+	"net"
+	"net/rpc"
+	"syscall"
+	"fmt"
+)
+
 // Errors
 
 type Err struct {
+	Nil bool
 	Msg string
 }
 
@@ -24,17 +34,17 @@ const (
 
 // Convenience types
 
-type ServerID int
-type ServerName string
+//type ServerID int
+//type ServerName string
 
 // -- Shared Map : built-in concurrency support --
 
 func MakeSharedResponses() *SharedResponses {
-	return &SharedResponses{Aggregate: make(map[int][]PrepareReply)}
+	return &SharedResponses{Aggregated: make(map[int][]PrepareReply)}
 }
 
 type SharedResponses struct {
-	Aggregate map[int][]PrepareReply
+	Aggregated map[int][]PrepareReply
 	mu sync.Mutex
 }
 
@@ -50,12 +60,12 @@ func aggregate(responses *SharedResponses, epochReplies map[int]PrepareReply) {
 	responses.Lock()
 	defer responses.Unlock()
 	for seq, prepareReply := range epochReplies {
-		prepareReplies, exists := responses.Aggregate[seq]
+		prepareReplies, exists := responses.Aggregated[seq]
 		if ! exists {
-			prepareResplies = []PrepareReply{}
+			prepareReplies = []PrepareReply{}
 		}
 		prepareReplies = append(prepareReplies, prepareReply)
-		responses.Aggregate[seq] = prepareReplies
+		responses.Aggregated[seq] = prepareReplies
 	}
 }
 
@@ -67,16 +77,8 @@ func MakeSharedCounter() *SharedCounter {
 
 type SharedCounter struct {
 	_n int
-	_mu int
+	_mu sync.Mutex
 }
-
-/*
-func (c *SharedCounter) SafeReset() {
-	c._mu.Lock()
-	c._n = 0
-	c._mu.Unlock()
-}
-*/
 
 func (c *SharedCounter) SafeCount() int {
 	c._mu.Lock()
@@ -99,7 +101,7 @@ type Proposer struct {
 	V_prime DeepCopyable
 }
 
-func (propser *Proposer) Lock() {
+func (proposer *Proposer) Lock() {
 	proposer.mu.Lock()
 }
 
@@ -107,7 +109,7 @@ func (proposer *Proposer) Unlock() {
 	proposer.mu.Unlock()
 }
 
-type Acceptor DeepCopyable {
+type Acceptor struct {
 	mu sync.Mutex
 	N_p int
 	N_a int
@@ -115,13 +117,13 @@ type Acceptor DeepCopyable {
 }
 
 func (acceptor Acceptor) DeepCopy() Acceptor {
-	acceptor.Mu.Lock()
+	acceptor.Lock()
 	copy := Acceptor{
 		N_p: acceptor.N_p,
 		N_a: acceptor.N_a,
-		V_a: acceptor.V_a.DeepCopy()
+		V_a: acceptor.V_a.DeepCopy(),
 	}
-	acceptor.Mu.Unlock()
+	acceptor.Unlock()
 	return copy
 }
 
@@ -131,10 +133,6 @@ func (acceptor *Acceptor) Lock() {
 
 func (acceptor *Acceptor) Unlock() {
 	acceptor.mu.Unlock()
-}
-
-func prepareAcceptor(acceptor *Acceptor) {
-//TODO what is this function for?
 }
 
 type Learner struct {
@@ -215,15 +213,12 @@ type PiggyBack struct {
 // Disk
 
 func MakeDisk() *Disk {
-	return &Disk{
-		Acceptors: make(map[int]*Acceptors),
-		LocalMin: 0
-	}
+	return &Disk{Acceptors: make(map[int]*Acceptor), LocalMin: 0}
 }
 
 type Disk struct {
 	mu sync.Mutex
-	Acceptors map[int]*Acceptors
+	Acceptors map[int]*Acceptor
 	//OPTIMIZATION: keep track of learners... helps KV in common case
 	LocalMin int
 }
@@ -239,7 +234,8 @@ func (disk *Disk) Unlock() {
 func (d *Disk) WriteAcceptor(seq int, acceptor *Acceptor) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	d.Acceptors[seq] = &(acceptor.DeepCopy)
+	acceptorCopy := acceptor.DeepCopy()
+	d.Acceptors[seq] = &acceptorCopy
 	time.Sleep(1 * time.Millisecond) //TUNE: incur write latency
 }
 
@@ -250,10 +246,10 @@ func (d *Disk) WriteLocalMin(localMin int) {
 	time.Sleep(1 * time.Millisecond) //TUNE: incur write latency
 }
 
-func (d *Disk) ReadAcceptors() map[int]Acceptors {
+func (d *Disk) ReadAcceptors() map[int]Acceptor {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	copy := make(map[int]Acceptors)
+	copy := make(map[int]Acceptor)
 	for seq, acceptor := range d.Acceptors {
 		copy[seq] = acceptor.DeepCopy()
 	}
@@ -267,17 +263,6 @@ func (d *Disk) ReadLocalMin() int {
 	time.Sleep(1 * time.Millisecond) //TUNE: incur read latency
 	return d.LocalMin
 }
-
-// testing types
-
-type DeepString DeepCopyable {
-	Str string
-}
-
-func (dstr *DeepString) DeepCopy(){
-	return dstr.Str
-}
-
 
 //
 // call() sends an RPC to the rpcname handler on server srv
