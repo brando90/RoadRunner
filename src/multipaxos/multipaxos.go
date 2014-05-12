@@ -720,6 +720,12 @@ func (mpx *MultiPaxos) relinquishLeadership() {
   mpx.actingAsLeader = false
 }
 
+/*
+Leader propose tries to propose a value with the current epoch round number for the current leader.
+If it receives a majority of accepts, the a decision happened!
+If not but it received a reject, it will try to do another prepare phase and refresh its epoch number (and increase it).
+If no majority formed but not rejection was received, keep trying to propose value.
+*/
 func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
   undecided:
   for !mpx.dead {

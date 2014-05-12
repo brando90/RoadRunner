@@ -127,14 +127,25 @@ Basically, the idea is, in practice we don't create all the acceptors to infinit
 \subsection{Sending proposes in Multi-Paxos}
 
 We changed the Start function in normal paxos to be the Push function.
-The push function tries to Push some value to the paxos log and it might be successful or it might not, but more importantly, push will call leaderPropose.
+The push function tries to Push some value to the paxos log and it might be successful or it might not, but more importantly, push will call leaderPropose. 
+Leader propose will be described in the next section.
 
 \subsubsection{Leader Propose}
 
 Leader propose is the function that sends the accepts to all the acceptors with the current epoch round number.
+The Leader tries to propose a value and if it receives a majority of accepts, then a decision happened!
+If not but it received a reject, it will try to do another prepare phase and refresh its epoch number (and increase it correctly).
+If no majority formed but not rejection was received, then the leader will keep trying to propose value.
 
+\subsection{Electing leaders through tick and pings}
 
+Our Multi-Paxos will periodically tick and thus ping all servers.
+Once we have received the replies from the pings (and thus all the servers), Multi-Paxos  runs the leader election procedure.
+The leader election procedure is simple, from the servers that are consider alive, pick the one with the highest server ID and consider that the leader (if its our own ID then start acting as a leader). 
+As I already explained on the overview, its ok if multiple servers ever think they are both leaders because the true leader will eventually have the highest epoch round (which means his accepts are the only ones that are accepted), old leaders with lower epoch rounds will get rejected (any leader always prepares before it sends accepts, so its impossible to reverse decisions unsafely) and in the case of a unstable leader, our system will just behave like normal Paxos. 
+For more implementation details see the comments, pseudocode or actual code of the tick() function
 
+\subsection{Persistence}
 
 
 \end{document}
