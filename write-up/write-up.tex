@@ -120,7 +120,7 @@ Pseudocode:
 \indent \}
 
 In the practice its silly to actually create an infinite set of acceptors and send some kind of prepare reply for all the sequences numbers for every server.
-Instead we the prepare handler from a some specific sequence number to the local max (max known sequence that has been started) and then reply to the leader's proposer.
+Instead the prepare handler from a some specific sequence number to the local max (max known sequence that has been started) and then reply to the leader's proposer.
 However, since the current acceptors just replied with a promise to not accepts with lower epoch rounds, if they ever get a sequence for which the acceptor has yet not been initialized, the server will make sure to create acceptors that keep that promise (by remembering that promise epoch round!).
 Basically, the idea is, in practice we don't create all the acceptors to infinity, but when a new acceptor is needed, its created with correct epoch round according to the highest prepare phase they have received.
 
