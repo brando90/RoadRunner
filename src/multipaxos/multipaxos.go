@@ -42,22 +42,25 @@ type MultiPaxos struct {
   peers []string
   me int
 
+  // Important sequence numbers
   localMin int // one more than the lowest sequence number that we have called Done() on
   localMax int // highest sequence number for which this server knows a paxos instance has been started
   maxKnownMin int // needed to to know up to watch seq to process in the log.
-
-  proposers SharedMap // internally: map[int]*Proposer
-  acceptors SharedMap // internally: map[int]*Acceptor
-  learners  SharedMap // internally: map[int]*Learner
-
-  mins SharedSlice // internally: []int for calculating GlobalMin()
-
-  lifeStates SharedSlice // internally: []LifeState keeps track of Alive/Missing/Dead for each peer
+  mins []int // for calculating GlobalMin()
+  // Leader election state
+  lifeStates []LifeState // keeps track of Alive/Missing/Dead for each peer
   actingAsLeader bool
-
+  // Important round numbers
   epoch int
   maxKnownEpoch int // for generating a higher, unique epoch number
-
+  // Paxos Instances
+  proposers map[int]*Proposer
+  proposersMu sync.Mutex
+  acceptors map[int]*Acceptor
+  acceptorsMu sync.Mutex
+  learners  map[int]*Learner
+  learnersMu sync.Mutex
+  // Persistence
   disk *Disk // simulates disk in software for persistence plan
 }
 
@@ -73,7 +76,6 @@ the ports of all the multipaxos peers (including this one)
 are in peers[]. this servers port is peers[me].
 */
 func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
-  //TODO: when should rpcs be nil??
   mpx := &MultiPaxos{}
   mpx.peers = peers
   mpx.me = me
@@ -82,14 +84,14 @@ func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
   mpx.localMin = 0
   mpx.localMax = 0
   mpx.maxKnownMin = 0
-  mpx.proposers = MakeSharedMap()
-  mpx.acceptors = MakeSharedMap()
-  mpx.learners = MakeSharedMap()
-  mpx.mins = MakeSharedSlice(len(mpx.peers))
-  mpx.lifeStates = MakeSharedSlice(len(mpx.peers))
+  mpx.mins = make([]int, len(mpx.peers))
+  mpx.lifeStates = make([]LifeState, len(mpx.peers))
   mpx.actingAsLeader = false
   mpx.epoch = 0
   mpx.maxKnownEpoch = 0
+  mpx.proposers = make(map[int]*Proposer)
+  mpx.acceptors = make(map[int]*Acceptor)
+  mpx.learners = make(map[int]*Learner)
   mpx.disk = disk
 
   if rpcs != nil {
@@ -145,7 +147,7 @@ func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
   go func() {
     for mpx.dead == false {
       mpx.tick()
-      time.Sleep(250 * time.Millisecond)
+      time.Sleep(250 * time.Millisecond) //TODO: set ping interval
     }
   }()
   return mpx
@@ -191,14 +193,14 @@ func (mpx *MultiPaxos) Push(seq int, v DeepCopyable) Err {
 */
 func (mpx *MultiPaxos) Done(seq int) {
   mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   if seq >= mpx.localMin { // done up to or beyond our local min
     mpx.localMin = seq + 1 // update local min
   }
   mpx.disk.SafeWriteLocalMin(mpx.localMin)
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for localMin
   //forgets until seq (inclusive)
-  mpx.safeForgetUntil(mpx.proposers, seq)
-  mpx.safeForgetUntil(mpx.learners, seq)
+  mpx.safeForgetUntil(mpx.proposers, mpx.proposersMu, seq)
+  mpx.safeForgetUntil(mpx.learners, mpx.learnersMu, seq)
 }
 
 /*
@@ -207,7 +209,9 @@ highest instance sequence known to
 this peer.
 */
 func (mpx *MultiPaxos) Max() int {
-  return mpx.localMax //Q: localMax access issues? Are int read/writes atomic?
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock() //Q: is locking necessary here?
+  return mpx.localMax
 }
 
 /*
@@ -215,16 +219,13 @@ Returns the lowest known min.
 */
 func (mpx *MultiPaxos) GlobalMin() int {
   mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   globalMin := mpx.localMin
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for localMin
-  mpx.mins.Mu.Lock()
-  for _, min := range mpx.mins.Slice {
+  for _, min := range mpx.mins {
     if min < globalMin {
       globalMin = min
     }
   }
-  mpx.mins.Mu.Unlock()
-  mpx.safeForgetUntil(mpx.acceptors, globalMin)
   return globalMin
 }
 
@@ -240,8 +241,8 @@ func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
     panic("Cannot remember decision at sequence %d after Done(%d) was called for this instance", seq, mpx.localMin-1)
   }
   learner := mpx.summonLearner(seq)
-  learner.Mu.Lock()
-  defer learner.Mu.Unlock()
+  learner.Lock()
+  defer learner.Unlock()
   return learner.Decided, learner.Value
 }
 
@@ -266,7 +267,7 @@ Specifiy whether simulated disk loss should occur
 */
 func (mpx *MultiPaxos) Crash(loseDisk bool) {
   //TODO: should rpcs argument be nil?
-  mpx.dead = true
+  mpx.dead = true //TODO: check -> writes to disk should be disabled!
   if mpx.l != nil {
     mpx.l.Close()
   }
@@ -301,23 +302,22 @@ func (mpx *MultiPaxos) Reboot() {
 // -- SubSection 0 : Ping --
 
 func (mpx *MultiPaxos) ping(peerID ServerID, rollcall *SharedCounter, done chan bool) {
+
   if peerID != mpx.me {
     args := PingArgs{}
     reply := PingReply{}
     replyReceived := call(mpx.peers[peerID], "MultiPaxos.PingHandler", &args, &reply)
+    mpx.mu.Lock() // -> lifeStates should not be concurrently accessed
     if replyReceived {
-      mpx.mu.Lock()
-      mpx.presence[peerID] = Alive
-      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
+      mpx.lifeStates[peerID] = Alive
     }else {
-      mpx.mu.Lock()
-      if mpx.presence[peerID] == Alive {
-        mpx.presence[peerID] = Missing
-      }else if mpx.presence[peerID] == Missing {
-        mpx.presence[peerID] = Dead
+      if mpx.lifeStates[peerID] == Alive {
+        mpx.lifeStates[peerID] = Missing
+      }else if mpx.lifeStates[peerID] == Missing {
+        mpx.lifeStates[peerID] = Dead
       }
-      mpx.mu.Unlock() //OPTIMIZATION: array lock for presence
     }
+    mpx.mu.Unlock()
   }
   // account for pinged server
   rollcall.SafeIncr()
@@ -333,7 +333,7 @@ Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   for !mpx.dead {
-    responses := MakeSharedMap()
+    responses := MakeSharedMap() //TODO: replace with map and lock??
     rollcall := MakeSharedCounter()
     done := make(chan bool)
     for _, peer := range mpx.peers {
@@ -359,13 +359,13 @@ Processes the aggregated responses for a prepare epoch phase
 func (mpx *MultiPaxos) SafeProcessAggregated(responses *SharedMap) (bool, bool) {
   witnessedReject := false
   witnessedMajority := false
-  mpx.SafeProcessAggregated(responses)
   responses.Mu.Lock()
   for k, v := range responses.Map {
-    sn := k.(int)
+    seq := k.(int)
     prepareReplies := v.([]PrepareReply) // accumulated replies for sequence number = s
-    proposer := summonProposer(sn)
+    proposer := summonProposer(seq)
     seqReject, seqMajority := proposer.SafeProcess(prepareReplies)
+    //TODO: should SafeProcess by a method of the mpx server?
     if seqReject {
       witnessedReject = true
     }
@@ -391,7 +391,7 @@ func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedM
   reply := PrepareEpochReply{}
   replyReceived := sendPrepareEpoch(peerID, &args, &reply)
   if replyReceived {
-    responses.aggregate(reply.EpochReplies)
+    responses.aggregate(reply.EpochReplies) //TODO: should this be a function?
   }
   rollcall.SafeIncr()
   if rollcall.SafeCount() == len(mpx.peers) {
@@ -496,8 +496,8 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
-    acceptor := mpx.summonAcceptor(seq)
     epochReplies[seq] = mpx.prepareHandler(seq, args.Epoch)
+    //TODO: should prepareHandler take acceptor as input?
     //OPTIMIZATION: batch acceptor disk writes
   }
   reply.EpochReplies = epochReplies
@@ -505,9 +505,10 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 }
 
 func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
-  prepareReply := PrepareReply{}
   acceptor := mpx.summonAcceptor(seq)
-  acceptor.Mu.Lock()
+  acceptor.Lock()
+  defer acceptor.Unlock()
+  prepareReply := PrepareReply{}
   if n > acceptor.N_p {
     acceptor.N_p = n
     prepareReply.N_a = acceptor.N_a
@@ -517,18 +518,18 @@ func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
     prepareReply.OK = false
   }
   prepareReply.N_p = acceptor.N_p
-  mpx.disk.SafeWriteAcceptor(seq, acceptor)
-  acceptor.Mu.Unlock()
+  mpx.disk.WriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
   return prepareReply
 }
 
 // -- SubSection 2 : Accept Handler --
 
 func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error {
-  mpx.refreshLocalMax(args.Seq)
-  mpx.processPiggyBack(args.PiggyBack)
   acceptor := mpx.summonAcceptor(args.Seq)
   acceptor.Lock()
+  defer acceptor.Unlock()
+  mpx.refreshLocalMax(args.Seq)
+  mpx.processPiggyBack(args.PiggyBack)
   if args.N >= acceptor.N_p {
     acceptor.N_p = args.N
     acceptor.N_a = args.N
@@ -538,21 +539,20 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
     reply.OK = false
   }
   reply.N_p = acceptor.N_p
-  mpx.disk.SafeWriteAcceptor(seq, acceptor)
-  acceptor.Unlock()
+  mpx.disk.SafeWriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
   return nil
 }
 
 // -- SubSection 3 : Decide Handler --
 
 func (mpx *MultiPaxos) DecideHandler(args *DecideArgs, reply *DecideReply) error {
+  learner := mpx.summonLearner(args.Seq)
+  learner.Lock()
+  defer learner.Unlock()
   mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
-  learner := mpx.summonLearner(args.Seq)
-  learner.Mu.Lock()
   learner.Decided = true
   learner.V = args.V
-  learner.Mu.Unlock()
   return nil
 }
 
@@ -583,14 +583,14 @@ func (mpx *MultiPaxos) refreshLocalMax(seq int) {
 Lazy instantiator for proposers
 */
 func (mpx *MultiPaxos) summonProposer(seq int) *Proposer {
-  mpx.proposers.Mu.Lock()
-  proposer, exists := mpx.proposers.Map[seq]
+  mpx.proposersMu.Lock()
+  defer mpx.proposersMu.Unlock()
+  proposer, exists := mpx.proposers[seq]
   if !exists {
     proposer = &Proposer{}
     mpx.proposers[seq] = proposer
   }
-  mpx.proposers.Mu.Unlock()
-  return proposer.(*Proposer)
+  return proposer
 }
 
 /*
@@ -599,49 +599,48 @@ Prepares acceptors immediately upon creation if server
 has received prepare epoch
 */
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
-  mpx.acceptors.Mu.Lock()
-  acceptor, exists := mpx.acceptors.Map[seq]
+  mpx.acceptorsMu.Lock()
+  defer mpx.acceptorsMu.Unlock()
+  acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
-    acceptor.SafePrepare(mpx.maxKnownEpoch) //Q: can accessing maxKnownEpoch cause issues? Are int read/writes atomic?
-    mpx.acceptors = acceptor
+    mpx.prepare(acceptor, mpx.maxKnownEpoch) //Q: can accessing maxKnownEpoch cause issues? Are int read/writes atomic?
+    mpx.acceptors[seq] = acceptor
   }
-  mpx.acceptors.Mu.Unlock()
-  return acceptor.(*Acceptor)
+  return acceptor
 }
 
 /*
 Lazy instantiator for learners
 */
 func (mpx *MultiPaxos) summonLearner(seq int) *Learner {
-  mpx.learners.Mu.Lock()
-  learner, exists := mpx.learners.Map[seq]
+  mpx.learnersMu.Lock()
+  defer mpx.learnersMu.Unlock()
+  learner, exists := mpx.learners[seq]
   if !exists {
     learner = &Learner{Decided: false}
     mpx.learners[seq] = learner
   }
-  mpx.learners.Mu.Unlock()
-  return learner.(*Learner)
+  return learner
 }
 
 /*
 Processes the current state of the PB information.
 */
-func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack){
-  mpx.mins.Mu.Lock()
-  if piggyBack.LocalMin > mpx.mins.Slice[piggyBack.Me] {
-    mpx.mins.Slice[piggyBack.Me] = piggyBack.LocalMin
-  }
-  mpx.mins.Mu.Unlock()
+func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack) {
   mpx.mu.Lock()
+  if piggyBack.LocalMin > mpx.mins[piggyBack.Me] {
+    mpx.mins[piggyBack.Me] = piggyBack.LocalMin
+  }
   if piggyBack.MaxKnownMin > mpx.maxKnownMin {
     mpx.maxKnownMin = mpx.MaxKnownMin
   }
   if piggyBack.MaxKnownEpoch > mpx.maxKnownEpoch {
     mpx.maxKnownEpoch = mpx.MaxKnownEpoch
   }
-  min := mpx.GlobalMin()
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownMins
+  mpx.mu.Unlock()
+  // potential mins entry update may have increased GlobalMin
+  mpx.safeForgetUntil(mpx.acceptors, mpx.acceptorsMu, GlobalMin())
 }
 
 // -- SubSection 1 : MultiPaxos --
@@ -654,8 +653,8 @@ Pick highest ID of servers considered living to be the leader
 */
 func (mpx *MultiPaxos) leaderElection() int {
   highestLivingID := mpx.me
-  mpx.lifeStates.Mu.Lock()
-  for k, v := range mpx.lifeStates.Slice {
+  mpx.mu.Lock()
+  for k, v := range mpx.lifeStates {
     peerID := k.(int)
     lifeState := v.(LifeState)
     if lifeState == Alive || lifeState == Missing {
@@ -664,7 +663,7 @@ func (mpx *MultiPaxos) leaderElection() int {
       }
     }
   }
-  mpx.lifeStates.Mu.Unlock()
+  mpx.mu.Unlock()
   return highestLivingID
 }
 
@@ -675,8 +674,7 @@ func (mpx *MultiPaxos) actAsLeader() {
   mpx.mu.Lock()
   mpx.actingAsLeader = true
   seq := mpx.localMax
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for actingAsLeader and localMin...?
-
+  mpx.mu.Unlock()
   mpx.prepareEpochPhase(seq)
 }
 
@@ -685,8 +683,8 @@ Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
   mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   mpx.actingAsLeader = false
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain lock for actingAsLeader...?
 }
 
 func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
@@ -715,19 +713,19 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
 
 func (mpx *MultiPaxos) considerEpoch(e int) {
   mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   if e > mpx.maxKnownEpoch {
     mpx.maxKnownEpoch = e
   }
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for maxKnownEpoch and maxKnownEpoch
 }
 
 func (mpx *MultiPaxos) refreshEpoch() {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
   l := len(mpx.peers)
   // generate unique epoch higher than any epoch we have seen so far
-  mpx.mu.Lock()
   mpx.epoch = ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
   mpx.maxKnownEpoch = mpx.epoch // not strictly necessary, but maintains the implied invariant of maxKnownEpoch
-  mpx.mu.Unlock() //OPTIMIZATION: fine-grain locking for epoch and maxKnownEpoch
 }
 
 // -- SubSection 2 : Tick --
@@ -765,46 +763,55 @@ Deletes anything within the paxos map (e.g. proposers, acceptors, learners)
 from a sequence <= the threshold
 No server will need this information in the future
 */
-func (mpx *MultiPaxos) forgetUntil(pxRole *SharedMap, threshold int) {
-  pxRole.Mu.Lock()
-  for s, _ := range pxRole.Map {
+func (mpx *MultiPaxos) forgetProposersUntil(threshold int) {
+  mpx.proposersMu.Lock()
+  for s, _ := range mpx.proposers {
     if s <= threshold {
-      delete(pxRole.Map, s)
+      delete(mpx.proposers, s)
     }
   }
-  pxRole.Mu.Unlock()
+  mpx.proposersMu.Unlock()
+}
+
+func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
+  mpx.acceptorsMu.Lock()
+  for s, _ := range mpx.acceptors {
+    if s <= threshold {
+      delete(mpx.acceptors, s)
+    }
+  }
+  mpx.acceptorsMu.Unlock()
 }
 
 // -- SubSection 4 : Persistence --
 
 func (mpx *MultiPaxos) recoverFromDisk() {
-  mpx.disk.Mu.Lock()
-  mpx.localMin = mpx.disk.LocalMin //TODO: incur disk read latency
+  mpx.disk.Lock()
+  mpx.localMin = mpx.disk.ReadLocalMin()
   mpx.localMax = mpx.localMin
   mpx.maxKnownMin = mpx.localMin
-  mpx.proposers = MakeSharedMap()
-  mpx.acceptors = MakeSharedMap()
-
+  mpx.mins = make([]int, len(mpx.peers)) // mins filled in after acceptors
+  mpx.lifeStates = make([]LifeState, len(mpx.peers))
+  for i, _ := range mpx.lifeStates { // fill in lifeStates with Dead
+    mpx.lifeStates[i] = Dead
+  }
+  mpx.actingAsLeader = false
+  mpx.epoch = 0
+  mpx.maxKnownEpoch = 0
+  mpx.proposers = make(map[int]*Proposer)
+  mpx.acceptors = make(map[int]*Acceptor)
   globalMin := mpx.localMin
-  mpx.acceptors.Mu.Lock()
-  for seq, acceptor := mpx.disk.Acceptors {
-    //TODO: incur disk read latency (batched??)
-    mpx.acceptors.Map[seq] = &(acceptor.DeepCopy())
+  for seq, acceptor := mpx.disk.ReadAcceptors() {
+    mpx.acceptors[seq] = &(acceptor.DeepCopy())
     if seq < globalMin {
       globalMin = seq
     }
   }
-  mpx.acceptors.Mu.Unlock()
-
-  mpx.learners = MakeSharedMap() //OPTIMIZATION: get directly from disk
-  mpx.mins = MakeSharedSlice()
-  mpx.mins.SafeFill(len(mpx.peers), globalMin)
-  mpx.lifeStates = MakeSharedSlice()
-  mpx.lifeStates.SafeFill(len(mpx.peers), Dead)
-  mpx.actingAsLeader = false
-  mpx.epoch = 0
-  mpx.maxKnownEpoch = 0
-  mpx.disk.Mu.Unlock()
+  mpx.learners = make(map[int]*Learners) //OPTIMIZATION: get directly from disk
+  for i, _ := range mpx.mins { // fill in mins with globalMin
+    mpx.mins[i] = globalMin
+  }
+  mpx.disk.Unlock()
 }
 
 func (mpx *MultiPaxos) recoverFromPeers() {
