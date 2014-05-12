@@ -52,6 +52,7 @@ type MultiPaxos struct {
   actingAsLeader bool
   // Important round numbers
   epoch int
+  highestPrepareEpoch int
   maxKnownEpoch int // for generating a higher, unique epoch number
   // Paxos Instances
   proposers map[int]*Proposer
@@ -88,6 +89,7 @@ func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
   mpx.lifeStates = make([]LifeState, len(mpx.peers))
   mpx.actingAsLeader = false
   mpx.epoch = 0
+  mpx.highestPrepareEpoch = 0
   mpx.maxKnownEpoch = 0
   mpx.proposers = make(map[int]*Proposer)
   mpx.acceptors = make(map[int]*Acceptor)
@@ -511,6 +513,7 @@ func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
 // -- SubSection 1 : Prepare Handler --
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
+  mpx.refreshHighestPrepareEpoch(args.Seq)
   mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   epochReplies := make(map[int]PrepareReply)
@@ -622,7 +625,7 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
-    mpx.prepareAcceptor(acceptor, mpx.maxKnownEpoch) //TODO: prepare with highest PREPARED epoch
+    mpx.prepareAcceptor(acceptor, mpx.highestPrepareEpoch)
     mpx.acceptors[seq] = acceptor
   }
   mpx.acceptorsMu.Unlock()
@@ -738,6 +741,14 @@ func (mpx *MultiPaxos) refreshMaxKnownEpoch(e int) {
   }
 }
 
+func (mpx *MultiPaxos) refreshHighestPrepareEpoch(e int) {
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
+  if e > mpx.highestPrepareEpoch {
+    mpx.highestPrepareEpoch = e
+  }
+}
+
 func (mpx *MultiPaxos) refreshEpoch() {
   mpx.mu.Lock()
   defer mpx.mu.Unlock()
@@ -816,6 +827,7 @@ func (mpx *MultiPaxos) recoverFromDisk() {
   }
   mpx.actingAsLeader = false
   mpx.epoch = 0
+  mpx.highestPrepareEpoch = 0
   mpx.maxKnownEpoch = 0
   mpx.proposers = make(map[int]*Proposer)
   mpx.acceptors = make(map[int]*Acceptor)

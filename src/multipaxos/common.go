@@ -126,11 +126,15 @@ func (acceptor Acceptor) DeepCopy() Acceptor {
 }
 
 func (acceptor *Acceptor) Lock() {
-	acceptor.mu.Lock() //TODO: make mu private
+	acceptor.mu.Lock()
 }
 
 func (acceptor *Acceptor) Unlock() {
-	acceptor.mu.Unlock() //TODO: make mu private
+	acceptor.mu.Unlock()
+}
+
+func prepareAcceptor(acceptor *Acceptor) {
+
 }
 
 type Learner struct {
@@ -140,11 +144,11 @@ type Learner struct {
 }
 
 func (learner *Learner) Lock() {
-	learner.mu.Lock() //TODO: make mu private
+	learner.mu.Lock()
 }
 
 func (learner *Learner) Unlock() {
-	learner.mu.Unlock() //TODO: make mu private
+	learner.mu.Unlock()
 }
 
 // RPC args & replies
@@ -236,14 +240,14 @@ func (d *Disk) WriteAcceptor(seq int, acceptor *Acceptor) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.Acceptors[seq] = &(acceptor.DeepCopy)
-	//TODO: incur write latency
+	time.Sleep(1 * time.Millisecond) //TUNE: incur write latency
 }
 
 func (d *Disk) WriteLocalMin(localMin int) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.LocalMin = localMin
-	//TODO: incur write latency
+	time.Sleep(1 * time.Millisecond) //TUNE: incur write latency
 }
 
 func (d *Disk) ReadAcceptors() map[int]Acceptors {
@@ -253,14 +257,14 @@ func (d *Disk) ReadAcceptors() map[int]Acceptors {
 	for seq, acceptor := range d.Acceptors {
 		copy[seq] = acceptor.DeepCopy()
 	}
-	//TODO: incur (batched) read latency
+	time.Sleep(1 * time.Millisecond) //TUNE: incur (batched) read latency
 	return copy
 }
 
 func (d *Disk) ReadLocalMin() int {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	//TODO: incur read latency
+	time.Sleep(1 * time.Millisecond) //TUNE: incur read latency
 	return d.LocalMin
 }
 
