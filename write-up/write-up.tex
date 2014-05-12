@@ -77,9 +77,12 @@ Remembering the history of the shards makes sure that duplicate detection works 
 Remembering the acceptors  ensures the correct behaviour of multi-Paxos.\\
 \indent If the disk crashes too, one has to be more careful on how the system proceeds.
 The reason is because we have lost all the acceptors for any sequence in the Paxos log.
-Therefore, before the system resumes operation, it needs to make sure that it does not reverse any values that had been already chosen or worse, not reverse any values that were already applied to the key-value store.
-Conceptually, it would be nice if we could copy the state of the server that would ensure that we get the acceptors back where we might have formed any decided value.
+Therefore, before the system resumes operation, it needs to make sure that it does not reverse any values that had previously been  decided (or worse, not reverse any values that were already applied to the key-value store).
+Conceptually, it would be nice if we could copy the state of some server such that we could get back the acceptors when we formed any decision.
 This is equivalent to knowing the sequence number of the highest decision we have contributed to. 
+In turn, the highest decision we have contributed to is less than or to the sequence number of the highest decision ever made.
+Therefore, if we could go to a state when the highest decision was applied to the key-value store, then we would remove the risk of reverting anything. 
+Thus, its enough to guarantee correctness that our service recovers from disk by pinging all the servers that are alive and finding out the
 
 
 
