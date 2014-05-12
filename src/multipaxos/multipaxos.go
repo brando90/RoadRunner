@@ -173,8 +173,18 @@ type DeepCopyable interface {
   DeepCopy() DeepCopyable
 }
 
+// testing types
+
+type DeepString DeepCopyable {
+  Str string
+}
+
+func (dstr *DeepString) DeepCopy(){
+  return dstr.Str
+}
+
 /*
-Tries to send accept
+Tries to send a propose
 If this server considers itself a leader, send accepts
 Otherwise, DO NOT send accepts
 */

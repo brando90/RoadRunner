@@ -50,7 +50,7 @@ func aggregate(responses *SharedResponses, epochReplies map[int]PrepareReply) {
 	responses.Lock()
 	defer responses.Unlock()
 	for seq, prepareReply := range epochReplies {
-		prepareReplies, exists := range responses.Aggregate[seq]
+		prepareReplies, exists := responses.Aggregate[seq]
 		if ! exists {
 			prepareResplies = []PrepareReply{}
 		}
@@ -134,7 +134,7 @@ func (acceptor *Acceptor) Unlock() {
 }
 
 func prepareAcceptor(acceptor *Acceptor) {
-
+//TODO what is this function for?
 }
 
 type Learner struct {
@@ -267,6 +267,17 @@ func (d *Disk) ReadLocalMin() int {
 	time.Sleep(1 * time.Millisecond) //TUNE: incur read latency
 	return d.LocalMin
 }
+
+// testing types
+
+type DeepString DeepCopyable {
+	Str string
+}
+
+func (dstr *DeepString) DeepCopy(){
+	return dstr.Str
+}
+
 
 //
 // call() sends an RPC to the rpcname handler on server srv

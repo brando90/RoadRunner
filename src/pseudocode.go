@@ -76,5 +76,5 @@ Reboot:
             then, copy everything about them (get their KV and acceptors, localMin, etc)
     else: //disk is not dead
         get the kv from the local disk
-        set the multi-paxos state up 
+        set the multi-paxos state up
         set ourselves to be live

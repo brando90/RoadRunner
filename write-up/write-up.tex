@@ -89,5 +89,52 @@ and then stores the largest local max from the majority.
 Since the local max is the highest sequence number for which a Paxos instance has started, if a value has been decided, then it has obviously been started.
 Therefore, the largest started sequence number from a majority clearly upper bounds the highest value that has been decided.
 Therefore, now that the server that is trying to recover knows the largest sequence number started by some majority, if it waits for any server's local min to be larger than that value, then it is guaranteed that it will recover to a safe state.
+So that is what RoadRunner will do.
+It will wait until some local min is larger than that value and then basically replicate identically that server.
+
+\section{Code Overview}
+
+Our code for Multi-Paxos heavily commented. In fact there is a Table of Contents at the top of our multi-Paxos code to help you find the methods and functions that are of interest.
+The explanation of what each section is about is in the comments in the code.
+Also, note that we have a pseudocode file with some of the important functions explained in english.
+
+\subsection{Preparing Paxos instances in Multi-Paxos}
+
+During normal Paxos, there are two phases, the prepare phase and the accept phase. 
+Multi-Paxos needs an analogous set of two phases for correctness (so that Multi-Paxos always learns old value before sending accepts blindly). 
+In this section we will explain the prepare phase.
+
+\subsubsection{The Prepare Phase and the Prepare Handler}
+
+The prepare phase conceptually prepares all sequences from a staring sequence to infinity until a majority is formed:
+
+Pseudocode:
+
+\textbf{func} (MultiPaxos) prepareEpochPhase(seq):\\
+\indent \indent \textbf{until} a majority is formed on each sequence $\geq$ seq \{ \\
+\indent \indent \indent \textbf{send} prepare rpc to each server with seq and epoch e \\
+\indent \indent  \} \\
+\indent \indent \textbf{if} we get any reject \{ \\
+\indent \indent \indent \textbf{then,} increase epoch number correctly and uniquely \\
+\indent \indent \} \\
+\indent \}
+
+In the practice its silly to actually create an infinite set of acceptors and send some kind of prepare reply for all the sequences numbers for every server.
+Instead the prepare handler from a some specific sequence number to the local max (max known sequence that has been started) and then reply to the leader's proposer.
+However, since the current acceptors just replied with a promise to not accepts with lower epoch rounds, if they ever get a sequence for which the acceptor has yet not been initialized, the server will make sure to create acceptors that keep that promise (by remembering that promise epoch round!).
+Basically, the idea is, in practice we don't create all the acceptors to infinity, but when a new acceptor is needed, its created with correct epoch round according to the highest prepare phase they have received.
+
+\subsection{Sending proposes in Multi-Paxos}
+
+We changed the Start function in normal paxos to be the Push function.
+The push function tries to Push some value to the paxos log and it might be successful or it might not, but more importantly, push will call leaderPropose.
+
+\subsubsection{Leader Propose}
+
+Leader propose is the function that sends the accepts to all the acceptors with the current epoch round number.
+
+
+
+
 
 \end{document}
