@@ -37,17 +37,27 @@ Conceptually, the reason for this is because the effective leader will send the 
 
 \subsubsection{Overview of Multi-Paxos}
 
-In the case of a stable leader Multi-Paxos will have a performance benefit by avoid round trip times to start Paxos instances in the log.
+In the case of a stable leader Multi-Paxos will have a performance benefit by avoid round trip times when starting Paxos instances in the log.
 Multi-Paxos will prepare all sequences in the Paxos log from a given sequence number to infinity with the current round number.
 However, what used to be a round number in normal Paxos will have different semantic in our Multi-Paxos.
 In our design, a round number will still be used to reject old accepts and prepare's, however, they will also correspond to the epoch round of the current leader. 
 Therefore, round numbers will be referred to as epoch numbers and the current acting leader will have the highest epoch round number (corresponding to the round in which he is the leader).
-Therefore, the leader will send prepare and accept messages with his epoch number and, if any other old leader tries to send accept or prepare messages with his lower epoch number, servers that have already been prepared with the current leader will reject and inform him that he should find out who the real leader is.
-Therefore, we ensure that old leader cannot change any already decide values because if a majority of the new servers have been prepared by the new leader, they will reject any old accept or prepare message and inform the confused leader about the new leader.
+Therefore, the leader will send prepare and accept messages with his epoch number and, if any other old leader tries to send accept or prepare messages with a lower epoch number, servers that have already been prepared with the current leader will reject and inform him that he should find out who the real leader is.
+Therefore, we ensure that old leader cannot change any already decide values because if a majority of the new servers have been prepared by the new leader, they will reject any old accept or prepare message and inform the confused leader about the new leader (because the majority was prepared with a higher epoch number).
 Furthermore, new leader cannot possibly change old decided values either. 
 This is because when a new leader is formed, he will *always* send prepare messages before sending accept messages.
-Therefore, whenever he tries propose any new values, he will always be informed by some overlapping majority of a decided value by a previous epoch number, if one exists.
-Thus, new leader cannot change decision because they prepare before they accept.
+Therefore, whenever he tries propose any new values, he will always be informed by some majority of a decided value by a previous epoch number, if one exists.
+\\
+\indent However, how do we make sure that the system agrees on who the leader is? 
+This is enforced through our periodic ticks.
+All the servers will ping each other and if one of the servers does not respond for a long enough time, a server will consider it dead.
+If the dead server was the leader, then the current server will see know that a new leader will have to be chosen from the alive ones.
+Thus, from the pings he just did he knows who the alive servers are and then from them checks the highest server id.
+Whoever has the highest server id should act as the leader and that is how servers will know who the new leader is.
+If a client needs to know who the leader is, he can be informed by any server of who the server believe who the leader is and the client can eventually get routed to the leader.
+Notice that it is possible that in a bad network situation or if there is not a stable leader, that the servers will "fight" to be the leader.
+In that case, then we just have servers preparing and increasing their epoch number and dueling for Paxos instances.
+This scenario was possible in possible normal Paxos, so in a bad case, the system will degrade and behave like normal Paxos.
 
 
 \subsubsection{Overview of the whole Service and Persistance}
