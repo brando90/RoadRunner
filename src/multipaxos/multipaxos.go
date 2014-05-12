@@ -147,7 +147,7 @@ func mpx(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPaxos {
   go func() {
     for mpx.dead == false {
       mpx.tick()
-      time.Sleep(250 * time.Millisecond) //TODO: set ping interval
+      time.Sleep(250 * time.Millisecond) //Tune: set ping interval
     }
   }()
   return mpx
@@ -335,7 +335,7 @@ Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
   for !mpx.dead {
-    responses := MakeSharedMap() //TODO: replace with map and lock??
+    responses := MakeSharedResponses()
     rollcall := MakeSharedCounter()
     done := make(chan bool)
     for _, peer := range mpx.peers {
@@ -343,7 +343,7 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
     }
     <- done
     // Process aggregated replies
-    witnessedReject, witnessedMajority := mpx.SafeProcessAggregated(responses)
+    witnessedReject, witnessedMajority := mpx.processAggregated(responses)
     if witnessedReject {
       mpx.refreshEpoch()
       continue // try again
@@ -358,16 +358,13 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
 /*
 Processes the aggregated responses for a prepare epoch phase
 */
-func (mpx *MultiPaxos) SafeProcessAggregated(responses *SharedMap) (bool, bool) {
+func (mpx *MultiPaxos) processAggregated(responses *SharedResponses) (bool, bool) {
+  responses.Lock()
+  defer responses.Unlock()
   witnessedReject := false
   witnessedMajority := false
-  responses.Mu.Lock()
-  for k, v := range responses.Map {
-    seq := k.(int)
-    prepareReplies := v.([]PrepareReply) // accumulated replies for sequence number = s
-    proposer := summonProposer(seq)
-    seqReject, seqMajority := proposer.SafeProcess(prepareReplies)
-    //TODO: should SafeProcess by a method of the mpx server?
+  for seq, prepareReplies := range responses.Aggregate {
+    seqReject, seqMajority := mpx.process(seq, prepareReplies)
     if seqReject {
       witnessedReject = true
     }
@@ -375,14 +372,33 @@ func (mpx *MultiPaxos) SafeProcessAggregated(responses *SharedMap) (bool, bool) 
       witnessedMajority = true
     }
   }
-  responses.Mu.Unlock()
   return witnessedReject, witnessedMajority
+}
+
+func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) {
+  proposer := mpx.summonProposer(seq)
+  proposer.Lock()
+  defer proposer.Unlock()
+  prepareOKs := 0
+  for _, prepareReply := range prepareReplies {
+    if prepareReply.OK {
+      prepareOKs += 1
+      if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
+        proposer.N_prime = prepareReply.N_a
+        proposer.V_prime = prepareReply.V_a
+      }
+    }else {
+      witnessedReject = true
+    }
+    mpx.refreshMaxKnownEpoch(reply.N_p) // keeping track of maxKnownEpoch
+  }
+  return witnessedReject, mpx.isMajority(prepareOKs)
 }
 
 /*
 Sends prepare epoch for sequence >= seq to one server, processes reply, and increments rollcall
 */
-func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedMap, rollcall *SharedCounter, done chan bool) {
+func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses SharedResponses, rollcall *SharedCounter, done chan bool) {
   args := PrepareEpochArgs{N: mpx.epoch, Seq: seq}
   args.PiggyBack = PiggyBack{
     Me: mpx.me,
@@ -393,7 +409,9 @@ func (mpx *MultiPaxos) prepareEpoch(peerID ServerID, seq int, responses *SharedM
   reply := PrepareEpochReply{}
   replyReceived := sendPrepareEpoch(peerID, &args, &reply)
   if replyReceived {
-    responses.aggregate(reply.EpochReplies) //TODO: should this be a function?
+    responses.Lock()
+    aggregate(responses, reply.EpochReplies)
+    responses.Unlock()
   }
   rollcall.SafeIncr()
   if rollcall.SafeCount() == len(mpx.peers) {
@@ -435,7 +453,7 @@ func (mpx *MultiPaxos) acceptPhase(seq int, v DeepCopyable) (bool, bool) {
       }else {
         witnessedReject  = true
       }
-      mpx.considerEpoch(reply.N_p) // keeping track of knownMaxEpoch
+      mpx.refreshMaxKnwonEpoch(reply.N_p) // keeping track of knownMaxEpoch
     }
   }
   return witnessedReject, mpx.isMajority(acceptOKs)
@@ -498,16 +516,15 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
-    epochReplies[seq] = mpx.prepareHandler(seq, args.Epoch)
-    //TODO: should prepareHandler take acceptor as input?
+    acceptor := mpx.summonAcceptor(seq)
+    epochReplies[seq] = mpx.prepareAcceptor(acceptor, args.Epoch)
     //OPTIMIZATION: batch acceptor disk writes
   }
   reply.EpochReplies = epochReplies
   return nil
 }
 
-func (mpx *MultiPaxos) prepareHandler(seq int, n int) PrepareReply{
-  acceptor := mpx.summonAcceptor(seq)
+func (mpx *MultiPaxos) prepareAcceptor(acceptor *Acceptor, n int) PrepareReply {
   acceptor.Lock()
   defer acceptor.Unlock()
   prepareReply := PrepareReply{}
@@ -602,13 +619,13 @@ has received prepare epoch
 */
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   mpx.acceptorsMu.Lock()
-  defer mpx.acceptorsMu.Unlock()
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
-    mpx.prepare(acceptor, mpx.maxKnownEpoch) //Q: can accessing maxKnownEpoch cause issues? Are int read/writes atomic?
+    mpx.prepareAcceptor(acceptor, mpx.maxKnownEpoch) //TODO: prepare with highest PREPARED epoch
     mpx.acceptors[seq] = acceptor
   }
+  mpx.acceptorsMu.Unlock()
   return acceptor
 }
 
@@ -713,7 +730,7 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
   }
 }
 
-func (mpx *MultiPaxos) considerEpoch(e int) {
+func (mpx *MultiPaxos) refreshMaxKnownEpoch(e int) {
   mpx.mu.Lock()
   defer mpx.mu.Unlock()
   if e > mpx.maxKnownEpoch {

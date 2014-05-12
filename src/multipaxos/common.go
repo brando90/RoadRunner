@@ -29,24 +29,34 @@ type ServerName string
 
 // -- Shared Map : built-in concurrency support --
 
-func MakeSharedMap() *SharedMap {
-	return &SharedMap{Map: make(map[interface{}]interface{})}
+func MakeSharedResponses() *SharedResponses {
+	return &SharedResponses{Aggregate: make(map[int][]PrepareReply)}
 }
 
-type SharedMap struct {
-	Map map[interface{}]interface{}
-	Mu sync.Mutex
+type SharedResponses struct {
+	Aggregate map[int][]PrepareReply
+	mu sync.Mutex
 }
 
-//TODO: should this be a helper method of mpx?
-func (m *SharedMap) aggregate(epochReplies map[int]PrepareReply) {
-	m.Mu.Lock()
+func (r *SharedResponses) Lock() {
+	r.mu.Lock()
+}
+
+func (r *SharedResponses) Unlock() {
+	r.mu.Unlock()
+}
+
+func aggregate(responses *SharedResponses, epochReplies map[int]PrepareReply) {
+	responses.Lock()
+	defer responses.Unlock()
 	for seq, prepareReply := range epochReplies {
-		prepareReplies := m.Map[seq].([]PrepareReply)
+		prepareReplies, exists := range responses.Aggregate[seq]
+		if ! exists {
+			prepareResplies = []PrepareReply{}
+		}
 		prepareReplies = append(prepareReplies, prepareReply)
-		m.Map[seq] = prepareReplies
+		responses.Aggregate[seq] = prepareReplies
 	}
-	m.Mu.Unlock()
 }
 
 // -- Shared Counter : built-in concurrency support --
@@ -90,34 +100,11 @@ type Proposer struct {
 }
 
 func (propser *Proposer) Lock() {
-	proposer.mu.Lock() //TODO: make mu private
+	proposer.mu.Lock()
 }
 
 func (proposer *Proposer) Unlock() {
-	proposer.mu.Unlock() //TODO: make mu private
-}
-
-/*
-Processes prepare replies for this proposer's sequence number
-*/
-func (proposer *Proposer) SafeProcess(prepareReplies []PrepareReply) (bool, bool) {
-	//TODO: should be a method in MultiPaxos
-	proposer.Mu.Lock()
-	defer proposer.Mu.Unlock()
-	prepareOKs := 0
-	for _, prepareReply := range prepareReplies {
-		if prepareReply.OK {
-			prepareOKs += 1
-			if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
-				proposer.N_prime = prepareReply.N_a
-				proposer.V_prime = prepareReply.V_a
-			}
-		}else {
-			witnessedReject = true
-		}
-		mpx.considerEpoch(reply.N_p) // keeping track of maxKnownEpoch
-	}
-	return witnessedReject, mpx.isMajority(prepareOKs)
+	proposer.mu.Unlock()
 }
 
 type Acceptor DeepCopyable {
