@@ -145,7 +145,17 @@ The leader election procedure is simple, from the servers that are consider aliv
 As I already explained on the overview, its ok if multiple servers ever think they are both leaders because the true leader will eventually have the highest epoch round (which means his accepts are the only ones that are accepted), old leaders with lower epoch rounds will get rejected (any leader always prepares before it sends accepts, so its impossible to reverse decisions unsafely) and in the case of a unstable leader, our system will just behave like normal Paxos. 
 For more implementation details see the comments, pseudocode or actual code of the tick() function
 
-\subsection{Persistence}
+\subsection{Persistence and Recovery}
+
+In this section I will discuss the three most important cases for recovery and how we are persisting things on disk.
+
+\subsubsection{Recover when one server crashes but disk is intact}
+The most important things that we will be storing on disk are the acceptors for multi-Paxos, the local min, 
+When a server crashes and loses its memory, it will simply copy its disk
+
+\subsubsection{Recover when one server crashes but disk crashes}
+
+\subsubsection{Recover when all server crashes}
 
 
 \end{document}
