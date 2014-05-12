@@ -58,9 +58,28 @@ If a client needs to know who the leader is, he can be informed by any server of
 Notice that it is possible that in a really bad network situation or if there is no stable leader, that the servers will duel to be the leader.
 In that case, then that case servers will prepare and increasing their epoch number and inevitably duel for Paxos instances.
 A similar scenario was possible normal in Paxos, so in a temporary bad scenario, the system will  behave like normal Paxos.
-
+\\
+\indent Our Multi-Paxos library can also handle disk crashes.
+The way that it ensures correct Paxos behaviour is by persisting the acceptors before replying to a proposer from the leader.
+The reason that this is important is because, when a acceptors replies to a proposer, it promises that it will not accept values with a epoch number lower than n.
+If that is true, but then acceptor forgets that it did that promise, it is possible that a decided value that was "locked", reverses, which is bad behaviour in Paxos.
+Thus, for the correct behaviour of the Paxos, we persist acceptors.
 
 \subsubsection{Overview of the whole Service and Persistance}
+
+RoadRunner is a sharded key-value store (that garbage collects), which means that our system is able to handle very large amounts of data.
+Our system is made fault-tolerent through Multi-Paxos and disk writes.
+The things that we write to disk are: key-value store, the duplicate detection table (history of keys and shards), the Multi-Paxos acceptors and the local min (one more than the last sequence number that was garbage collected, i.e. Done was called on it).
+If one server crashes with its disk intact, then it can return to its normal operation by reading the disk.
+The key-value store he stored will make sure that he doesn't have to re-apply every operation ever done to its key-vale store to get it up to date.
+The fact that he knows the local min means that he knows from which operations he needs to learn decided value and which ones his key-value store might be behind. 
+Remembering the history of the shards makes sure that duplicate detection works normal when he comes back up.
+Remembering the acceptors  ensures the correct behaviour of multi-Paxos.\\
+\indent If the disk crashes too, one has to be more careful on how the system proceeds.
+The reason is because we have lost all the acceptors for any sequence in the Paxos log.
+Therefore, before the system resumes operation, it needs to make sure that it does not reverse any values that had been already chosen or worse, not reverse any values that were already applied to the key-value store.
+Conceptually, it would be nice if we could copy the state of the server that would ensure that we get the acceptors back where we might have formed any decided value.
+This is equivalent to knowing the sequence number of the highest decision we have contributed to. 
 
 
 
