@@ -1,5 +1,5 @@
 package multipaxos
-//TODO: check acceptor copies (e.g. in disk writes)
+
 import (
   "net"
   "net/rpc"
@@ -267,7 +267,9 @@ Specifiy whether simulated disk loss should occur
 */
 func (mpx *MultiPaxos) Crash(loseDisk bool) {
   //TODO: should rpcs argument be nil?
-  mpx.dead = true //TODO: check -> writes to disk should be disabled!
+  mpx.mu.Lock()
+  defer mpx.mu.Unlock()
+  mpx.dead = true
   if mpx.l != nil {
     mpx.l.Close()
   }
