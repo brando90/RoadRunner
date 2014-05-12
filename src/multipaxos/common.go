@@ -27,33 +27,6 @@ const (
 type ServerID int
 type ServerName string
 
-/*
-// -- SharedInt : built-in concurrency support --
-
-func MakeSharedInt(i int) *SharedInt {
-	return &SharedInt{Int: i}
-}
-
-type SharedInt struct {
-	Int int
-	Mu sync.Mutex
-}
-
-func (i *SharedInt) SafeGet() int {
-	i.Mu.Lock()
-	j := i.Int
-	i.Mu.Unlock()
-	return j
-}
-
-func (i *SharedInt) SafeSet(j int) {
-	i.Mu.Lock()
-	i.Int = j
-	i.Mu.Unlock()
-}
-*/
-
-
 // -- Shared Map : built-in concurrency support --
 
 func MakeSharedMap() *SharedMap {
@@ -65,30 +38,7 @@ type SharedMap struct {
 	Mu sync.Mutex
 }
 
-/*
-func (m *SharedMap) SafeReset() {
-	m.Mu.Lock()
-	m.Map = make(map[interface{}]interface{})
-	m.Mu.Unlock()
-}
-*/
-
-//TODO: is this method ever called?
-func (m *SharedMap) SafeGet(key interface{}) (interface{}, bool) {
-	m.Mu.Lock()
-	value, exists := m.Map[key]
-	m.Mu.Unlock()
-	return value, exists
-}
-
-//TODO: is this method ever called?
-func (m *SharedMap) SafePut(key interface{}, value interface{}) {
-	m.Mu.Lock()
-	m.Map[key] = value
-	m.Mu.Unlock()
-}
-
-//TODOL shpuld this be a helper method of mpx?
+//TODO: should this be a helper method of mpx?
 func (m *SharedMap) aggregate(epochReplies map[int]PrepareReply) {
 	m.Mu.Lock()
 	for seq, prepareReply := range epochReplies {
