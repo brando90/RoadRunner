@@ -42,12 +42,14 @@ func (dstr DeepString) DeepCopy() DeepCopyable {
   return DeepString{Str: dstr.Str}
 }
 
-func start(pxa []*MultiPaxos, seq int, v DeepCopyable) {
+func start(mpxa []*MultiPaxos, seq int, v DeepCopyable) {
   for {
-    for _, mpx := range pxa {
+    for _, mpx := range mpxa {
       err := mpx.Push(seq, v)
       if err.Nil {
         return
+      }else {
+        // not a leader
       }
     }
     time.Sleep(10*time.Millisecond)
@@ -216,21 +218,24 @@ func TestConsensusStableReliable(t *testing.T) {
 
   time.Sleep(500*time.Millisecond) // wait for system to converge on leader
   leader := mpxa[nmultipaxos - 1]
-  leader.Push(0, DeepString{Str: "stable"})
+
+  leader.Push(0, DeepString{Str: "good"})
   waitn(t, mpxa, 0, nmultipaxos)
-  decidedStable, valStable := leader.Status(0)
-  if !decidedStable {
+  decided1, val1 := leader.Status(0)
+  if !decided1 {
     t.Fatalf("Consensus was never decided...?")
   }
-  leader.Push(0, DeepString{Str: "unstable"})
+
+  leader.Push(0, DeepString{Str: "bad"})
   time.Sleep(1000*time.Millisecond)
   waitn(t, mpxa, 0, nmultipaxos)
-  decidedUnstable, valUnstable := leader.Status(0)
-  if !decidedUnstable {
+  decided2, val2 := leader.Status(0)
+  if !decided2 {
     t.Fatalf("Consensus is unstable; Now undecided")
   }
-  if valStable != valUnstable {
-    t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", valStable, valUnstable)
+  
+  if val1 != val2 {
+    t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", val1, val2)
   }
   fmt.Printf("  ... Passed\n")
 }
