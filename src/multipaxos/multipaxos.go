@@ -844,6 +844,7 @@ func (mpx *MultiPaxos) forgetLearnersUntil(threshold int) {
 
 func (mpx *MultiPaxos) recoverFromDisk() {
   mpx.disk.Lock()
+  defer mpx.disk.Unlock()
   mpx.localMin = mpx.disk.ReadLocalMin()
   mpx.localMax = mpx.localMin
   mpx.maxKnownMin = mpx.localMin
@@ -870,7 +871,6 @@ func (mpx *MultiPaxos) recoverFromDisk() {
   for i, _ := range mpx.mins { // fill in mins with globalMin
     mpx.mins[i] = globalMin
   }
-  mpx.disk.Unlock()
 }
 
 func (mpx *MultiPaxos) recoverFromPeers() {
