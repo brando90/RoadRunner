@@ -134,11 +134,14 @@ func TestBasic(t *testing.T) {
 
   fmt.Printf("Test: Single proposer ...\n")
 
-  time.Sleep(5000 * time.Millisecond)
-
-  err := pxa[2].Push(0, DeepString{Str: "hello"})
-  if !err.Nil {
-    fmt.Println("Fail :: ", err.Msg)
+  for { // keep trying to push to leader
+    err := pxa[2].Push(0, DeepString{Str: "hello"})
+    if !err.Nil {
+      fmt.Println("Fail :: ", err.Msg)
+      time.Sleep(10 * time.Millisecond)
+    }else {
+      break // pushed to leader
+    }
   }
 
   waitn(t, pxa, 0, npaxos)
