@@ -7,6 +7,7 @@ import (
   "os"
   "time"
   "fmt"
+  "encoding/gob"
   //"math/rand"
 )
 
@@ -116,6 +117,7 @@ func noTestSpeed(t *testing.T) {
 */
 
 func TestBasic(t *testing.T) {
+  gob.Register(DeepString{})
   runtime.GOMAXPROCS(4)
 
   const npaxos = 3
@@ -132,7 +134,12 @@ func TestBasic(t *testing.T) {
 
   fmt.Printf("Test: Single proposer ...\n")
 
-  pxa[2].Push(0, DeepString{Str: "hello"})
+  time.Sleep(5000 * time.Millisecond)
+
+  err := pxa[2].Push(0, DeepString{Str: "hello"})
+  if !err.Nil {
+    fmt.Println("Fail :: ", err.Msg)
+  }
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")

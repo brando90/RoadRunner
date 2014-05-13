@@ -69,7 +69,7 @@ type MultiPaxos struct {
 // -- SubSection 1 : Constructors --
 
 func Make(peers []string, me int, rpcs *rpc.Server) *MultiPaxos {
-  return makeWithDisk(peers, me, rpcs, &Disk{})
+  return makeWithDisk(peers, me, rpcs, MakeDisk())
 }
 
 /*
@@ -229,6 +229,7 @@ func (mpx *MultiPaxos) GlobalMin() int {
       globalMin = min
     }
   }
+  mpx.DPrintf("global min calculated: %d", globalMin)
   return globalMin
 }
 
@@ -240,6 +241,7 @@ should just inspect the local peer state;
 it should not contact other Paxos peers.
 */
 func (mpx *MultiPaxos) Status(seq int) (bool, interface{}) {
+  fmt.Println("STATUS call")
   if seq < mpx.GlobalMin() {
     panic(fmt.Sprintf("Cannot remember decision at sequence %d after Done(%d) was called for this instance", seq, mpx.localMin-1))
   }
@@ -289,7 +291,7 @@ Signal server to undergo recovery protocol
 */
 func (mpx *MultiPaxos) Reboot() {
   if mpx.disk == nil { // disk loss
-    mpx.disk = &Disk{} // initialize replacement disk
+    mpx.disk = MakeDisk() // initialize replacement disk
     mpx.recoverFromPeers()
   }else { // disk intact
     mpx.recoverFromDisk()
@@ -311,6 +313,7 @@ func (mpx *MultiPaxos) Reboot() {
 // -- SubSection 0 : Ping --
 
 func (mpx *MultiPaxos) ping(peerID int, rollcall *SharedCounter, done chan bool) {
+  mpx.DPrintf("Sending ping to server id:%d", peerID)
   if peerID != mpx.me {
     args := PingArgs{}
     reply := PingReply{}
@@ -517,20 +520,29 @@ func (mpx *MultiPaxos) sendDecide(peerID int, args *DecideArgs, reply *DecideRep
 // -- SubSection 0 : Ping Handler --
 
 func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
+  mpx.DPrintf("entered pinghandler")
   mpx.processPiggyBack(args.PiggyBack)
+  mpx.DPrintf("exited ping handler")
   return nil
 }
 
 // -- SubSection 1 : Prepare Handler --
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
+  mpx.DPrintf("Prepare epoch handler")
   mpx.refreshHighestPrepareEpoch(args.N)
   mpx.refreshLocalMax(args.Seq)
   mpx.processPiggyBack(args.PiggyBack)
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
   for seq := args.Seq; seq <= mpx.localMax; seq++ {
+    mpx.DPrintf("summoning acceptor at seq:%d", seq)
     acceptor := mpx.summonAcceptor(seq)
+    if acceptor == nil {
+      mpx.DPrintf("about to prepare a nil acceptor")
+    }else {
+      mpx.DPrintf("about to prepare non-nil acceptor")
+    }
     epochReplies[seq] = mpx.prepareAcceptor(seq, acceptor, args.N)
     //OPTIMIZATION: batch acceptor disk writes
   }
@@ -553,7 +565,10 @@ func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) Prepa
     prepareReply.OK = false
   }
   prepareReply.N_p = acceptor.N_p
-  mpx.disk.WriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
+  if acceptor == nil {
+    mpx.DPrintf("about to write nil as acceptor")
+  }
+  mpx.disk.WriteAcceptor(seq, acceptor)
   return prepareReply
 }
 
@@ -634,13 +649,19 @@ Prepares acceptors immediately upon creation if server
 has received prepare epoch
 */
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
+  mpx.DPrintf("summoning acceptor")
   mpx.acceptorsMu.Lock()
+  mpx.DPrintf("summon acceptor lock")
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
+    if acceptor == nil {
+      mpx.DPrintf("lazily instantiated nil acceptor!!")
+    }
     mpx.prepareAcceptor(seq, acceptor, mpx.highestPrepareEpoch)
     mpx.acceptors[seq] = acceptor
   }
+  mpx.DPrintf("summon acceptor done & unlock")
   mpx.acceptorsMu.Unlock()
   return acceptor
 }
@@ -674,8 +695,10 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack) {
     mpx.maxKnownEpoch = piggyBack.MaxKnownEpoch
   }
   mpx.mu.Unlock()
+  mpx.DPrintf("processed piggyback...forgetting relevant acceptors")
   // potential mins entry update may have increased GlobalMin
-  mpx.forgetAcceptorsUntil(mpx.GlobalMin())
+  globalMin := mpx.GlobalMin()
+  mpx.forgetAcceptorsUntil(globalMin)
 }
 
 // -- SubSection 1 : MultiPaxos --
@@ -697,6 +720,7 @@ func (mpx *MultiPaxos) leaderElection() int {
     }
   }
   mpx.mu.Unlock()
+  mpx.DPrintf("leader should be server id:%d", highestLivingID)
   return highestLivingID
 }
 
@@ -708,6 +732,7 @@ func (mpx *MultiPaxos) actAsLeader() {
   mpx.actingAsLeader = true
   seq := mpx.localMax
   mpx.mu.Unlock()
+  mpx.DPrintf("ACTING AS LEADER")
   mpx.prepareEpochPhase(seq)
 }
 
@@ -784,12 +809,14 @@ Once we have accounted for all servers, run the leader election protocol
 If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
+  mpx.DPrintf("TICK")
   rollcall := MakeSharedCounter()
   done := make(chan bool)
   for peerID, _ := range mpx.peers {
     go mpx.ping(peerID, rollcall, done)
   }
   <- done
+  mpx.DPrintf("PAST TICK DONE")
   // leader decision & action
   leaderID := mpx.leaderElection()
   if leaderID == mpx.me {
@@ -811,32 +838,36 @@ No server will need this information in the future
 */
 func (mpx *MultiPaxos) forgetProposersUntil(threshold int) {
   mpx.proposersMu.Lock()
+  defer mpx.proposersMu.Unlock()
   for s, _ := range mpx.proposers {
     if s <= threshold {
       delete(mpx.proposers, s)
     }
   }
-  mpx.proposersMu.Unlock()
 }
 
 func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
+  mpx.DPrintf("starting acceptor forgetting")
   mpx.acceptorsMu.Lock()
+  mpx.DPrintf("acceptor forget locked")
   for s, _ := range mpx.acceptors {
     if s <= threshold {
       delete(mpx.acceptors, s)
     }
   }
+  mpx.DPrintf("done acceptor forgetting")
   mpx.acceptorsMu.Unlock()
+  mpx.DPrintf("acceptor forget unlock")
 }
 
 func (mpx *MultiPaxos) forgetLearnersUntil(threshold int) {
   mpx.learnersMu.Lock()
+  defer mpx.learnersMu.Unlock()
   for s, _ := range mpx.learners {
     if s <= threshold {
       delete(mpx.learners, s)
     }
   }
-  mpx.learnersMu.Unlock()
 }
 
 // -- SubSection 4 : Persistence --
@@ -887,4 +918,16 @@ func (mpx *MultiPaxos) recoverFromPeers() {
   else:
     try Step 2 again
   */
+}
+
+// DEBUGGING
+
+const Debug = true
+
+func (mpx *MultiPaxos) DPrintf(format string, a ...interface{}) (n int, err error) {
+  if Debug {
+    prefix := fmt.Sprintf("Server ID:%d :: ", mpx.me)
+    log.Printf(prefix+format, a...)
+  }
+  return
 }
