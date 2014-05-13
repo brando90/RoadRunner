@@ -140,6 +140,7 @@ func TestBasic(t *testing.T) {
   if !err.Nil {
     fmt.Println("Fail :: ", err.Msg)
   }
+
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")
