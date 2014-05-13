@@ -179,4 +179,26 @@ This is possible because the acceptors for that server didn't persist, so its po
 When all servers die and their disk is intact, then its easy to recover because they should only fetch their disk contents.
 If they all crash and only one server loses its disk contents, then the one that lost its disk content should do the procedure already described in the previous section.
 If multiple disk crash, it should not be a problem unless a majority of the disk crash (which nothing can be done because our system has that limit).
+
+\subsection{How does the key-value store catch up?}
+
+Previously, our key-value need to "catch-up" its paxos log and key-value with the missing operation for it to be able to apply say, the most recent operation sent to it.
+A similar functionality would be nice to have with multi-Paxos.
+However it has to be a little different now.
+I will first present the pseudocode and then explain more in detail why the procedure is the way it is:
+
+\textbf{func} (MultiPaxos) CatchUp(largestLocalMin) \{ \\
+\indent \textbf{while} not at largestLocalMin /\ /\ while behind the catch up point: \\
+\indent \indent \textbf{call status} to see if decision is available on the servers local learner \\
+\indent \indent \textbf{if} not yet decided: \\
+\indent \indent \indent \textbf{prepare} NOP with a special, globally highest round number \\
+\indent \indent \indent  \textbf{wait} for decision... \\
+\indent \indent \indent \textbf{execute} and persist decision to KV \\
+\indent \indent \indent  \textbf{proceed} to next sequence number \\
+\indent \}\\
+
+The main idea for the above function is that it tries to query for every paxos slot to see if there is a decision, if there is a decision, then execute the decision to the key-vale store (basically the same as the previous labs).
+The only difference is that now we have a different point to catch up to, which is the largest local min we know.
+The reason that it has to be that way is because the largest local min guarantees that every sequence before them has been decided.
+
 \end{document}
