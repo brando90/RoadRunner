@@ -11,12 +11,10 @@ import (
 
 // Errors
 
-type Err struct {
-	Nil bool
-	Msg string
-}
+type Err string
 
 const (
+	Nil = "Nil"
 	NotLeader = "ErrNotLeader"
 )
 
@@ -60,7 +58,7 @@ func aggregate(responses *SharedResponses, epochReplies map[int]PrepareReply) {
 	responses.Lock()
 	defer responses.Unlock()
 	for seq, prepareReply := range epochReplies {
-		fmt.Printf("AGGREGATE: prepareReply %+v", prepareReply)
+		//fmt.Printf("AGGREGATE: prepareReply %+v", prepareReply)
 		prepareReplies, exists := responses.Aggregated[seq]
 		if !exists {
 			prepareReplies = []PrepareReply{}
@@ -234,9 +232,9 @@ func (disk *Disk) Unlock() {
 }
 
 func (d *Disk) WriteAcceptor(seq int, acceptor *Acceptor) {
-	if acceptor == nil {
-		fmt.Println("writing nil acceptor!")
-	}
+	// if acceptor == nil {
+	// 	fmt.Println("writing nil acceptor!")
+	// }
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	acceptorCopy := acceptor.DeepCopy()

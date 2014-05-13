@@ -46,7 +46,7 @@ func start(mpxa []*MultiPaxos, seq int, v DeepCopyable) {
   for {
     for _, mpx := range mpxa {
       err := mpx.Push(seq, v)
-      if err.Nil { // mpx is a leader... push successful
+      if err == Nil { // mpx is a leader... push successful
         return
       }else {
         // not a leader
@@ -159,7 +159,7 @@ func TestLeadershipReliable(t *testing.T) {
     highestIDLeading := false
     for id, mpx := range mpxa {
       err := mpx.Push(0, DeepString{Str: "hello"})
-      if err.Nil {
+      if err == Nil {
         leaders += 1
         if id == nmultipaxos - 1 {
           highestIDLeading = true
@@ -187,7 +187,7 @@ func TestLeadershipReliable(t *testing.T) {
     for id, mpx := range mpxa {
       if id != nmultipaxos - 1 { // don't send requests to old, dead leader
         err := mpx.Push(0, DeepString{Str: "hello"})
-        if err.Nil {
+        if err == Nil {
           leaders += 1
           if id == nmultipaxos - 2 {
             livingHighestIDLeading = true
@@ -219,7 +219,7 @@ func TestConsensusStableReliable(t *testing.T) {
   leader := mpxa[nmultipaxos - 1]
 
   err := leader.Push(0, DeepString{Str: "good"})
-  if !err.Nil {
+  if err != Nil {
     t.Fatalf("did not converge on leader in time")
   }
   fmt.Printf("... waiting on initial decision\n")
@@ -249,7 +249,7 @@ func TestConsensusStableReliable(t *testing.T) {
   leader1 := mpxa[nmultipaxos - 1]
 
   err1 := leader1.Push(0, DeepString{Str: "did not change"})
-  if !err1.Nil {
+  if err1 != Nil {
     t.Fatalf("did not converge on leader in time")
   }
   fmt.Printf("... waiting on initial decision")
@@ -260,7 +260,7 @@ func TestConsensusStableReliable(t *testing.T) {
   time.Sleep(500*time.Millisecond) // wait for the system to converge on new leader
   leader2 := mpxa[nmultipaxos - 2]
   err2 := leader2.Push(0, DeepString{Str: "changed!"})
-  if !err2.Nil {
+  if err2 != Nil {
     t.Fatalf("did not converge on new leader in time")
   }
   time.Sleep(1000*time.Millisecond)
