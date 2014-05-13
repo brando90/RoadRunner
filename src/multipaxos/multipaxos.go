@@ -340,7 +340,7 @@ func (mpx *MultiPaxos) ping(peerID int, rollcall *SharedCounter, done chan bool)
 Sends prepare epoch for sequences >= seq to all acceptors
 */
 func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
-  for !mpx.dead {
+  for !mpx.dead && mpx.actingAsLeader {
     responses := MakeSharedResponses()
     rollcall := MakeSharedCounter()
     done := make(chan bool)
@@ -719,6 +719,7 @@ func (mpx *MultiPaxos) relinquishLeadership() {
   mpx.mu.Lock()
   defer mpx.mu.Unlock()
   mpx.actingAsLeader = false
+  mpx.DPrintf("relinquished leadership")
 }
 
 /*
@@ -785,21 +786,27 @@ Once we have accounted for all servers, run the leader election protocol
 If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
+  mpx.DPrintf("ticking ...")
   rollcall := MakeSharedCounter()
   done := make(chan bool)
   for peerID, _ := range mpx.peers {
     go mpx.ping(peerID, rollcall, done)
   }
+  mpx.DPrintf("... waiting for pings to return")
   <- done
+  mpx.DPrintf("... all pings returned")
   // leader decision & action
   leaderID := mpx.leaderElection()
   if leaderID == mpx.me {
+    mpx.DPrintf(" i am leader now ...")
     if !mpx.actingAsLeader { //Q: actingAsLeader access issues? Are boolean read/writes atomic?
-      mpx.actAsLeader()
+      mpx.DPrintf(" ...starting to act as leader")
+      go mpx.actAsLeader()
+      mpx.DPrintf(" established leadership!!!")
     }
   }else {
     if mpx.actingAsLeader {
-      mpx.relinquishLeadership()
+      go mpx.relinquishLeadership()
     }
   }
 }

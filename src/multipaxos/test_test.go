@@ -8,6 +8,7 @@ import (
   "time"
   "fmt"
   "encoding/gob"
+  "log"
   //"math/rand"
 )
 
@@ -40,6 +41,18 @@ type DeepString struct {
 
 func (dstr DeepString) DeepCopy() DeepCopyable {
   return DeepString{Str: dstr.Str}
+}
+
+func start(pxa []*MultiPaxos, seq int, v DeepCopyable) {
+  for {
+    for _, mpx := range pxa {
+      err := mpx.Push(seq, v)
+      if err.Nil {
+        return
+      }
+    }
+    time.Sleep(10*time.Millisecond)
+  }
 }
 
 func port(tag string, host int) string {
@@ -109,33 +122,60 @@ func cleanup(pxa []*MultiPaxos) {
   }
 }
 
-/*TODO: rewrite this to work with multipaxos
-func noTestSpeed(t *testing.T) {
+func setup(nmultipaxos int) ([]*MultiPaxos, []string) {
+  gob.Register(DeepString{})
+
+  var mpxa []*MultiPaxos = make([]*MultiPaxos, nmultipaxos)
+  var mpxh []string = make([]string, nmultipaxos)
+
+  for i := 0; i < nmultipaxos; i++ {
+    mpxh[i] = port("time", i)
+  }
+  for i := 0; i < nmultipaxos; i++ {
+    mpxa[i] = Make(mpxh, i, nil)
+  }
+  return mpxa, mpxh
+}
+
+func TPrintf(format string, a ...interface{}) (n int, err error) {
+  prefix := "\nTest: "
+  log.Printf(prefix + format, a...)
+  return
+}
+
+func TestLeadership(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
-  const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
-  var pxh []string = make([]string, npaxos)
-  defer cleanup(pxa)
+  const nmultipaxos = 5
+  mpxa, _ := setup(nmultipaxos)
+  defer cleanup(mpxa)
 
-  for i := 0; i < npaxos; i++ {
-    pxh[i] = port("time", i)
+  TPrintf("Converge on 1 Leader w/ Highest ID ...\n")
+  passed := false
+  const iters = 10 * nmultipaxos
+  for i := 0; i < iters; i++ {
+    leaders := 0
+    highestIDLeading := false
+    for id, mpx := range mpxa {
+      err := mpx.Push(0, DeepString{Str: "hello"})
+      if err.Nil {
+        leaders += 1
+        if id == nmultipaxos - 1 {
+          highestIDLeading = true
+        }
+      }
+    }
+    if leaders == 1 && highestIDLeading {
+      passed = true
+      break
+    }
+    time.Sleep(250 * time.Millisecond)
   }
-  for i := 0; i < npaxos; i++ {
-    pxa[i] = Make(pxh, i, nil)
+  if !passed {
+    t.Fatalf("didn't converge on 1 leader w/ highest id in time")
   }
-
-  t0 := time.Now()
-
-  for i := 0; i < 20; i++ {
-    pxa[0].Push(i, "x")
-    waitn(t, pxa, i, npaxos)
-  }
-
-  d := time.Since(t0)
-  fmt.Printf("20 agreements %v seconds\n", d.Seconds())
+  fmt.Printf("  ... Passed\n")
 }
-*/
 
 func TestBasic(t *testing.T) {
   gob.Register(DeepString{})
@@ -155,21 +195,13 @@ func TestBasic(t *testing.T) {
 
   fmt.Printf("Test: Single proposer ...\n")
 
-  for { // keep trying to push to leader
-    err := pxa[2].Push(0, DeepString{Str: "hello"})
-    if !err.Nil {
-      fmt.Println("Fail :: ", err.Msg)
-      time.Sleep(10 * time.Millisecond)
-    }else {
-      break // pushed to leader
-    }
-  }
+  start(pxa, 0, DeepString{Str: "hello"})
 
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")
 
-  fmt.Printf("Test: Many proposers, same value ...\n")
+  //fmt.Printf("Test: Many proposers, same value ...\n")
   //
   // for i := 0; i < npaxos; i++ {
   //   pxa[i].Start(1, 77)
@@ -178,7 +210,7 @@ func TestBasic(t *testing.T) {
   //
   // fmt.Printf("  ... Passed\n")
   //
-  fmt.Printf("Test: Many proposers, different values ...\n")
+  //fmt.Printf("Test: Many proposers, different values ...\n")
   //
   // pxa[0].Start(2, 100)
   // pxa[1].Start(2, 101)
@@ -187,7 +219,7 @@ func TestBasic(t *testing.T) {
   //
   // fmt.Printf("  ... Passed\n")
   //
-  fmt.Printf("Test: Out-of-order instances ...\n")
+  //fmt.Printf("Test: Out-of-order instances ...\n")
   //
   // pxa[0].Start(7, 700)
   // pxa[0].Start(6, 600)
@@ -207,8 +239,7 @@ func TestBasic(t *testing.T) {
   //fmt.Printf("  ... Passed\n")
 }
 
-/* SUPER COMMENT
-
+/*
 func TestDeaf(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
@@ -226,31 +257,36 @@ func TestDeaf(t *testing.T) {
 
   fmt.Printf("Test: Deaf proposer ...\n")
 
-  pxa[0].Start(0, "hello")
+  start(pxa, 0, DeepString{Str:"hello"})
   waitn(t, pxa, 0, npaxos)
 
   os.Remove(pxh[0])
   os.Remove(pxh[npaxos-1])
 
-  pxa[1].Start(1, "goodbye")
+  time.Sleep(1 * time.Second) // let system converge to new leaders
+  start(pxa, 1, DeepString{Str:"goodbye"})
   waitmajority(t, pxa, 1)
   time.Sleep(1 * time.Second)
   if ndecided(t, pxa, 1) != npaxos - 2 {
     t.Fatalf("a deaf peer heard about a decision")
   }
 
-  pxa[0].Start(1, "xxx")
+  start(pxa, 1, DeepString{Str: "xxx"})
   waitn(t, pxa, 1, npaxos-1)
   time.Sleep(1 * time.Second)
   if ndecided(t, pxa, 1) != npaxos - 1 {
     t.Fatalf("a deaf peer heard about a decision")
   }
 
-  pxa[npaxos-1].Start(1, "yyy")
-  waitn(t, pxa, 1, npaxos)
+  //pxa[npaxos-1].Start(1, "yyy")
+  //waitn(t, pxa, 1, npaxos)
 
   fmt.Printf("  ... Passed\n")
 }
+*/
+
+
+/* SUPER COMMENT
 
 func TestForget(t *testing.T) {
   runtime.GOMAXPROCS(4)
@@ -858,3 +894,32 @@ func TestLots(t *testing.T) {
 }
 
 END OF SUPER COMMENT*/
+
+/*
+TODO: rewrite this to work with multipaxos
+func noTestSpeed(t *testing.T) {
+  runtime.GOMAXPROCS(4)
+
+  const npaxos = 3
+  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxh []string = make([]string, npaxos)
+  defer cleanup(pxa)
+
+  for i := 0; i < npaxos; i++ {
+    pxh[i] = port("time", i)
+  }
+  for i := 0; i < npaxos; i++ {
+    pxa[i] = Make(pxh, i, nil)
+  }
+
+  t0 := time.Now()
+
+  for i := 0; i < 20; i++ {
+    pxa[0].Push(i, "x")
+    waitn(t, pxa, i, npaxos)
+  }
+
+  d := time.Since(t0)
+  fmt.Printf("20 agreements %v seconds\n", d.Seconds())
+}
+*/
