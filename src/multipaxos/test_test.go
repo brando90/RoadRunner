@@ -7,8 +7,30 @@ import (
   "os"
   "time"
   "fmt"
+  "encoding/gob"
   //"math/rand"
 )
+
+/*Test outline
+1 sequence:
+  leader vs. non-leader
+  leader changes...?
+  1 leader
+    decision reached
+    decison doesnt change
+  multiple leaders
+    same seq, same v
+    same seq, diff v
+    diff seq, same/diff v
+  garbage collection
+    deleting proposers/learners
+    deleting acceptors
+  unreliable connections
+  unreliable servers
+  concurrent requests
+  unreliable & concurrent
+  persistence
+*/
 
 // testing types
 
@@ -116,6 +138,7 @@ func noTestSpeed(t *testing.T) {
 */
 
 func TestBasic(t *testing.T) {
+  gob.Register(DeepString{})
   runtime.GOMAXPROCS(4)
 
   const npaxos = 3
@@ -132,15 +155,21 @@ func TestBasic(t *testing.T) {
 
   fmt.Printf("Test: Single proposer ...\n")
 
-  pxa[0].Push(0, DeepString{Str: "hello"})
-  pxa[1].Push(0, DeepString{Str: "hello"})
-  pxa[2].Push(0, DeepString{Str: "hello"})
-  time.Sleep(1000 * time.Millisecond)
+  for { // keep trying to push to leader
+    err := pxa[2].Push(0, DeepString{Str: "hello"})
+    if !err.Nil {
+      fmt.Println("Fail :: ", err.Msg)
+      time.Sleep(10 * time.Millisecond)
+    }else {
+      break // pushed to leader
+    }
+  }
+
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")
 
-  // fmt.Printf("Test: Many proposers, same value ...\n")
+  fmt.Printf("Test: Many proposers, same value ...\n")
   //
   // for i := 0; i < npaxos; i++ {
   //   pxa[i].Start(1, 77)
@@ -149,7 +178,7 @@ func TestBasic(t *testing.T) {
   //
   // fmt.Printf("  ... Passed\n")
   //
-  // fmt.Printf("Test: Many proposers, different values ...\n")
+  fmt.Printf("Test: Many proposers, different values ...\n")
   //
   // pxa[0].Start(2, 100)
   // pxa[1].Start(2, 101)
@@ -158,7 +187,7 @@ func TestBasic(t *testing.T) {
   //
   // fmt.Printf("  ... Passed\n")
   //
-  // fmt.Printf("Test: Out-of-order instances ...\n")
+  fmt.Printf("Test: Out-of-order instances ...\n")
   //
   // pxa[0].Start(7, 700)
   // pxa[0].Start(6, 600)
@@ -175,7 +204,7 @@ func TestBasic(t *testing.T) {
   //   t.Fatalf("wrong Max()")
   // }
 
-  fmt.Printf("  ... Passed\n")
+  //fmt.Printf("  ... Passed\n")
 }
 
 /* SUPER COMMENT

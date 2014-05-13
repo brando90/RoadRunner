@@ -69,7 +69,7 @@ type MultiPaxos struct {
 // -- SubSection 1 : Constructors --
 
 func Make(peers []string, me int, rpcs *rpc.Server) *MultiPaxos {
-  return makeWithDisk(peers, me, rpcs, &Disk{})
+  return makeWithDisk(peers, me, rpcs, MakeDisk())
 }
 
 /*
@@ -289,7 +289,7 @@ Signal server to undergo recovery protocol
 */
 func (mpx *MultiPaxos) Reboot() {
   if mpx.disk == nil { // disk loss
-    mpx.disk = &Disk{} // initialize replacement disk
+    mpx.disk = MakeDisk() // initialize replacement disk
     mpx.recoverFromPeers()
   }else { // disk intact
     mpx.recoverFromDisk()
@@ -517,7 +517,7 @@ func (mpx *MultiPaxos) sendDecide(peerID int, args *DecideArgs, reply *DecideRep
 // -- SubSection 0 : Ping Handler --
 
 func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
-  mpx.processPiggyBack(args.PiggyBack)
+  go mpx.processPiggyBack(args.PiggyBack) // done concurrently so we can immediately respond
   return nil
 }
 
@@ -553,7 +553,7 @@ func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) Prepa
     prepareReply.OK = false
   }
   prepareReply.N_p = acceptor.N_p
-  mpx.disk.WriteAcceptor(seq, acceptor) // write will deep-copy acceptor internally for safety
+  mpx.disk.WriteAcceptor(seq, acceptor)
   return prepareReply
 }
 
@@ -635,13 +635,13 @@ has received prepare epoch
 */
 func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   mpx.acceptorsMu.Lock()
+  defer mpx.acceptorsMu.Unlock()
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
     acceptor = &Acceptor{}
     mpx.prepareAcceptor(seq, acceptor, mpx.highestPrepareEpoch)
     mpx.acceptors[seq] = acceptor
   }
-  mpx.acceptorsMu.Unlock()
   return acceptor
 }
 
@@ -675,7 +675,8 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack) {
   }
   mpx.mu.Unlock()
   // potential mins entry update may have increased GlobalMin
-  mpx.forgetAcceptorsUntil(mpx.GlobalMin())
+  globalMin := mpx.GlobalMin()
+  mpx.forgetAcceptorsUntil(globalMin)
 }
 
 // -- SubSection 1 : MultiPaxos --
@@ -811,12 +812,12 @@ No server will need this information in the future
 */
 func (mpx *MultiPaxos) forgetProposersUntil(threshold int) {
   mpx.proposersMu.Lock()
+  defer mpx.proposersMu.Unlock()
   for s, _ := range mpx.proposers {
     if s <= threshold {
       delete(mpx.proposers, s)
     }
   }
-  mpx.proposersMu.Unlock()
 }
 
 func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
@@ -831,12 +832,12 @@ func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
 
 func (mpx *MultiPaxos) forgetLearnersUntil(threshold int) {
   mpx.learnersMu.Lock()
+  defer mpx.learnersMu.Unlock()
   for s, _ := range mpx.learners {
     if s <= threshold {
       delete(mpx.learners, s)
     }
   }
-  mpx.learnersMu.Unlock()
 }
 
 // -- SubSection 4 : Persistence --
@@ -887,4 +888,16 @@ func (mpx *MultiPaxos) recoverFromPeers() {
   else:
     try Step 2 again
   */
+}
+
+// :: DEBUGGING ::
+
+const Debug = true
+
+func (mpx *MultiPaxos) DPrintf(format string, a ...interface{}) (n int, err error) {
+  if Debug {
+    prefix := fmt.Sprintf("Server ID:%d :: ", mpx.me)
+    log.Printf(prefix+format, a...)
+  }
+  return
 }

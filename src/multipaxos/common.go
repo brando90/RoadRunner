@@ -117,13 +117,14 @@ type Acceptor struct {
 }
 
 func (acceptor Acceptor) DeepCopy() Acceptor {
-	acceptor.Lock()
+	//TODO: if V_a is nil, we need to do something different
 	copy := Acceptor{
 		N_p: acceptor.N_p,
 		N_a: acceptor.N_a,
-		V_a: acceptor.V_a.DeepCopy(),
 	}
-	acceptor.Unlock()
+	if acceptor.V_a != nil {
+		copy.V_a = acceptor.V_a.DeepCopy()
+	}
 	return copy
 }
 
@@ -232,6 +233,9 @@ func (disk *Disk) Unlock() {
 }
 
 func (d *Disk) WriteAcceptor(seq int, acceptor *Acceptor) {
+	if acceptor == nil {
+		fmt.Println("writing nil acceptor!")
+	}
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	acceptorCopy := acceptor.DeepCopy()
