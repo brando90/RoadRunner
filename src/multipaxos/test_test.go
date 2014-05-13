@@ -13,24 +13,23 @@ import (
 )
 
 /*Test outline
-1 sequence:
-  leader vs. non-leader
-  leader changes...?
-  1 leader
-    decision reached
-    decison doesnt change
-  multiple leaders
-    same seq, same v
-    same seq, diff v
-    diff seq, same/diff v
-  garbage collection
-    deleting proposers/learners
-    deleting acceptors
-  unreliable connections
-  unreliable servers
-  concurrent requests
-  unreliable & concurrent
-  persistence
+DONE: leader vs. non-leader
+DONE: leader changes...?
+1 leader
+  decision reached
+  decison doesnt change
+multiple leaders
+  same seq, same v
+  same seq, diff v
+  diff seq, same/diff v
+garbage collection
+  deleting proposers/learners
+  deleting acceptors
+unreliable connections
+unreliable servers
+concurrent requests
+unreliable & concurrent
+persistence
 */
 
 // testing types
@@ -143,7 +142,7 @@ func TPrintf(format string, a ...interface{}) (n int, err error) {
   return
 }
 
-func TestLeadership(t *testing.T) {
+func TestLeadershipReliable(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
   const nmultipaxos = 5
@@ -151,8 +150,8 @@ func TestLeadership(t *testing.T) {
   defer cleanup(mpxa)
 
   TPrintf("Converge on 1 Leader w/ Highest ID ...\n")
-  passed := false
-  const iters = 10 * nmultipaxos
+  passed1 := false
+  const iters = 5 * nmultipaxos
   for i := 0; i < iters; i++ {
     leaders := 0
     highestIDLeading := false
@@ -166,13 +165,72 @@ func TestLeadership(t *testing.T) {
       }
     }
     if leaders == 1 && highestIDLeading {
-      passed = true
+      passed1 = true
       break
     }
     time.Sleep(250 * time.Millisecond)
   }
-  if !passed {
+  if !passed1 {
     t.Fatalf("didn't converge on 1 leader w/ highest id in time")
+  }
+  fmt.Printf("  ... Passed\n")
+
+  TPrintf("Converge on new leader when old leader dies ...\n")
+  leader := mpxa[nmultipaxos-1]
+  leader.Kill()
+  passed2 := false
+  for i := 0; i < iters; i++ {
+    leaders := 0
+    livingHighestIDLeading := false
+    for id, mpx := range mpxa {
+      if id != nmultipaxos - 1 { // don't send requests to old, dead leader
+        err := mpx.Push(0, DeepString{Str: "hello"})
+        if err.Nil {
+          leaders += 1
+          if id == nmultipaxos - 2 {
+            livingHighestIDLeading = true
+          }
+        }
+      }
+    }
+    if leaders == 1 && livingHighestIDLeading {
+      passed2 = true
+      break
+    }
+    time.Sleep(250 * time.Millisecond)
+  }
+  if !passed2 {
+    t.Fatalf("didn't converge on new leader w/ highest living id in time")
+  }
+  fmt.Printf("  ... Passed\n")
+}
+
+func TestConsensusStableReliable(t *testing.T) {
+  runtime.GOMAXPROCS(4)
+
+  const nmultipaxos = 3
+  mpxa, _ := setup(nmultipaxos)
+  defer cleanup(mpxa)
+
+  TPrintf("Consensus stability ...\n")
+
+  time.Sleep(500*time.Millisecond) // wait for system to converge on leader
+  leader := mpxa[nmultipaxos - 1]
+  leader.Push(0, DeepString{Str: "stable"})
+  waitn(t, mpxa, 0, nmultipaxos)
+  decidedStable, valStable := leader.Status(0)
+  if !decidedStable {
+    t.Fatalf("Consensus was never decided...?")
+  }
+  leader.Push(0, DeepString{Str: "unstable"})
+  time.Sleep(1000*time.Millisecond)
+  waitn(t, mpxa, 0, nmultipaxos)
+  decidedUnstable, valUnstable := leader.Status(0)
+  if !decidedUnstable {
+    t.Fatalf("Consensus is unstable; Now undecided")
+  }
+  if valStable != valUnstable {
+    t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", valStable, valUnstable)
   }
   fmt.Printf("  ... Passed\n")
 }

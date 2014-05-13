@@ -735,6 +735,8 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
     proposer.Lock()
     v_prime := proposer.V_prime
     if v_prime == nil {
+      mpx.DPrintf("Proposer v_prime is nil -> proposing %+v", v)
+      proposer.V_prime = v // remember this value since leader may propose again at this sequence later without preparing!
       v_prime = v
     }
     proposer.Unlock()
@@ -899,7 +901,7 @@ func (mpx *MultiPaxos) recoverFromPeers() {
 
 // :: DEBUGGING ::
 
-const Debug = true
+const Debug = false
 
 func (mpx *MultiPaxos) DPrintf(format string, a ...interface{}) (n int, err error) {
   if Debug {
