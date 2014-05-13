@@ -60,8 +60,9 @@ func aggregate(responses *SharedResponses, epochReplies map[int]PrepareReply) {
 	responses.Lock()
 	defer responses.Unlock()
 	for seq, prepareReply := range epochReplies {
+		fmt.Printf("AGGREGATE: prepareReply %+v", prepareReply)
 		prepareReplies, exists := responses.Aggregated[seq]
-		if ! exists {
+		if !exists {
 			prepareReplies = []PrepareReply{}
 		}
 		prepareReplies = append(prepareReplies, prepareReply)

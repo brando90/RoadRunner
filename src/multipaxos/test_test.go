@@ -212,19 +212,20 @@ func TestConsensusStableReliable(t *testing.T) {
 
   const nmultipaxos = 3
   mpxa, _ := setup(nmultipaxos)
-  defer cleanup(mpxa)
 
   TPrintf("Consensus stability w/ stable leader...\n")
 
   time.Sleep(500*time.Millisecond) // wait for system to converge on leader
   leader := mpxa[nmultipaxos - 1]
 
-  leader.Push(0, DeepString{Str: "good"})
-  waitn(t, mpxa, 0, nmultipaxos)
-  decided1, val1 := leader.Status(0)
-  if !decided1 {
-    t.Fatalf("Consensus was never decided...?")
+  err := leader.Push(0, DeepString{Str: "good"})
+  if !err.Nil {
+    t.Fatalf("did not converge on leader in time")
   }
+  fmt.Printf("... waiting on initial decision\n")
+  waitn(t, mpxa, 0, nmultipaxos)
+  fmt.Printf("...intial decision reached\n")
+  _, val1 := leader.Status(0)
 
   leader.Push(0, DeepString{Str: "bad"})
   time.Sleep(1000*time.Millisecond)
@@ -239,9 +240,40 @@ func TestConsensusStableReliable(t *testing.T) {
   }
   fmt.Printf("  ... Passed\n")
 
-  TPrinf("Concensus stability w/ leader change...\n")
-  //TODO: implement this test
+  cleanup(mpxa)
+
+  mpxa, _ = setup(nmultipaxos)
+
+  TPrintf("Concensus stability w/ leader change...\n")
+  time.Sleep(500*time.Millisecond) // wait for system to converge on leader
+  leader1 := mpxa[nmultipaxos - 1]
+
+  err1 := leader1.Push(0, DeepString{Str: "did not change"})
+  if !err1.Nil {
+    t.Fatalf("did not converge on leader in time")
+  }
+  fmt.Printf("... waiting on initial decision")
+  waitn(t, mpxa, 0, nmultipaxos)
+  fmt.Printf("... intial decison reached")
+  _, v1 := leader1.Status(0)
+  leader1.Kill()
+  time.Sleep(500*time.Millisecond) // wait for the system to converge on new leader
+  leader2 := mpxa[nmultipaxos - 2]
+  err2 := leader2.Push(0, DeepString{Str: "changed!"})
+  if !err2.Nil {
+    t.Fatalf("did not converge on new leader in time")
+  }
+  time.Sleep(1000*time.Millisecond)
+  fmt.Printf("... unstable value propagating")
+  decided2, v2 := leader2.Status(0)
+  if !decided2 {
+    t.Fatalf("Consensus is unstable; Now undecided")
+  }
+  if v1 != v2 {
+    t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", v1, v2)
+  }
   fmt.Printf("  ... Passed\n")
+  cleanup(mpxa)
 }
 
 func TestBasic(t *testing.T) {
