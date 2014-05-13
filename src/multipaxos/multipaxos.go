@@ -397,7 +397,7 @@ func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bo
   defer proposer.Unlock()
   prepareOKs := 0
   for _, prepareReply := range prepareReplies {
-    mpx.DPrintf("...processing reply -> %+v", prepareReply)
+    //mpx.DPrintf("...processing reply -> %+v", prepareReply)
     if prepareReply.OK {
       prepareOKs += 1
       if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
@@ -457,7 +457,7 @@ Returns true if a majority accepted; false otherwise
 func (mpx *MultiPaxos) acceptPhase(seq int, v DeepCopyable) (bool, bool) {
   acceptOKs := 0
   witnessedReject := false
-  mpx.DPrintf("Sending accepts with n: %d, v: %+v", mpx.epoch, v)
+  //mpx.DPrintf("Sending accepts with n: %d, v: %+v", mpx.epoch, v)
   for peerID, _ := range mpx.peers {
     args := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
     args.PiggyBack = PiggyBack{
@@ -561,7 +561,7 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) PrepareReply {
   acceptor.Lock()
   defer acceptor.Unlock()
-  mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d", acceptor, seq,n)
+  //mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d", acceptor, seq,n)
   prepareReply := PrepareReply{}
   if n > acceptor.N_p {
     acceptor.N_p = n
@@ -573,8 +573,8 @@ func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) Prepa
   }
   prepareReply.N_p = acceptor.N_p
   //mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d...result : %+v", acceptor, seq, n, prepareReply)
-  //TODO: persist acceptor : mpx.disk.WriteAcceptor(seq, acceptor)
-  mpx.DPrintf("acceptor state after prepare : %+v", acceptor)
+  mpx.disk.WriteAcceptor(seq, acceptor)
+  //mpx.DPrintf("acceptor state after prepare : %+v", acceptor)
   return prepareReply
 }
 
@@ -589,7 +589,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   acceptor.Lock()
   defer acceptor.Unlock()
   if args.N >= acceptor.N_p {
-    mpx.DPrintf("accepting n:%d, v:%+v", args.N, args.V)
+    //mpx.DPrintf("accepting n:%d, v:%+v", args.N, args.V)
     acceptor.N_p = args.N
     acceptor.N_a = args.N
     acceptor.V_a = args.V
@@ -598,9 +598,9 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
     reply.OK = false
   }
   reply.N_p = acceptor.N_p
-  //TODO: persist acceptor : mpx.disk.WriteAcceptor(args.Seq, acceptor) // write will deep-copy acceptor internally for safety
-  mpx.DPrintf("acceptor state after accept : %+v", acceptor)
-  mpx.DPrintf("replying to accept with %+v", reply)
+  mpx.disk.WriteAcceptor(args.Seq, acceptor) // write will deep-copy acceptor internally for safety
+  //mpx.DPrintf("acceptor state after accept : %+v", acceptor)
+  //mpx.DPrintf("replying to accept with %+v", reply)
   return nil
 }
 
@@ -664,16 +664,11 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   defer mpx.acceptorsMu.Unlock()
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
-    mpx.DPrintf("init-ing new acceptor for seq %d", seq)
+    //mpx.DPrintf("init-ing new acceptor for seq %d", seq)
     acceptor = &Acceptor{}
     mpx.prepareAcceptor(seq, acceptor, mpx.highestPrepareEpoch)
     mpx.acceptors[seq] = acceptor
   }
-  acceptor, exists = mpx.acceptors[seq]
-  if !exists {
-    panic("acceptor should already be init-ed!!")
-  }
-
   return acceptor
 }
 
@@ -779,7 +774,7 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
     proposer.Lock()
     v_prime := proposer.V_prime
     if v_prime == nil {
-      mpx.DPrintf("Proposer v_prime is nil -> proposing %+v", v)
+      //mpx.DPrintf("Proposer v_prime is nil -> proposing %+v", v)
       proposer.V_prime = v // remember this value since leader may propose again at this sequence later without preparing!
       v_prime = v
     }
@@ -870,7 +865,8 @@ func (mpx *MultiPaxos) forgetProposersUntil(threshold int) {
 }
 
 func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
-  mpx.DPrintf("delet")
+  //mpx.DPrintf("delet")
+  //TODO: forget until 1 less than the global min... maybe rename these forgetter functions
   mpx.acceptorsMu.Lock()
   defer mpx.acceptorsMu.Unlock()
   for s, _ := range mpx.acceptors {
