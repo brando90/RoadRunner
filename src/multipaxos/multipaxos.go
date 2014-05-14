@@ -181,6 +181,9 @@ If this server considers itself a leader, send accepts
 Otherwise, DO NOT send accepts
 */
 func (mpx *MultiPaxos) Push(seq int, v DeepCopyable) Err {
+  if seq < mpx.localMin{
+    panic(fmt.Sprintf("cannot push at a sequence number %d when Done(%d) has already been called", seq, mpx.localMin))
+  }
   if mpx.actingAsLeader {
     go mpx.leaderPropose(seq, v.DeepCopy())
     return Nil
@@ -345,7 +348,7 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
     responses := MakeSharedResponses()
     rollcall := MakeSharedCounter()
     done := make(chan bool)
-    //mpx.DPrintf("...sending prepare epoch rpcs")
+    mpx.DPrintf("...sending prepare epoch rpcs")
     for peerID, _ := range mpx.peers {
       go mpx.prepareEpoch(peerID, seq, responses, rollcall, done)
     }
@@ -397,7 +400,7 @@ func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bo
   defer proposer.Unlock()
   prepareOKs := 0
   for _, prepareReply := range prepareReplies {
-    //mpx.DPrintf("...processing reply -> %+v", prepareReply)
+    mpx.DPrintf("...processing reply -> %+v", prepareReply)
     if prepareReply.OK {
       prepareOKs += 1
       if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
@@ -428,7 +431,7 @@ func (mpx *MultiPaxos) prepareEpoch(peerID int, seq int, responses *SharedRespon
   replyReceived := mpx.sendPrepareEpoch(peerID, &args, &reply)
   //mpx.DPrintf("... ... this prepare epoch rpc returned")
   if replyReceived {
-    //mpx.DPrintf("... ... this prepare epoch rpc contained a reply %+v", reply.EpochReplies)
+    mpx.DPrintf("... ... this prepare epoch rpc contained a reply %+v", reply.EpochReplies)
     aggregate(responses, reply.EpochReplies)
     //mpx.DPrintf("... ... this prepare epoch rpc's reply was aggregated")
   }
@@ -542,7 +545,7 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
   mpx.refreshLocalMax(args.Seq)
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
-  //mpx.DPrintf("performing prepares at seqs: %d -> %d", args.Seq, mpx.localMax)
+  mpx.DPrintf("performing prepares at seqs: %d -> %d", args.Seq, mpx.localMax)
   localMax := mpx.localMax
   for seq := args.Seq; seq <= localMax; seq++ {
     acceptor := mpx.summonAcceptor(seq)
@@ -572,9 +575,9 @@ func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) Prepa
     prepareReply.OK = false
   }
   prepareReply.N_p = acceptor.N_p
-  //mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d...result : %+v", acceptor, seq, n, prepareReply)
+  mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d...result : %+v", acceptor, seq, n, prepareReply)
   mpx.disk.WriteAcceptor(seq, acceptor)
-  //mpx.DPrintf("acceptor state after prepare : %+v", acceptor)
+  mpx.DPrintf("acceptor state after prepare : %+v", acceptor)
   return prepareReply
 }
 
@@ -589,7 +592,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   acceptor.Lock()
   defer acceptor.Unlock()
   if args.N >= acceptor.N_p {
-    //mpx.DPrintf("accepting n:%d, v:%+v", args.N, args.V)
+    mpx.DPrintf("accepting n:%d, v:%+v", args.N, args.V)
     acceptor.N_p = args.N
     acceptor.N_a = args.N
     acceptor.V_a = args.V
@@ -600,7 +603,7 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   reply.N_p = acceptor.N_p
   mpx.disk.WriteAcceptor(args.Seq, acceptor) // write will deep-copy acceptor internally for safety
   //mpx.DPrintf("acceptor state after accept : %+v", acceptor)
-  //mpx.DPrintf("replying to accept with %+v", reply)
+  mpx.DPrintf("replying to accept with %+v", reply)
   return nil
 }
 
@@ -736,10 +739,10 @@ func (mpx *MultiPaxos) actAsLeader() {
   if !mpx.actingAsLeader {
     //mpx.DPrintf("leader initiation commencing")
     //mpx.mu.Lock()
-    seq := mpx.localMax
+    //seq := mpx.localMax
     //mpx.mu.Unlock()
     //mpx.DPrintf("...commencing prepare epoch")
-    mpx.prepareEpochPhase(seq) //TODO: local max + 1?? should localMax start at -1?
+    mpx.prepareEpochPhase(mpx.localMin) //TODO: local max + 1?? should localMax start at -1?
     //mpx.DPrintf("...prepare epoch successful!!!")
     //mpx.mu.Lock()
     mpx.actingAsLeader = true

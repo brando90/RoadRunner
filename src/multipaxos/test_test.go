@@ -211,9 +211,9 @@ func TestConsensusStableReliable(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
   const nmultipaxos = 3
-  mpxa, _ := setup(nmultipaxos)
 
   TPrintf("Consensus stability w/ stable leader...\n")
+  mpxa, _ := setup(nmultipaxos)
 
   time.Sleep(500*time.Millisecond) // wait for system to converge on leader
   leader := mpxa[nmultipaxos - 1]
@@ -238,12 +238,12 @@ func TestConsensusStableReliable(t *testing.T) {
   if val1 != val2 {
     t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", val1, val2)
   }
+  cleanup(mpxa)
   fmt.Printf("  ... Passed\n")
 
-  cleanup(mpxa)
+  // leader change stability
 
   mpxa, _ = setup(nmultipaxos)
-
   TPrintf("Concensus stability w/ leader change...\n")
   time.Sleep(500*time.Millisecond) // wait for system to converge on leader
   leader1 := mpxa[nmultipaxos - 1]
@@ -272,8 +272,56 @@ func TestConsensusStableReliable(t *testing.T) {
   if v1 != v2 {
     t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", v1, v2)
   }
-  fmt.Printf("  ... Passed\n")
   cleanup(mpxa)
+  fmt.Printf("  ... Passed\n")
+
+  TPrintf("Consensus stability, many sequences w/ leader change...\n")
+  mpxa, _ = setup(nmultipaxos)
+  time.Sleep(500*time.Millisecond) // wait for system to converge on leader
+  stableLeader := mpxa[nmultipaxos - 1]
+  const iters = 5
+  stableVals := [iters]interface{}{}
+  for i := 0; i < iters; i++ {
+    erri := stableLeader.Push(i, DeepString{Str: fmt.Sprintf("leader1 seq:%d", i)})
+    if erri != Nil {
+      if i == 0 {
+        t.Fatalf("did not converge on leader in time")
+      }else {
+        t.Fatalf("leader unstable")
+      }
+    }
+    waitn(t, mpxa, i, nmultipaxos)
+    _, v := stableLeader.Status(i)
+    stableVals[i] = v
+  }
+  stableLeader.Kill()
+  time.Sleep(1000*time.Millisecond)
+
+  newStableLeader := mpxa[nmultipaxos - 2]
+  newStableVals := [iters]interface{}{}
+  for i := 0; i < iters; i++ {
+    erri := newStableLeader.Push(i, DeepString{Str: fmt.Sprintf("leader2 seq:%d",i)})
+    if erri != Nil {
+      if i == 0 {
+        t.Fatalf("did not converge on new leader in time")
+      }else {
+        t.Fatalf("new leader unstable")
+      }
+    }
+    time.Sleep(500*time.Millisecond) // allow for unstable value to be propagatad
+    _, v := newStableLeader.Status(i)
+    newStableVals[i] = v
+  }
+
+  for i := 0; i < iters; i++ {
+    v1 := stableVals[i]
+    v2 := newStableVals[i]
+    if v1 != v2 {
+      t.Fatalf("consensus change at seq %d: %+v -> %+v", i, v1, v2)
+    }
+  }
+
+  fmt.Printf("  ... Passed\n")
 }
 
 func TestBasic(t *testing.T) {
