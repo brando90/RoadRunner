@@ -1,6 +1,5 @@
 package multipaxos
-//TODO: check seq vs. round number
-//TODO: start epoch as mpx.me for each server
+
 import (
   "net"
   "net/rpc"
@@ -10,7 +9,6 @@ import (
   "sync"
   "fmt"
   "time"
-  //"math"
   "math/rand"
 )
 
@@ -90,9 +88,9 @@ func makeWithDisk(peers []string, me int, rpcs *rpc.Server, disk *Disk) *MultiPa
   mpx.mins = make([]int, len(mpx.peers))
   mpx.lifeStates = make([]LifeState, len(mpx.peers))
   mpx.actingAsLeader = false
-  mpx.epoch = 0
+  mpx.epoch = mpx.me
   mpx.highestPrepareEpoch = 0
-  mpx.maxKnownEpoch = 0
+  mpx.maxKnownEpoch = mpx.me
   mpx.proposers = make(map[int]*Proposer)
   mpx.acceptors = make(map[int]*Acceptor)
   mpx.learners = make(map[int]*Learner)
@@ -348,24 +346,18 @@ func (mpx *MultiPaxos) prepareEpochPhase(seq int) {
     responses := MakeSharedResponses()
     rollcall := MakeSharedCounter()
     done := make(chan bool)
-    mpx.DPrintf("...sending prepare epoch rpcs")
     for peerID, _ := range mpx.peers {
       go mpx.prepareEpoch(peerID, seq, responses, rollcall, done)
     }
-    //mpx.DPrintf("...waiting for prepare epoch rpcs to return")
     <- done
-    //mpx.DPrintf("...all prepare epoch rpcs returned!")
     // Process aggregated replies
     witnessedReject, witnessedMajority := mpx.processAggregated(responses)
     if witnessedReject {
-      //mpx.DPrintf("...witnessed reject, trying prepare epoch phase again with HIGHER epoch")
       mpx.refreshEpoch()
       continue // try again
     }else if witnessedMajority {
-      //mpx.DPrintf("...majority! success!")
       return
     }else {
-      //mpx.DPrintf("... did not hear back from a majority, trying prepare epoch phase again with SAME epoch")
       continue // try again
     }
   }
@@ -400,7 +392,6 @@ func (mpx *MultiPaxos) process(seq int, prepareReplies []PrepareReply) (bool, bo
   defer proposer.Unlock()
   prepareOKs := 0
   for _, prepareReply := range prepareReplies {
-    mpx.DPrintf("...processing reply -> %+v", prepareReply)
     if prepareReply.OK {
       prepareOKs += 1
       if prepareReply.N_a > proposer.N_prime && prepareReply.V_a != nil { // received higher (n_a,v_a) from prepareOK
@@ -420,7 +411,6 @@ Sends prepare epoch for sequence >= seq to one server, processes reply, and incr
 */
 func (mpx *MultiPaxos) prepareEpoch(peerID int, seq int, responses *SharedResponses, rollcall *SharedCounter, done chan bool) {
   args := PrepareEpochArgs{N: mpx.epoch, Seq: seq}
-  //mpx.DPrintf("... preparing epoch w/ e = %d", mpx.epoch)
   args.PiggyBack = PiggyBack{
     Me: mpx.me,
     LocalMin: mpx.localMin,
@@ -429,13 +419,9 @@ func (mpx *MultiPaxos) prepareEpoch(peerID int, seq int, responses *SharedRespon
   }
   reply := PrepareEpochReply{}
   replyReceived := mpx.sendPrepareEpoch(peerID, &args, &reply)
-  //mpx.DPrintf("... ... this prepare epoch rpc returned")
   if replyReceived {
-    mpx.DPrintf("... ... this prepare epoch rpc contained a reply %+v", reply.EpochReplies)
     aggregate(responses, reply.EpochReplies)
-    //mpx.DPrintf("... ... this prepare epoch rpc's reply was aggregated")
   }
-  //mpx.DPrintf("... ... this prepare epoch rpc was processed")
   rollcall.SafeIncr()
   if rollcall.SafeCount() == len(mpx.peers) {
     done <- true
@@ -460,7 +446,6 @@ Returns true if a majority accepted; false otherwise
 func (mpx *MultiPaxos) acceptPhase(seq int, v DeepCopyable) (bool, bool) {
   acceptOKs := 0
   witnessedReject := false
-  //mpx.DPrintf("Sending accepts with n: %d, v: %+v", mpx.epoch, v)
   for peerID, _ := range mpx.peers {
     args := AcceptArgs{Seq: seq, N: mpx.epoch, V: v}
     args.PiggyBack = PiggyBack{
@@ -540,17 +525,12 @@ func (mpx *MultiPaxos) PingHandler(args *PingArgs, reply *PingReply) error {
 
 func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *PrepareEpochReply) error {
   mpx.processPiggyBack(args.PiggyBack)
-  //mpx.mu.Lock()
-  //defer mpx.mu.Unlock()
   mpx.refreshLocalMax(args.Seq)
   epochReplies := make(map[int]PrepareReply)
   //OPTIMIZATION: concurrently apply prepares to acceptors
-  mpx.DPrintf("performing prepares at seqs: %d -> %d", args.Seq, mpx.localMax)
-  localMax := mpx.localMax
-  for seq := args.Seq; seq <= localMax; seq++ {
+  for seq := args.Seq; seq <= mpx.localMax; seq++ {
     acceptor := mpx.summonAcceptor(seq)
     epochReply := mpx.prepareAcceptor(seq, acceptor, args.N)
-    //mpx.DPrintf(" handled prepare at seq %d with reply %+v", seq, epochReply)
     epochReplies[seq] = epochReply
     //OPTIMIZATION: batch acceptor disk writes
   }
@@ -564,7 +544,6 @@ func (mpx *MultiPaxos) PrepareEpochHandler(args *PrepareEpochArgs, reply *Prepar
 func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) PrepareReply {
   acceptor.Lock()
   defer acceptor.Unlock()
-  //mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d", acceptor, seq,n)
   prepareReply := PrepareReply{}
   if n > acceptor.N_p {
     acceptor.N_p = n
@@ -575,9 +554,7 @@ func (mpx *MultiPaxos) prepareAcceptor(seq int, acceptor *Acceptor, n int) Prepa
     prepareReply.OK = false
   }
   prepareReply.N_p = acceptor.N_p
-  mpx.DPrintf("Acting as acceptor %+v at seq %d : preparing n %d...result : %+v", acceptor, seq, n, prepareReply)
   mpx.disk.WriteAcceptor(seq, acceptor)
-  mpx.DPrintf("acceptor state after prepare : %+v", acceptor)
   return prepareReply
 }
 
@@ -587,12 +564,9 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   mpx.processPiggyBack(args.PiggyBack)
   mpx.refreshLocalMax(args.Seq)
   acceptor := mpx.summonAcceptor(args.Seq)
-  //mpx.mu.Lock()
-  //mpx.mu.Unlock()
   acceptor.Lock()
   defer acceptor.Unlock()
   if args.N >= acceptor.N_p {
-    mpx.DPrintf("accepting n:%d, v:%+v", args.N, args.V)
     acceptor.N_p = args.N
     acceptor.N_a = args.N
     acceptor.V_a = args.V
@@ -602,8 +576,6 @@ func (mpx *MultiPaxos) AcceptHandler(args *AcceptArgs, reply *AcceptReply) error
   }
   reply.N_p = acceptor.N_p
   mpx.disk.WriteAcceptor(args.Seq, acceptor) // write will deep-copy acceptor internally for safety
-  //mpx.DPrintf("acceptor state after accept : %+v", acceptor)
-  mpx.DPrintf("replying to accept with %+v", reply)
   return nil
 }
 
@@ -636,11 +608,9 @@ func (mpx *MultiPaxos) isMajority(x int) bool {
 }
 
 func (mpx *MultiPaxos) refreshLocalMax(seq int) {
-  //mpx.mu.Lock()
   if seq > mpx.localMax {
     mpx.localMax = seq
   }
-  //mpx.mu.Unlock()
 }
 
 /*
@@ -667,7 +637,6 @@ func (mpx *MultiPaxos) summonAcceptor(seq int) *Acceptor {
   defer mpx.acceptorsMu.Unlock()
   acceptor, exists := mpx.acceptors[seq]
   if !exists {
-    //mpx.DPrintf("init-ing new acceptor for seq %d", seq)
     acceptor = &Acceptor{}
     mpx.prepareAcceptor(seq, acceptor, mpx.highestPrepareEpoch)
     mpx.acceptors[seq] = acceptor
@@ -705,8 +674,7 @@ func (mpx *MultiPaxos) processPiggyBack(piggyBack PiggyBack) {
   }
   mpx.mu.Unlock()
   // potential mins entry update may have increased GlobalMin
-  globalMin := mpx.GlobalMin() //TODO: move garbage collection else where??
-  mpx.forgetAcceptorsUntil(globalMin)
+  mpx.forgetAcceptorsUntil(mpx.GlobalMin()-1)
 }
 
 
@@ -737,31 +705,18 @@ Called when this server starts considering itself a leader
 */
 func (mpx *MultiPaxos) actAsLeader() {
   if !mpx.actingAsLeader {
-    //mpx.DPrintf("leader initiation commencing")
-    //mpx.mu.Lock()
-    //seq := mpx.localMax
-    //mpx.mu.Unlock()
-    //mpx.DPrintf("...commencing prepare epoch")
-    mpx.prepareEpochPhase(mpx.localMin) //TODO: local max + 1?? should localMax start at -1?
-    //mpx.DPrintf("...prepare epoch successful!!!")
-    //mpx.mu.Lock()
+    mpx.prepareEpochPhase(mpx.localMin)
     mpx.actingAsLeader = true
-    //mpx.mu.Unlock()
-    //mpx.DPrintf("leader initiation complete! can now serve requests")
-  }//else {
-  //   mpx.DPrintf("...already acting as leader")
-  // }
+  }
 }
 
 /*
 Called when this server no longer considers itself a leader
 */
 func (mpx *MultiPaxos) relinquishLeadership() {
-  //mpx.DPrintf("about to relinquish leadership")
   mpx.mu.Lock()
   defer mpx.mu.Unlock()
   mpx.actingAsLeader = false
-  //mpx.DPrintf("relinquished leadership")
 }
 
 /*
@@ -777,7 +732,6 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
     proposer.Lock()
     v_prime := proposer.V_prime
     if v_prime == nil {
-      //mpx.DPrintf("Proposer v_prime is nil -> proposing %+v", v)
       proposer.V_prime = v // remember this value since leader may propose again at this sequence later without preparing!
       v_prime = v
     }
@@ -797,24 +751,18 @@ func (mpx *MultiPaxos) leaderPropose(seq int, v DeepCopyable) {
 }
 
 func (mpx *MultiPaxos) refreshMaxKnownEpoch(e int) {
-  //mpx.mu.Lock()
-  //defer mpx.mu.Unlock()
   if e > mpx.maxKnownEpoch {
     mpx.maxKnownEpoch = e
   }
 }
 
 func (mpx *MultiPaxos) refreshHighestPrepareEpoch(e int) {
-  //mpx.mu.Lock()
-  //defer mpx.mu.Unlock()
   if e > mpx.highestPrepareEpoch {
     mpx.highestPrepareEpoch = e
   }
 }
 
 func (mpx *MultiPaxos) refreshEpoch() {
-  //mpx.mu.Lock()
-  //defer mpx.mu.Unlock()
   l := len(mpx.peers)
   // generate unique epoch higher than any epoch we have seen so far
   mpx.epoch = ((mpx.maxKnownEpoch/l + 1) * l) + mpx.me
@@ -830,19 +778,15 @@ Once we have accounted for all servers, run the leader election protocol
 If this server considers itself a leader, start acting as a leader
 */
 func (mpx *MultiPaxos) tick() {
-  //mpx.DPrintf("ticking ...")
   rollcall := MakeSharedCounter()
   done := make(chan bool)
   for peerID, _ := range mpx.peers {
     go mpx.ping(peerID, rollcall, done)
   }
-  //mpx.DPrintf("... waiting for pings to return")
   <- done
-  //mpx.DPrintf("... all pings returned")
   // leader decision & action
   leaderID := mpx.leaderElection()
   if leaderID == mpx.me {
-    //mpx.DPrintf("i am leader!")
     go mpx.actAsLeader()
   }else {
     if mpx.actingAsLeader {
@@ -868,12 +812,11 @@ func (mpx *MultiPaxos) forgetProposersUntil(threshold int) {
 }
 
 func (mpx *MultiPaxos) forgetAcceptorsUntil(threshold int) {
-  //mpx.DPrintf("delet")
   //TODO: forget until 1 less than the global min... maybe rename these forgetter functions
   mpx.acceptorsMu.Lock()
   defer mpx.acceptorsMu.Unlock()
   for s, _ := range mpx.acceptors {
-    if s < threshold {
+    if s <= threshold {
       delete(mpx.acceptors, s)
     }
   }
@@ -903,9 +846,9 @@ func (mpx *MultiPaxos) recoverFromDisk() {
     mpx.lifeStates[i] = Dead
   }
   mpx.actingAsLeader = false
-  mpx.epoch = 0
+  mpx.epoch = mpx.me
   mpx.highestPrepareEpoch = 0
-  mpx.maxKnownEpoch = 0
+  mpx.maxKnownEpoch = mpx.me
   mpx.proposers = make(map[int]*Proposer)
   mpx.acceptors = make(map[int]*Acceptor)
   globalMin := mpx.localMin

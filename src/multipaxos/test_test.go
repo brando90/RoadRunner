@@ -324,6 +324,7 @@ func TestConsensusStableReliable(t *testing.T) {
   fmt.Printf("  ... Passed\n")
 }
 
+/*
 func TestBasic(t *testing.T) {
   gob.Register(DeepString{})
   runtime.GOMAXPROCS(4)
@@ -385,6 +386,7 @@ func TestBasic(t *testing.T) {
 
   //fmt.Printf("  ... Passed\n")
 }
+*/
 
 /*
 func TestDeaf(t *testing.T) {
@@ -1043,7 +1045,7 @@ func TestLots(t *testing.T) {
 END OF SUPER COMMENT*/
 
 /*
-TODO: rewrite this to work with multipaxos
+ rewrite this to work with multipaxos
 func noTestSpeed(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
