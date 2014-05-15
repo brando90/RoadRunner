@@ -101,6 +101,7 @@ func noTestSpeed(t *testing.T) {
   fmt.Printf("20 agreements %v seconds\n", d.Seconds())
 }
 
+/*
 func TestBasic(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
@@ -211,7 +212,7 @@ func TestForget(t *testing.T) {
   var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
-  
+
   for i := 0; i < npaxos; i++ {
     pxh[i] = port("gc", i)
   }
@@ -285,6 +286,7 @@ func TestForget(t *testing.T) {
 
   fmt.Printf("  ... Passed\n")
 }
+*/
 
 /* Buggy test
 func TestManyForget(t *testing.T) {
@@ -294,7 +296,7 @@ func TestManyForget(t *testing.T) {
   var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
-  
+
   for i := 0; i < npaxos; i++ {
     pxh[i] = port("manygc", i)
   }
@@ -313,7 +315,7 @@ func TestManyForget(t *testing.T) {
     for i := 0; i < len(na); i++ {
       seq := na[i]
       j := (rand.Int() % npaxos)
-      v := rand.Int() 
+      v := rand.Int()
       pxa[j].Start(seq, v)
       runtime.Gosched()
     }
@@ -352,6 +354,7 @@ func TestManyForget(t *testing.T) {
 }
 */
 
+/*
 //
 // does paxos forgetting actually free the memory?
 //
@@ -364,7 +367,7 @@ func TestForgetMem(t *testing.T) {
   var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
-  
+
   for i := 0; i < npaxos; i++ {
     pxh[i] = port("gcmem", i)
   }
@@ -543,7 +546,7 @@ func TestMany(t *testing.T) {
 //
 // a peer starts up, with proposal, after others decide.
 // then another peer starts, without a proposal.
-// 
+//
 func TestOld(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
@@ -624,9 +627,10 @@ func TestManyUnreliable(t *testing.T) {
     }
     time.Sleep(100 * time.Millisecond)
   }
-  
+
   fmt.Printf("  ... Passed\n")
 }
+*/
 
 func pp(tag string, src int, dst int) string {
   s := "/var/tmp/824-"
@@ -668,7 +672,7 @@ func part(t *testing.T, tag string, npaxos int, p1 []int, p2 []int, p3 []int) {
     }
   }
 }
-
+/*
 func TestPartition(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
@@ -698,7 +702,7 @@ func TestPartition(t *testing.T) {
   part(t, tag, npaxos, []int{0,2}, []int{1,3}, []int{4})
   pxa[1].Start(seq, 111)
   checkmax(t, pxa, seq, 0)
-  
+
   fmt.Printf("  ... Passed\n")
 
   fmt.Printf("Test: Decision in majority partition ...\n")
@@ -731,7 +735,7 @@ func TestPartition(t *testing.T) {
     if ndecided(t, pxa, seq) > 3 {
       t.Fatalf("too many decided")
     }
-    
+
     part(t, tag, npaxos, []int{0,1}, []int{2,3,4}, []int{})
     waitn(t, pxa, seq, npaxos)
   }
@@ -756,7 +760,7 @@ func TestPartition(t *testing.T) {
     if ndecided(t, pxa, seq) > 3 {
       t.Fatalf("too many decided")
     }
-    
+
     part(t, tag, npaxos, []int{0,1}, []int{2,3,4}, []int{})
 
     for i := 0; i < npaxos; i++ {
@@ -873,4 +877,62 @@ func TestLots(t *testing.T) {
   }
 
   fmt.Printf("  ... Passed\n")
+}
+*/
+func TestBenchmark() {
+
+  runtime.GOMAXPROCS(4)
+
+  const npaxos = 3
+  var pxa []*Paxos = make([]*Paxos, npaxos)
+  var pxh []string = make([]string, npaxos)
+  defer cleanup(pxa)
+
+  TPrintf(" Benchmark...\n")
+
+
+  for i := 0; i < npaxos; i++ {
+    pxh[i] = port("time", i)
+  }
+  for i := 0; i < npaxos; i++ {
+    pxa[i] = Make(pxh, i, nil)
+  }
+
+  const iters = 100
+
+  t0 := time.Now()
+
+
+  for i := 0; i < iters; i++ {
+    pxa[0].Start(i, "x")
+  }
+
+  for i := 0; i < iters; i++ {
+    waitn(t, pxa, i, npaxos)
+  }
+
+  d := time.Since(t0)
+  fmt.Printf("%d agreements in %v seconds\n", iters, d.Seconds())
+/*
+
+  TPrintf(" Benchmark...\n")
+
+
+  t0 := time.Now()
+
+  const nmultipaxos = 3
+  mpxa, _ := setup(nmultipaxos)
+  defer cleanup(mpxa)
+
+  const iters = 100;
+  for i := 0; i < iters; i++ {
+    stri := DeepString{Str: fmt.Sprintf("v%d", i)}
+    startBenchmark(mpxa, i, stri)
+  }
+  for i := 0; i < iters; i++ {
+    waitn(t, mpxa, i, nmultipaxos)
+  }
+  d := time.Since(t0)
+  fmt.Printf("%d agreements in %v seconds\n", iters, d.Seconds())
+  */
 }

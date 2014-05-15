@@ -1,60 +1,13 @@
-package multipaxos
+package paxos
 
-import (
-  "testing"
-  "runtime"
-  "strconv"
-  "os"
-  "time"
-  "fmt"
-  "encoding/gob"
-  "log"
-  //"math/rand"
-)
-
-/*Test outline
-DONE: leader vs. non-leader
-DONE: leader changes...?
-1 leader
-  decision reached
-  decison doesnt change
-multiple leaders
-  same seq, same v
-  same seq, diff v
-  diff seq, same/diff v
-garbage collection
-  deleting proposers/learners
-  deleting acceptors
-unreliable connections
-unreliable servers
-concurrent requests
-unreliable & concurrent
-persistence
-*/
-
-// testing types
-
-type DeepString struct {
-  Str string
-}
-
-func (dstr DeepString) DeepCopy() DeepCopyable {
-  return DeepString{Str: dstr.Str}
-}
-
-func start(mpxa []*MultiPaxos, seq int, v DeepCopyable) {
-  for {
-    for _, mpx := range mpxa {
-      err := mpx.Push(seq, v)
-      if err == Nil { // mpx is a leader... push successful
-        return
-      }else {
-        // not a leader
-      }
-    }
-    time.Sleep(10*time.Millisecond)
-  }
-}
+import "testing"
+import "runtime"
+import "strconv"
+import "os"
+import "time"
+import "fmt"
+//import "gob"
+//import "math/rand"
 
 func port(tag string, host int) string {
   s := "/var/tmp/824-"
@@ -67,7 +20,7 @@ func port(tag string, host int) string {
   return s
 }
 
-func ndecided(t *testing.T, pxa []*MultiPaxos, seq int) int {
+func ndecided(t *testing.T, pxa []*Paxos, seq int) int {
   count := 0
   var v interface{}
   for i := 0; i < len(pxa); i++ {
@@ -86,7 +39,7 @@ func ndecided(t *testing.T, pxa []*MultiPaxos, seq int) int {
   return count
 }
 
-func waitn(t *testing.T, pxa[]*MultiPaxos, seq int, wanted int) {
+func waitn(t *testing.T, pxa[]*Paxos, seq int, wanted int) {
   to := 10 * time.Millisecond
   for iters := 0; iters < 30; iters++ {
     if ndecided(t, pxa, seq) >= wanted {
@@ -103,11 +56,11 @@ func waitn(t *testing.T, pxa[]*MultiPaxos, seq int, wanted int) {
   }
 }
 
-func waitmajority(t *testing.T, pxa[]*MultiPaxos, seq int) {
+func waitmajority(t *testing.T, pxa[]*Paxos, seq int) {
   waitn(t, pxa, seq, (len(pxa) / 2) + 1)
 }
 
-func checkmax(t *testing.T, pxa[]*MultiPaxos, seq int, max int) {
+func checkmax(t *testing.T, pxa[]*Paxos, seq int, max int) {
   time.Sleep(3 * time.Second)
   nd := ndecided(t, pxa, seq)
   if nd > max {
@@ -115,7 +68,7 @@ func checkmax(t *testing.T, pxa[]*MultiPaxos, seq int, max int) {
   }
 }
 
-func cleanup(pxa []*MultiPaxos) {
+func cleanup(pxa []*Paxos) {
   for i := 0; i < len(pxa); i++ {
     if pxa[i] != nil {
       pxa[i].Kill()
@@ -123,235 +76,49 @@ func cleanup(pxa []*MultiPaxos) {
   }
 }
 
-func setup(nmultipaxos int) ([]*MultiPaxos, []string) {
-  gob.Register(DeepString{})
-
-  var mpxa []*MultiPaxos = make([]*MultiPaxos, nmultipaxos)
-  var mpxh []string = make([]string, nmultipaxos)
-
-  for i := 0; i < nmultipaxos; i++ {
-    mpxh[i] = port("time", i)
-  }
-  for i := 0; i < nmultipaxos; i++ {
-    mpxa[i] = Make(mpxh, i, nil)
-  }
-  return mpxa, mpxh
-}
-
-func TPrintf(format string, a ...interface{}) (n int, err error) {
-  prefix := "\nTest: "
-  log.Printf(prefix + format, a...)
-  return
-}
-
-func TestLeadershipReliable(t *testing.T) {
-  runtime.GOMAXPROCS(4)
-
-  const nmultipaxos = 5
-  mpxa, _ := setup(nmultipaxos)
-  defer cleanup(mpxa)
-
-  TPrintf("Converge on 1 Leader w/ Highest ID ...\n")
-  passed1 := false
-  const iters = 5 * nmultipaxos
-  for i := 0; i < iters; i++ {
-    leaders := 0
-    highestIDLeading := false
-    for id, mpx := range mpxa {
-      err := mpx.Push(0, DeepString{Str: "hello"})
-      if err == Nil {
-        leaders += 1
-        if id == nmultipaxos - 1 {
-          highestIDLeading = true
-        }
-      }
-    }
-    if leaders == 1 && highestIDLeading {
-      passed1 = true
-      break
-    }
-    time.Sleep(250 * time.Millisecond)
-  }
-  if !passed1 {
-    t.Fatalf("didn't converge on 1 leader w/ highest id in time")
-  }
-  fmt.Printf("  ... Passed\n")
-
-  TPrintf("Converge on new leader when old leader dies ...\n")
-  leader := mpxa[nmultipaxos-1]
-  leader.Kill()
-  passed2 := false
-  for i := 0; i < iters; i++ {
-    leaders := 0
-    livingHighestIDLeading := false
-    for id, mpx := range mpxa {
-      if id != nmultipaxos - 1 { // don't send requests to old, dead leader
-        err := mpx.Push(0, DeepString{Str: "hello"})
-        if err == Nil {
-          leaders += 1
-          if id == nmultipaxos - 2 {
-            livingHighestIDLeading = true
-          }
-        }
-      }
-    }
-    if leaders == 1 && livingHighestIDLeading {
-      passed2 = true
-      break
-    }
-    time.Sleep(250 * time.Millisecond)
-  }
-  if !passed2 {
-    t.Fatalf("didn't converge on new leader w/ highest living id in time")
-  }
-  fmt.Printf("  ... Passed\n")
-}
-
-func TestConsensusStableReliable(t *testing.T) {
-  runtime.GOMAXPROCS(4)
-
-  const nmultipaxos = 3
-
-  TPrintf("Consensus stability w/ stable leader...\n")
-  mpxa, _ := setup(nmultipaxos)
-
-  time.Sleep(500*time.Millisecond) // wait for system to converge on leader
-  leader := mpxa[nmultipaxos - 1]
-
-  err := leader.Push(0, DeepString{Str: "good"})
-  if err != Nil {
-    t.Fatalf("did not converge on leader in time")
-  }
-  fmt.Printf("... waiting on initial decision\n")
-  waitn(t, mpxa, 0, nmultipaxos)
-  fmt.Printf("...intial decision reached\n")
-  _, val1 := leader.Status(0)
-
-  leader.Push(0, DeepString{Str: "bad"})
-  time.Sleep(1000*time.Millisecond)
-  waitn(t, mpxa, 0, nmultipaxos)
-  decided2, val2 := leader.Status(0)
-  if !decided2 {
-    t.Fatalf("Consensus is unstable; Now undecided")
-  }
-
-  if val1 != val2 {
-    t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", val1, val2)
-  }
-  cleanup(mpxa)
-  fmt.Printf("  ... Passed\n")
-
-  // leader change stability
-
-  mpxa, _ = setup(nmultipaxos)
-  TPrintf("Concensus stability w/ leader change...\n")
-  time.Sleep(500*time.Millisecond) // wait for system to converge on leader
-  leader1 := mpxa[nmultipaxos - 1]
-
-  err1 := leader1.Push(0, DeepString{Str: "did not change"})
-  if err1 != Nil {
-    t.Fatalf("did not converge on leader in time")
-  }
-  fmt.Printf("... waiting on initial decision")
-  waitn(t, mpxa, 0, nmultipaxos)
-  fmt.Printf("... intial decison reached")
-  _, v1 := leader1.Status(0)
-  leader1.Kill()
-  time.Sleep(500*time.Millisecond) // wait for the system to converge on new leader
-  leader2 := mpxa[nmultipaxos - 2]
-  err2 := leader2.Push(0, DeepString{Str: "changed!"})
-  if err2 != Nil {
-    t.Fatalf("did not converge on new leader in time")
-  }
-  time.Sleep(1000*time.Millisecond)
-  fmt.Printf("... unstable value propagating")
-  decided2, v2 := leader2.Status(0)
-  if !decided2 {
-    t.Fatalf("Consensus is unstable; Now undecided")
-  }
-  if v1 != v2 {
-    t.Fatalf("Consensus is unstable; changed value: %+v -> %+v", v1, v2)
-  }
-  cleanup(mpxa)
-  fmt.Printf("  ... Passed\n")
-
-  TPrintf("Consensus stability, many sequences w/ leader change...\n")
-  mpxa, _ = setup(nmultipaxos)
-  time.Sleep(500*time.Millisecond) // wait for system to converge on leader
-  stableLeader := mpxa[nmultipaxos - 1]
-  const iters = 5
-  stableVals := [iters]interface{}{}
-  for i := 0; i < iters; i++ {
-    erri := stableLeader.Push(i, DeepString{Str: fmt.Sprintf("leader1 seq:%d", i)})
-    if erri != Nil {
-      if i == 0 {
-        t.Fatalf("did not converge on leader in time")
-      }else {
-        t.Fatalf("leader unstable")
-      }
-    }
-    waitn(t, mpxa, i, nmultipaxos)
-    _, v := stableLeader.Status(i)
-    stableVals[i] = v
-  }
-  stableLeader.Kill()
-  time.Sleep(1000*time.Millisecond)
-
-  newStableLeader := mpxa[nmultipaxos - 2]
-  newStableVals := [iters]interface{}{}
-  for i := 0; i < iters; i++ {
-    erri := newStableLeader.Push(i, DeepString{Str: fmt.Sprintf("leader2 seq:%d",i)})
-    if erri != Nil {
-      if i == 0 {
-        t.Fatalf("did not converge on new leader in time")
-      }else {
-        t.Fatalf("new leader unstable")
-      }
-    }
-    time.Sleep(500*time.Millisecond) // allow for unstable value to be propagatad
-    _, v := newStableLeader.Status(i)
-    newStableVals[i] = v
-  }
-
-  for i := 0; i < iters; i++ {
-    v1 := stableVals[i]
-    v2 := newStableVals[i]
-    if v1 != v2 {
-      t.Fatalf("consensus change at seq %d: %+v -> %+v", i, v1, v2)
-    }
-  }
-
-  fmt.Printf("  ... Passed\n")
-}
-
-func startBenchmark(mpxa []*MultiPaxos, seq int, v DeepCopyable) {
-  var leader *MultiPaxos
-  for {
-    if leader != nil {
-      err := leader.Push(seq, v)
-      if err != Nil {
-        leader = nil
-      }
-    }else {
-      for _, mpx := range mpxa {
-        err := mpx.Push(seq, v)
-        if err == Nil { // mpx is a leader... push successful
-          return
-        }else {
-          // not a leader
-        }
-      }
-      time.Sleep(10*time.Millisecond)
-    }
-  }
-}
-
 func TestBenchmark(t *testing.T) {
-  TPrintf(" Benchmark...\n")
+
+  runtime.GOMAXPROCS(4)
+  //gob.Register(DeepString{})
+
+  const npaxos = 9
+  var pxa []*Paxos = make([]*Paxos, npaxos)
+  var pxh []string = make([]string, npaxos)
+  defer cleanup(pxa)
+
+  fmt.Printf(" Benchmark...\n")
+
+
+  for i := 0; i < npaxos; i++ {
+    pxh[i] = port("time", i)
+  }
+  for i := 0; i < npaxos; i++ {
+    pxa[i] = Make(pxh, i, nil)
+  }
+
+  const iters = 100
 
   t0 := time.Now()
 
-  const nmultipaxos = 9
+
+  for i := 0; i < iters; i++ {
+    pxa[0].Start(i, fmt.Sprintf("v%d", i))
+  }
+
+  for i := 0; i < iters; i++ {
+    waitn(t, pxa, i, npaxos)
+  }
+
+  d := time.Since(t0)
+  fmt.Printf("%d agreements in %v seconds\n", iters, d.Seconds())
+/*
+
+  TPrintf(" Benchmark...\n")
+
+
+  t0 := time.Now()
+
+  const nmultipaxos = 3
   mpxa, _ := setup(nmultipaxos)
   defer cleanup(mpxa)
 
@@ -365,15 +132,41 @@ func TestBenchmark(t *testing.T) {
   }
   d := time.Since(t0)
   fmt.Printf("%d agreements in %v seconds\n", iters, d.Seconds())
+  */
 }
 
 /*
-func TestBasic(t *testing.T) {
-  gob.Register(DeepString{})
+func noTestSpeed(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
   const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
+  var pxh []string = make([]string, npaxos)
+  defer cleanup(pxa)
+
+  for i := 0; i < npaxos; i++ {
+    pxh[i] = port("time", i)
+  }
+  for i := 0; i < npaxos; i++ {
+    pxa[i] = Make(pxh, i, nil)
+  }
+
+  t0 := time.Now()
+
+  for i := 0; i < 20; i++ {
+    pxa[0].Start(i, "x")
+    waitn(t, pxa, i, npaxos)
+  }
+
+  d := time.Since(t0)
+  fmt.Printf("20 agreements %v seconds\n", d.Seconds())
+}
+
+func TestBasic(t *testing.T) {
+  runtime.GOMAXPROCS(4)
+
+  const npaxos = 3
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -386,57 +179,54 @@ func TestBasic(t *testing.T) {
 
   fmt.Printf("Test: Single proposer ...\n")
 
-  start(pxa, 0, DeepString{Str: "hello"})
-
+  pxa[0].Start(0, "hello")
   waitn(t, pxa, 0, npaxos)
 
   fmt.Printf("  ... Passed\n")
 
-  //fmt.Printf("Test: Many proposers, same value ...\n")
-  //
-  // for i := 0; i < npaxos; i++ {
-  //   pxa[i].Start(1, 77)
-  // }
-  // waitn(t, pxa, 1, npaxos)
-  //
-  // fmt.Printf("  ... Passed\n")
-  //
-  //fmt.Printf("Test: Many proposers, different values ...\n")
-  //
-  // pxa[0].Start(2, 100)
-  // pxa[1].Start(2, 101)
-  // pxa[2].Start(2, 102)
-  // waitn(t, pxa, 2, npaxos)
-  //
-  // fmt.Printf("  ... Passed\n")
-  //
-  //fmt.Printf("Test: Out-of-order instances ...\n")
-  //
-  // pxa[0].Start(7, 700)
-  // pxa[0].Start(6, 600)
-  // pxa[1].Start(5, 500)
-  // waitn(t, pxa, 7, npaxos)
-  // pxa[0].Start(4, 400)
-  // pxa[1].Start(3, 300)
-  // waitn(t, pxa, 6, npaxos)
-  // waitn(t, pxa, 5, npaxos)
-  // waitn(t, pxa, 4, npaxos)
-  // waitn(t, pxa, 3, npaxos)
-  //
-  // if pxa[0].Max() != 7 {
-  //   t.Fatalf("wrong Max()")
-  // }
+  fmt.Printf("Test: Many proposers, same value ...\n")
 
-  //fmt.Printf("  ... Passed\n")
+  for i := 0; i < npaxos; i++ {
+    pxa[i].Start(1, 77)
+  }
+  waitn(t, pxa, 1, npaxos)
+
+  fmt.Printf("  ... Passed\n")
+
+  fmt.Printf("Test: Many proposers, different values ...\n")
+
+  pxa[0].Start(2, 100)
+  pxa[1].Start(2, 101)
+  pxa[2].Start(2, 102)
+  waitn(t, pxa, 2, npaxos)
+
+  fmt.Printf("  ... Passed\n")
+
+  fmt.Printf("Test: Out-of-order instances ...\n")
+
+  pxa[0].Start(7, 700)
+  pxa[0].Start(6, 600)
+  pxa[1].Start(5, 500)
+  waitn(t, pxa, 7, npaxos)
+  pxa[0].Start(4, 400)
+  pxa[1].Start(3, 300)
+  waitn(t, pxa, 6, npaxos)
+  waitn(t, pxa, 5, npaxos)
+  waitn(t, pxa, 4, npaxos)
+  waitn(t, pxa, 3, npaxos)
+
+  if pxa[0].Max() != 7 {
+    t.Fatalf("wrong Max()")
+  }
+
+  fmt.Printf("  ... Passed\n")
 }
-*/
 
-/*
 func TestDeaf(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
   const npaxos = 5
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -449,42 +239,37 @@ func TestDeaf(t *testing.T) {
 
   fmt.Printf("Test: Deaf proposer ...\n")
 
-  start(pxa, 0, DeepString{Str:"hello"})
+  pxa[0].Start(0, "hello")
   waitn(t, pxa, 0, npaxos)
 
   os.Remove(pxh[0])
   os.Remove(pxh[npaxos-1])
 
-  time.Sleep(1 * time.Second) // let system converge to new leaders
-  start(pxa, 1, DeepString{Str:"goodbye"})
+  pxa[1].Start(1, "goodbye")
   waitmajority(t, pxa, 1)
   time.Sleep(1 * time.Second)
   if ndecided(t, pxa, 1) != npaxos - 2 {
     t.Fatalf("a deaf peer heard about a decision")
   }
 
-  start(pxa, 1, DeepString{Str: "xxx"})
+  pxa[0].Start(1, "xxx")
   waitn(t, pxa, 1, npaxos-1)
   time.Sleep(1 * time.Second)
   if ndecided(t, pxa, 1) != npaxos - 1 {
     t.Fatalf("a deaf peer heard about a decision")
   }
 
-  //pxa[npaxos-1].Start(1, "yyy")
-  //waitn(t, pxa, 1, npaxos)
+  pxa[npaxos-1].Start(1, "yyy")
+  waitn(t, pxa, 1, npaxos)
 
   fmt.Printf("  ... Passed\n")
 }
-*/
-
-
-/* SUPER COMMENT
 
 func TestForget(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
   const npaxos = 6
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -561,17 +346,86 @@ func TestForget(t *testing.T) {
 
   fmt.Printf("  ... Passed\n")
 }
+*/
 
+/* Buggy test
+func TestManyForget(t *testing.T) {
+  runtime.GOMAXPROCS(4)
+
+  const npaxos = 3
+  var pxa []*Paxos = make([]*Paxos, npaxos)
+  var pxh []string = make([]string, npaxos)
+  defer cleanup(pxa)
+
+  for i := 0; i < npaxos; i++ {
+    pxh[i] = port("manygc", i)
+  }
+  for i := 0; i < npaxos; i++ {
+    pxa[i] = Make(pxh, i, nil)
+    pxa[i].unreliable = true
+  }
+
+  fmt.Printf("Test: Lots of forgetting ...\n")
+
+  const maxseq = 20
+  done := false
+
+  go func() {
+    na := rand.Perm(maxseq)
+    for i := 0; i < len(na); i++ {
+      seq := na[i]
+      j := (rand.Int() % npaxos)
+      v := rand.Int()
+      pxa[j].Start(seq, v)
+      runtime.Gosched()
+    }
+  }()
+
+  go func() {
+    for done == false {
+      seq := (rand.Int() % maxseq)
+      i := (rand.Int() % npaxos)
+      if seq >= pxa[i].Min() {
+        decided, _ := pxa[i].Status(seq)
+        if decided {
+          pxa[i].Done(seq)
+        }
+      }
+      runtime.Gosched()
+    }
+  }()
+
+  time.Sleep(5 * time.Second)
+  done = true
+  for i := 0; i < npaxos; i++ {
+    pxa[i].unreliable = false
+  }
+  time.Sleep(2 * time.Second)
+
+  for seq := 0; seq < maxseq; seq++ {
+    for i := 0; i < npaxos; i++ {
+      if seq >= pxa[i].Min() {
+        pxa[i].Status(seq)
+      }
+    }
+  }
+
+  fmt.Printf("  ... Passed\n")
+}
+*/
+
+
+/*
 //
 // does paxos forgetting actually free the memory?
 //
 func TestForgetMem(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
-  fmt.Printf("Test: MultiPaxos frees forgotten instance memory ...\n")
+  fmt.Printf("Test: Paxos frees forgotten instance memory ...\n")
 
   const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -635,7 +489,7 @@ func TestRPCCount(t *testing.T) {
   fmt.Printf("Test: RPC counts aren't too high ...\n")
 
   const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -710,7 +564,7 @@ func TestMany(t *testing.T) {
   fmt.Printf("Test: Many instances ...\n")
 
   const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -760,7 +614,7 @@ func TestOld(t *testing.T) {
   fmt.Printf("Test: Minority proposal ignored ...\n")
 
   const npaxos = 5
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -797,7 +651,7 @@ func TestManyUnreliable(t *testing.T) {
   fmt.Printf("Test: Many instances, unreliable RPC ...\n")
 
   const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   var pxh []string = make([]string, npaxos)
   defer cleanup(pxa)
 
@@ -837,7 +691,7 @@ func TestManyUnreliable(t *testing.T) {
 
   fmt.Printf("  ... Passed\n")
 }
-
+*/
 func pp(tag string, src int, dst int) string {
   s := "/var/tmp/824-"
   s += strconv.Itoa(os.Getuid()) + "/"
@@ -870,7 +724,7 @@ func part(t *testing.T, tag string, npaxos int, p1 []int, p2 []int, p3 []int) {
         err := os.Link(pj, ij)
         if err != nil {
           // one reason this link can fail is if the
-          // corresponding MultiPaxos peer has prematurely quit and
+          // corresponding Paxos peer has prematurely quit and
           // deleted its socket file (e.g., called px.Kill()).
           t.Fatalf("os.Link(%v, %v): %v\n", pj, ij, err)
         }
@@ -879,12 +733,13 @@ func part(t *testing.T, tag string, npaxos int, p1 []int, p2 []int, p3 []int) {
   }
 }
 
+/*
 func TestPartition(t *testing.T) {
   runtime.GOMAXPROCS(4)
 
   tag := "partition"
   const npaxos = 5
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   defer cleanup(pxa)
   defer cleanpp(tag, npaxos)
 
@@ -986,7 +841,7 @@ func TestLots(t *testing.T) {
 
   tag := "lots"
   const npaxos = 5
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
+  var pxa []*Paxos = make([]*Paxos, npaxos)
   defer cleanup(pxa)
   defer cleanpp(tag, npaxos)
 
@@ -1083,35 +938,5 @@ func TestLots(t *testing.T) {
   }
 
   fmt.Printf("  ... Passed\n")
-}
-
-END OF SUPER COMMENT*/
-
-/*
- rewrite this to work with multipaxos
-func noTestSpeed(t *testing.T) {
-  runtime.GOMAXPROCS(4)
-
-  const npaxos = 3
-  var pxa []*MultiPaxos = make([]*MultiPaxos, npaxos)
-  var pxh []string = make([]string, npaxos)
-  defer cleanup(pxa)
-
-  for i := 0; i < npaxos; i++ {
-    pxh[i] = port("time", i)
-  }
-  for i := 0; i < npaxos; i++ {
-    pxa[i] = Make(pxh, i, nil)
-  }
-
-  t0 := time.Now()
-
-  for i := 0; i < 20; i++ {
-    pxa[0].Push(i, "x")
-    waitn(t, pxa, i, npaxos)
-  }
-
-  d := time.Since(t0)
-  fmt.Printf("20 agreements %v seconds\n", d.Seconds())
 }
 */
