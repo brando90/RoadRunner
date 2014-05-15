@@ -295,6 +295,7 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
   defer c.Close()
 
   err = c.Call(name, args, reply)
+	time.Sleep(100*time.Millisecond) // simulate network delay
   if err == nil {
     return true
   }

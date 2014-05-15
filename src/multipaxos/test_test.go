@@ -257,7 +257,7 @@ func TestConsensusStableReliable(t *testing.T) {
   fmt.Printf("... intial decison reached")
   _, v1 := leader1.Status(0)
   leader1.Kill()
-  time.Sleep(500*time.Millisecond) // wait for the system to converge on new leader
+  time.Sleep(1000*time.Millisecond) // wait for the system to converge on new leader
   leader2 := mpxa[nmultipaxos - 2]
   err2 := leader2.Push(0, DeepString{Str: "changed!"})
   if err2 != Nil {
@@ -349,14 +349,17 @@ func startBenchmark(mpxa []*MultiPaxos, seq int, v DeepCopyable) {
 func TestBenchmark(t *testing.T) {
   TPrintf(" Benchmark...\n")
 
-  t0 := time.Now()
 
-  const nmultipaxos = 9
+  const nmultipaxos = 3
   mpxa, _ := setup(nmultipaxos)
   defer cleanup(mpxa)
 
-  const iters = 100;
-  for i := 0; i < iters; i++ {
+  startBenchmark(mpxa, 0, DeepString{Str: "v0"})
+  waitn(t, mpxa, 0, nmultipaxos)
+  t0 := time.Now()
+
+  const iters = 200;
+  for i := 1; i < iters+1; i++ {
     stri := DeepString{Str: fmt.Sprintf("v%d", i)}
     startBenchmark(mpxa, i, stri)
   }
